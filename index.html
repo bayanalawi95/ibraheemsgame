@@ -341,6 +341,24 @@ button.tile:hover{border-color:var(--bld)}
 .wafoot{display:flex;gap:8px;padding:8px;background:#f0f2f5;align-items:flex-end}
 #waIn{flex:1;min-width:0;font-family:var(--body);font-size:1.2rem;border:none;border-radius:20px;padding:8px 14px;resize:none;background:#fff;color:#111}
 #waSend{width:46px;height:46px;border-radius:50%;background:#00a884;color:#fff;border:none;font-size:1.3rem;padding:0}
+
+/* mosque + adhan */
+.mosque{flex:none;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;width:120px;position:relative}
+.mosque .dome{font-size:4.6rem;line-height:1}
+.mosque .mlbl{font-weight:800;color:var(--good);font-size:.9rem}
+.mosque.focus .dome{filter:drop-shadow(0 0 12px rgba(46,157,106,.8))}
+.mfigs{display:flex;gap:2px;position:absolute;bottom:22px}
+.mosqueb{background:#dff5ea;border-color:var(--good)}
+.prayer{background:#dff5ea;color:#1b6b47;border-radius:999px;padding:2px 12px;font-weight:800;font-size:.9rem}
+.prayer small{font-weight:500;opacity:.85}
+.adhancard{max-width:480px}
+.adhancard select,.adhancard input[type=time],#aUrl{font-family:var(--body);font-size:1rem;border:2px solid var(--line);border-radius:10px;padding:6px 10px;background:#fff;color:var(--ink);width:100%}
+.ptable{display:grid;gap:6px}
+.prow{display:grid;grid-template-columns:90px minmax(0,1fr) auto;gap:8px;align-items:center;background:var(--page);border-radius:10px;padding:6px 10px}
+.prow.next{background:#dff5ea;outline:2px solid var(--good)}
+.prow input[type=time]{width:auto}
+.chk{display:flex;gap:8px;align-items:center;font-weight:600}
+.adhanstop{position:fixed;left:max(16px,env(safe-area-inset-left,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:45;background:var(--good);color:#fff;border-color:var(--good);font-weight:800;padding:10px 18px;border-radius:999px;box-shadow:0 6px 18px rgba(0,0,0,.25)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style><script src="config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.js"></script></head><body>
 
@@ -354,6 +372,7 @@ button.tile:hover{border-color:var(--bld)}
       <span class="stars" id="stars">⭐ ٠</span><button id="brkB">⚡ استراحة</button>
       <button id="tTr" class="on">النطق</button>
       <button id="tEn">English</button>
+      <button id="adhanB">🕌 مواقيت الأذان</button>
       <button id="chatB">💬 <span id="chatN"></span></button>
       <button id="detB" class="on">🕵️ المحقّق</button>
       <button id="swap">🔄 بدّل الأدوار</button>
@@ -361,7 +380,7 @@ button.tile:hover{border-color:var(--bld)}
     </div>
   </header>
 
-  <div class="shelfbar"><div class="players" id="players"></div><button id="homeB" class="big">🏠 شقّتي</button><span id="homeInfo" class="hint"></span></div>
+  <div class="shelfbar"><div class="players" id="players"></div><button id="homeB" class="big">🏠 شقّتي</button><span id="homeInfo" class="hint"></span><span id="prayerInfo" class="prayer"></span></div>
   <section class="scene" id="scene"></section>
   <section class="panel" id="panel"></section>
   <section class="panel" id="castWrap">
@@ -371,6 +390,8 @@ button.tile:hover{border-color:var(--bld)}
 </div>
 <div id="fx" aria-hidden="true"></div>
 <div id="home" class="overlay" hidden></div>
+<div id="adhanSet" class="overlay" hidden></div>
+<button id="adhanStop" class="adhanstop" hidden>⏹ أوقف الأذان</button>
 <div id="chat" class="overlay" hidden></div>
 <div id="ann" class="ann" aria-live="polite" hidden></div>
 <div id="pop" class="overlay" aria-live="polite"></div>
@@ -495,7 +516,7 @@ function newRound(keepVisitor){
   do{S.t=1+Math.floor(Math.random()*TOP);S.side=Math.floor(Math.random()*4);}while(S.res[S.t][S.side].home);S.why=rnd(WHY);
   S.lifts.forEach(l=>{l.out=false;l.open=false;l.dir="";});
   if(Math.random()<.65)S.lifts[Math.floor(Math.random()*3)].out=true;
-  Object.assign(S,{phase:"reception",lift:null,pos:0,said:{},msg:"",dir:false,stuck:false,knocked:null,hide:Math.random()<.3,talking:false,outTried:null,wrongAt:null,ready:false,entering:false,exiting:false,arrived:false,skipped:null,vary:{},closed:false,goHome:false,live:null,hint:{},build:{},shuf:{},shown:{},lw:{},det:newDet(),reward:null,rewardTaken:false,rid:(S.rid||0)+1});
+  Object.assign(S,{phase:"reception",lift:null,pos:0,said:{},msg:"",dir:false,stuck:false,knocked:null,hide:Math.random()<.3,talking:false,outTried:null,wrongAt:null,ready:false,entering:false,exiting:false,arrived:false,skipped:null,vary:{},closed:false,goHome:false,mosque:null,live:null,hint:{},build:{},shuf:{},shown:{},lw:{},det:newDet(),reward:null,rewardTaken:false,rid:(S.rid||0)+1});
   render();
 }
 /* ---------- rewards ---------- */
@@ -593,7 +614,7 @@ function renderScene(){
   const bld=`<div class="bld ${S.phase==="door"?"focus":""}"><div class="bname">${P("عمارة النجوم ✨","ʿimarat al-nujum")}</div>${rows}<div class="street"></div></div>`;
   let lifts="";
   S.lifts.forEach((l,i)=>{
-    const mine=S.lift===i, rider=mine&&(["inside","ride","stuck"].includes(S.phase)||S.entering)?fig(v.e,S.entering?"walk walkin":S.exiting?"walk walkout":""):"";
+    const mine=S.lift===i, rider=mine&&(["inside","ride","stuck"].includes(S.phase)||S.entering)?fig(v.e,S.entering?"walk walkin":S.exiting?"walk walkout":"")+(S.mosque&&S.mosque.picked?fig(T().e,S.exiting?"walk walkout":""):""):"";
     const pickable=S.phase==="lift"&&S.ready;
     const callOn=S.lift!==null&&!S.arrived&&(S.phase==="lift"||S.phase==="reception"), callPulse=S.phase==="lift"&&S.ready&&S.lift===null;
     lifts+=`${i?`<button class="call ${callOn?"lit":""} ${callPulse?"pulse":""}" aria-label="زر استدعاء المصعد">${callOn?"▲":"△"}</button>`:""}<button class="lift ${l.open?"open":""} ${mine?"chosen":""} ${S.stuck&&mine?"stuck":""} " data-lift="${i}" aria-label="${LIFTS[i].ar}">
@@ -605,7 +626,7 @@ function renderScene(){
   });
   const desk=`<div class="desk ${S.talking?"talking":""} ${S.phase==="reception"?"focus":""}"><div class="bub">${S.phase==="reception"?P("أهلاً! 👋","ahlan!"):"…"}</div>
     <div class="person">💁‍♂️<span class="pc">🖥️</span></div><div class="table">${P("المحاسب","al-muhasib")}</div></div>`;
-  $("scene").innerHTML=bld+`<div class="lifts ${["lift","inside","ride","stuck"].includes(S.phase)?"focus":""}">${lifts}</div>`+desk;
+  $("scene").innerHTML=bld+`<div class="lifts ${["lift","inside","ride","stuck"].includes(S.phase)?"focus":""}">${lifts}</div>`+desk+mosqueScene();
     $("scene").querySelectorAll(".call").forEach(b=>b.onclick=()=>{
     if((S.phase==="reception"||S.phase==="lift")&&S.lift===null){callNearest();return;}
     if(b.classList.contains("lit"))return;
@@ -966,6 +987,165 @@ function hintNext(id){
 }
 function showAll(id){if(!S.lw[id])return;S.build[id]=S.lw[id].map((_,i)=>i);S.shown[id]=1;render();}
 
+/* ===================== prayer times, adhan and the mosque trip ===================== */
+const PRAYERS=[{k:"fajr",ar:"الفجر",tr:"al-fajr"},{k:"dhuhr",ar:"الظهر",tr:"al-zuhr"},{k:"asr",ar:"العصر",tr:"al-ʿasr"},{k:"maghrib",ar:"المغرب",tr:"al-maghrib"},{k:"isha",ar:"العشاء",tr:"al-ʿisha'"}];
+// lat, lng, time zone, fajr angle, isha angle (or minutes after maghrib), asr factor
+const COUNTRIES={
+ sa:{ar:"السعودية (الرياض)",lat:24.71,lng:46.68,tz:"Asia/Riyadh",fa:18.5,im:90,asr:1},
+ mk:{ar:"السعودية (مكّة)",lat:21.42,lng:39.83,tz:"Asia/Riyadh",fa:18.5,im:90,asr:1},
+ ae:{ar:"الإمارات (دبي)",lat:25.20,lng:55.27,tz:"Asia/Dubai",fa:18.2,ia:18.2,asr:1},
+ kw:{ar:"الكويت",lat:29.37,lng:47.98,tz:"Asia/Kuwait",fa:18,ia:17.5,asr:1},
+ qa:{ar:"قطر (الدوحة)",lat:25.29,lng:51.53,tz:"Asia/Qatar",fa:18,im:90,asr:1},
+ eg:{ar:"مصر (القاهرة)",lat:30.04,lng:31.24,tz:"Africa/Cairo",fa:19.5,ia:17.5,asr:1},
+ jo:{ar:"الأردن (عمّان)",lat:31.95,lng:35.93,tz:"Asia/Amman",fa:18,ia:18,asr:1},
+ ma:{ar:"المغرب (الرباط)",lat:34.02,lng:-6.84,tz:"Africa/Casablanca",fa:19,ia:17,asr:1},
+ tr:{ar:"تركيا (إسطنبول)",lat:41.01,lng:28.98,tz:"Europe/Istanbul",fa:18,ia:17,asr:1},
+ pk:{ar:"باكستان (كراتشي)",lat:24.86,lng:67.00,tz:"Asia/Karachi",fa:18,ia:18,asr:2},
+ my:{ar:"ماليزيا (كوالالمبور)",lat:3.14,lng:101.69,tz:"Asia/Kuala_Lumpur",fa:20,ia:18,asr:1},
+ id:{ar:"إندونيسيا (جاكرتا)",lat:-6.21,lng:106.85,tz:"Asia/Jakarta",fa:20,ia:18,asr:1},
+ gb:{ar:"بريطانيا (لندن)",lat:51.51,lng:-0.13,tz:"Europe/London",fa:18,ia:17,asr:1},
+ de:{ar:"ألمانيا (برلين)",lat:52.52,lng:13.40,tz:"Europe/Berlin",fa:18,ia:17,asr:1},
+ fr:{ar:"فرنسا (باريس)",lat:48.86,lng:2.35,tz:"Europe/Paris",fa:12,ia:12,asr:1},
+ us:{ar:"أمريكا (نيويورك)",lat:40.71,lng:-74.01,tz:"America/New_York",fa:15,ia:15,asr:1},
+ ca:{ar:"كندا (تورونتو)",lat:43.65,lng:-79.38,tz:"America/Toronto",fa:15,ia:15,asr:1},
+ au:{ar:"أستراليا (سيدني)",lat:-33.87,lng:151.21,tz:"Australia/Sydney",fa:18,ia:17,asr:1},
+};
+const D2R=Math.PI/180,R2D=180/Math.PI;
+const fixA=a=>{a=a%360;return a<0?a+360:a;}, fixH=h=>{h=h%24;return h<0?h+24:h;};
+function sunPos(jd){
+  const D=jd-2451545,g=fixA(357.529+0.98560028*D),q=fixA(280.459+0.98564736*D);
+  const L=fixA(q+1.915*Math.sin(g*D2R)+0.020*Math.sin(2*g*D2R)),e=23.439-0.00000036*D;
+  const RA=fixH(Math.atan2(Math.cos(e*D2R)*Math.sin(L*D2R),Math.cos(L*D2R))*R2D/15);
+  return {decl:Math.asin(Math.sin(e*D2R)*Math.sin(L*D2R))*R2D,eqt:q/15-RA};
+}
+function julian(y,m,d){if(m<=2){y-=1;m+=12;}const A=Math.floor(y/100),B=2-A+Math.floor(A/4);return Math.floor(365.25*(y+4716))+Math.floor(30.6001*(m+1))+d+B-1524.5;}
+function tzParts(tz,date=new Date()){
+  const f=new Intl.DateTimeFormat("en-GB",{timeZone:tz,year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false});
+  const o={};f.formatToParts(date).forEach(p=>o[p.type]=+p.value);if(o.hour===24)o.hour=0;return o;
+}
+function tzOffsetH(tz,date=new Date()){const p=tzParts(tz,date);return (Date.UTC(p.year,p.month-1,p.day,p.hour,p.minute,p.second)-Math.floor(date.getTime()/1000)*1000)/3600000;}
+function calcTimes(c,y,m,d,tzH){
+  const jd=julian(y,m,d)-c.lng/(15*24),lat=c.lat*D2R;
+  const mid=t=>fixH(12-sunPos(jd+t).eqt);
+  const ang=(a,t,ccw)=>{const s=sunPos(jd+t),dec=s.decl*D2R;
+    const T=Math.acos((-Math.sin(a*D2R)-Math.sin(dec)*Math.sin(lat))/(Math.cos(dec)*Math.cos(lat)))*R2D/15;
+    return mid(t)+(ccw?-T:T);};
+  const asrT=(f,t)=>{const dec=sunPos(jd+t).decl;const a=-Math.atan(1/(f+Math.tan(Math.abs(c.lat-dec)*D2R)))*R2D;return ang(a,t);};
+  let fajr=ang(c.fa,5/24,true),rise=ang(0.833,6/24,true),dhuhr=mid(12/24),asr=asrT(c.asr,13/24),mag=ang(0.833,18/24);
+  let isha=c.im?mag+c.im/60:ang(c.ia,18/24);
+  const night=24-(mag-rise);
+  if(!isFinite(fajr)||rise-fajr>night/2)fajr=rise-night/7;
+  if(!isFinite(isha)||isha-mag>night/2)isha=mag+night/7;
+  const adj=h=>fixH(h+tzH-c.lng/15);
+  const fmt=h=>{h=fixH(h+0.5/60);const H=Math.floor(h),M=Math.floor((h-H)*60);return String(H).padStart(2,"0")+":"+String(M).padStart(2,"0");};
+  return {fajr:fmt(adj(fajr)),dhuhr:fmt(adj(dhuhr)+1/60),asr:fmt(adj(asr)),maghrib:fmt(adj(mag)+1/60),isha:fmt(adj(isha))};
+}
+function adhanCfg(){const c=PL[CUR].cfg;if(!c.country)c.country="sa";if(!c.adhanTimes)c.adhanTimes={};if(c.adhanAuto==null)c.adhanAuto=true;return c;}
+function todayTimes(code){
+  const c=COUNTRIES[code]||COUNTRIES.sa,p=tzParts(c.tz),calc=calcTimes(c,p.year,p.month,p.day,tzOffsetH(c.tz));
+  const ov=(adhanCfg().adhanTimes||{})[code]||{};
+  const out={};PRAYERS.forEach(x=>out[x.k]={time:ov[x.k]||calc[x.k],auto:calc[x.k],edited:!!ov[x.k]});return out;
+}
+const toMin=s=>{const [h,m]=s.split(":").map(Number);return h*60+m;};
+function nextPrayer(){
+  const code=adhanCfg().country,c=COUNTRIES[code]||COUNTRIES.sa,p=tzParts(c.tz),now=p.hour*60+p.minute,T=todayTimes(code);
+  for(const x of PRAYERS){const t=toMin(T[x.k].time);if(t>now)return {p:x,time:T[x.k].time,mins:t-now};}
+  return {p:PRAYERS[0],time:T.fajr.time,mins:24*60-now+toMin(T.fajr.time)};
+}
+const durTxt=m=>m>=60?`${ar(Math.floor(m/60))} س ${ar(m%60)} د`:`${ar(m)} دقيقة`;
+const hhmmAr=s=>{let [h,m]=s.split(":").map(Number);const pm=h>=12;h=h%12||12;return `${ar(h)}:${ar(String(m).padStart(2,"0"))} ${pm?"م":"ص"}`;};
+
+/* adhan sound: your own link first (settings), then public recordings */
+const ADHAN_SRCS=[
+ "https://upload.wikimedia.org/wikipedia/commons/transcoded/1/16/Adhan_wiki.oga/Adhan_wiki.oga.mp3",
+ "https://upload.wikimedia.org/wikipedia/commons/1/16/Adhan_wiki.oga",
+ "https://upload.wikimedia.org/wikipedia/commons/transcoded/8/86/Azan.ogg/Azan.ogg.mp3",
+ "https://upload.wikimedia.org/wikipedia/commons/8/86/Azan.ogg",
+ "https://upload.wikimedia.org/wikipedia/commons/transcoded/b/b0/Beautiful_adhan.ogg/Beautiful_adhan.ogg.mp3",
+ "https://upload.wikimedia.org/wikipedia/commons/7/7d/The_Adhan_-_Muslim_Call_to_Prayer_-_Aaqib_Azeez.mp3",
+];
+let ADHAN=null;
+function playAdhan(){
+  stopAdhan();
+  const own=(adhanCfg().adhanUrl||"").trim();
+  const list=(own?[own]:[]).concat(ADHAN_SRCS);
+  let i=0;
+  const tryNext=()=>{
+    if(i>=list.length){ADHAN=null;$("adhanStop").hidden=true;pop("🕌","تعذّر تشغيل صوت الأذان");return;}
+    const a=new Audio(list[i++]);ADHAN=a;a.onerror=()=>{if(ADHAN===a)tryNext();};
+    a.onended=()=>{if(ADHAN===a){ADHAN=null;$("adhanStop").hidden=true;}};
+    a.play().then(()=>{$("adhanStop").hidden=false;}).catch(()=>{if(ADHAN===a)tryNext();});
+  };
+  tryNext();
+}
+function stopAdhan(){if(ADHAN){const a=ADHAN;ADHAN=null;try{a.pause();}catch(e){}}const b=$("adhanStop");if(b)b.hidden=true;}
+
+/* automatic adhan at prayer time while the game is open */
+let lastAuto="";
+setInterval(()=>{
+  try{
+    const c=adhanCfg();const code=c.country,co=COUNTRIES[code]||COUNTRIES.sa,p=tzParts(co.tz);
+    const now=String(p.hour).padStart(2,"0")+":"+String(p.minute).padStart(2,"0"),T=todayTimes(code);
+    for(const x of PRAYERS){if(T[x.k].time===now){const key=`${p.year}-${p.month}-${p.day}-${x.k}-${CUR}`;
+      if(lastAuto!==key){lastAuto=key;pop("🕌",`حان الآن موعد أذان ${x.ar}`);if(c.adhanAuto)playAdhan();}}}
+    renderPrayerInfo();
+  }catch(e){}
+},20000);
+function renderPrayerInfo(){
+  const el=$("prayerInfo");if(!el)return;
+  const n=nextPrayer();
+  el.innerHTML=`🕌 ${P(`${n.p.ar} ${hhmmAr(n.time)}`,`${n.p.tr}`)} <small>${P(`بعد ${durTxt(n.mins)}`,`in ${n.mins} min`)}</small>`;
+}
+
+/* settings window */
+let AS={open:false};
+function openAdhanSet(){AS.open=true;drawAdhanSet();}
+function closeAdhanSet(){AS.open=false;$("adhanSet").hidden=true;render();}
+function drawAdhanSet(){
+  const o=$("adhanSet");if(!AS.open){o.hidden=true;return;}o.hidden=false;
+  const c=adhanCfg(),code=c.country,T=todayTimes(code),n=nextPrayer();
+  o.innerHTML=`<div class="homecard adhancard">
+    <div class="homehead"><h2>🕌 ${P(`مواقيت الأذان · ${PL_INFO[CUR].name}`,"mawaqit al-adhan")}</h2><button id="aClose">✕</button></div>
+    <label class="hint" for="aCountry">${P("البلد","al-balad")}</label>
+    <select id="aCountry">${Object.entries(COUNTRIES).map(([k,v])=>`<option value="${k}" ${k===code?"selected":""}>${v.ar}</option>`).join("")}</select>
+    <div class="ptable">${PRAYERS.map(x=>`<div class="prow ${n.p.k===x.k?"next":""}"><b>${P(x.ar,x.tr)}</b>
+      <input type="time" id="t_${x.k}" data-pk="${x.k}" value="${T[x.k].time}">
+      ${T[x.k].edited?`<button class="small" data-reset="${x.k}" title="الوقت المحسوب: ${T[x.k].auto}">↺ ${ar(T[x.k].auto)}</button>`:`<span class="hint">${P("تلقائي","tilqa'i")}</span>`}</div>`).join("")}</div>
+    <div class="hint">${P("الأوقات محسوبة لمدينة البلد. عدّل أي وقت ليطابق مسجدك، واضغط ↺ لإرجاعه.","")}</div>
+    <label class="chk"><input type="checkbox" id="aAuto" ${c.adhanAuto?"checked":""}> ${P("شغّل الأذان تلقائياً عند دخول الوقت (واللعبة مفتوحة)","")}</label>
+    <label class="hint" for="aUrl">${P("رابط صوت أذان خاص (اختياري، mp3)","")}</label>
+    <input id="aUrl" dir="ltr" placeholder="https://…/adhan.mp3" value="${esc(c.adhanUrl||"")}">
+    <div class="tog center"><button class="big" id="aTest">▶️ ${P("جرّب الأذان","jarrib al-adhan")}</button><button id="aStop">⏹ ${P("أوقف","awqif")}</button></div></div>`;
+  const on=(id,f)=>{const e=$(id);if(e)e.onclick=f;};
+  on("aClose",closeAdhanSet);
+  on("aTest",playAdhan);on("aStop",stopAdhan);
+  $("aCountry").onchange=e=>{c.country=e.target.value;saveHome();drawAdhanSet();render();};
+  o.querySelectorAll("[data-pk]").forEach(inp=>inp.onchange=()=>{const k=inp.dataset.pk;if(!inp.value)return;
+    c.adhanTimes[code]=c.adhanTimes[code]||{};c.adhanTimes[code][k]=inp.value;saveHome();drawAdhanSet();render();});
+  o.querySelectorAll("[data-reset]").forEach(b=>b.onclick=()=>{const k=b.dataset.reset;if(c.adhanTimes[code]){delete c.adhanTimes[code][k];}saveHome();drawAdhanSet();render();});
+  $("aAuto").onchange=e=>{c.adhanAuto=e.target.checked;saveHome();};
+  $("aUrl").onchange=e=>{c.adhanUrl=e.target.value.trim();saveHome();};
+}
+
+/* the mission: pick someone up and take them to the mosque */
+function startMosque(){
+  const cands=[];for(let f=1;f<=TOP;f++)S.res[f].forEach((r,s)=>{if(r&&r.m===1&&!r.home)cands.push([f,s]);});
+  const [f,s]=cands[Math.floor(Math.random()*cands.length)];
+  newRound(true);
+  Object.assign(S,{t:f,side:s,hide:false,mosque:{p:nextPrayer().p,picked:false}});
+  render();
+}
+function mosqueBoard(){
+  S.mosque.picked=true;S.phase="inside";S.pos=S.t;S.wrongAt=null;S.knocked=null;
+  const l=S.lifts[S.lift];if(l){l.f=S.t;l.open=true;}
+  ding();render();
+}
+function mosqueScene(){
+  const here=S.phase==="mosque",v=V(),t=T();
+  return `<div class="mosque ${here?"focus":""}"><div class="dome">🕌</div><div class="mlbl">${P("المسجد","al-masjid")}</div>
+    ${here?`<div class="mfigs">${fig(v.e,"small")}${fig(t.e,"small")}</div>`:""}</div>`;
+}
+
 /* ---------- one line at a time ---------- */
 const B=`<span class="blank"></span>`;
 const ln=(id,who,e,a,tr,en,mine)=>({id,who,e,a,tr,en,mine});
@@ -984,7 +1164,7 @@ function focus(lines,afterHtml){
   return h;
 }
 function steps(){const names=["المحاسب","المصعد","الأزرار","الشقة"],ntr=["al-muhasib","al-misʿad","al-azrar","al-shaqqa"];
-  const cur={reception:0,lift:1,inside:2,ride:2,stuck:2,door:3}[S.phase];
+  const cur={reception:0,lift:1,inside:2,ride:2,stuck:2,door:3,mosque:3}[S.phase];
   return `<div class="steps">${names.map((n,i)=>`<span class="${i<cur?"done":""} ${i===cur?"on":""}">${i<cur?"✓":ar(i+1)} ${P(n,ntr[i])}</span>`).join("")}</div>`;}
 
 /* pick one wording per round, so the dialogue changes every mission but stays stable while playing */
@@ -997,10 +1177,23 @@ const CLOSED=()=>`<div class="alert">🚪 ${P("أُغلق باب المصعد، 
 function renderPanel(){
   const p=$("panel"),v=V(),t=T(),w=W(),K=kid(),Tc=teach();
   const he=G(t,"يسكن","تسكن"), heT=G(t,"yaskunu","taskunu");
-  let h=`<div class="top"><span class="avatar">${v.e}</span><div style="flex:1;min-width:180px"><div class="mission">🎯 ${S.goHome?P("اذهب إلى","idhhab ila"):P("زُر","zur")} <b>${t.e} ${P(t.ar,t.tr)}</b></div>
+  let h=`<div class="top"><span class="avatar">${v.e}</span><div style="flex:1;min-width:180px"><div class="mission">${S.mosque?`🕌 ${P("خذ","khudh")} <b>${t.e} ${P(t.ar,t.tr)}</b> ${P(`إلى المسجد لصلاة ${S.mosque.p.ar}`,`ila al-masjid li-salat ${S.mosque.p.tr}`)}`:`🎯 ${S.goHome?P("اذهب إلى","idhhab ila"):P("زُر","zur")} <b>${t.e} ${P(t.ar,t.tr)}</b>`}</div>
     ${S.en?`<div class="en">Visit ${t.en}.</div>`:""}</div>${steps()}</div>`;
 
-  if(S.phase==="reception"&&S.goHome){
+  if(S.phase==="reception"&&S.mosque){
+    const pr=S.mosque.p,n=nextPrayer();
+    const GO=`<div class="win">👍 ${P("عرفتَ المكان! هيّا إلى المصاعد.","ʿarafta al-makan! hayya ila al-masaʿid.")}</div><div class="tog"><button class="big huge" id="go">🛗 ${P("اذهب إلى المصاعد","idhhab ila al-masaʿid")}</button></div>`;
+    h+=`<div class="win">🕌 ${P(`أذان ${n.p.ar} بعد ${durTxt(n.mins)}`,`adhan ${n.p.tr}`)}</div>`+focus([
+      ln("q1",K,v.e,"السلام عليكم!","al-salamu ʿalaykum!","Peace be upon you!",1),
+      ln("q2",Tc,"💁‍♂️","وعليكم السلام! كيف يمكنني مساعدتك؟","wa ʿalaykum al-salam! kayfa yumkinuni musaʿadatuk?","And peace be upon you! How can I help you?"),
+      ln("q3",K,v.e,`سآخذ ${t.ar} إلى المسجد لصلاة ${pr.ar}. أين ${he}؟`,`sa'akhudhu ${t.tr} ila al-masjid li-salat ${pr.tr}. ayna ${heT}?`,`I'll take ${t.en} to the mosque for ${pr.tr} prayer. Where does ${G(t,"he","she")} live?`,1),
+      ln("q4",Tc,"💁‍♂️",`${he} في ${B}، في الشقة ${B}. ${GV("أسرِع","أسرِعي")}، الأذان قريب!`,`${heT} fi ___ , fi al-shaqqa ___ . ${GV("asriʿ","asriʿi")}, al-adhanu qarib!`,`On the ___ floor, apartment ___. Hurry, the adhan is soon!`),
+      ln("q5",K,v.e,"شكراً! سأذهب الآن.","shukran! sa'adhhabu al-an.","Thanks! I'll go now.",1),
+    ],GO);
+    h+=`<div class="tog"><button id="dirB" class="small">📋 دليل العمارة (للمعلّم)</button></div>`;
+    if(S.dir)h+=`<div class="dir"><div class="target">🎯 ${t.e} ${t.ar}: ${FL[S.t].ar}، رقم ${aptNo(S.t,S.side)}</div></div>`;
+  }
+  else if(S.phase==="reception"&&S.goHome){
     const GO=`<div class="win">👍 ${P("هيّا إلى المصاعد!","hayya ila al-masaʿid!")}</div><div class="tog"><button class="big huge" id="go">🛗 ${P("اذهب إلى المصاعد","idhhab ila al-masaʿid")}</button></div>`;
     let waiting=S.closed&&S.lift===null?CLOSED():"";
     if(S.lift!==null)waiting=S.arrived?`<div class="win">🛗 ${P("المصعد ينتظرك! لكن أكمل كلامك مع المحاسب أولاً.","al-misʿad yantaziruk! lakin akmil kalamaka maʿa al-muhasib awwalan.")}</div>`:`<div class="win">🛗 ${P("المصعد قادم…","al-misʿad qadim…")}</div>`;
@@ -1017,7 +1210,7 @@ function renderPanel(){
   }
   else if(S.phase==="reception"){
     if(!Object.keys(S.said).length){
-      h+=`<div class="tog center">${HOME.f?`<button class="big" id="homeTrip">🏠 ${P("أريد أن أذهب إلى شقّتي","uridu an adhhaba ila shaqqati")}</button>`:""}
+      h+=`<div class="tog center"><button class="big mosqueb" id="mosqueTrip">🕌 ${P("خذ أحداً إلى المسجد","khudh ahadan ila al-masjid")}</button>${HOME.f?`<button class="big" id="homeTrip">🏠 ${P("أريد أن أذهب إلى شقّتي","uridu an adhhaba ila shaqqati")}</button>`:""}
         ${isIb()?(PL.by.home.f?`<button class="big" id="visitBy">👩‍🏫 ${P("أريد أن أزور جارتي المعلّمة بيان","uridu an azura jarati al-muʿallima bayan")}</button>`:"")
                 :PL.ib.home.f?`<button class="big" id="visitIb">👦 ${P("أريد أن أزور جاري إبراهيم","uridu an azura jari ibrahim")}</button>`:""}</div>`;
     }
@@ -1094,11 +1287,11 @@ function renderPanel(){
     const K1=pickL("k1",[[`سأضغط زرّ ${B}.`,`sa'adghatu zirra ___ .`,`I'll press the ___ floor button.`],
                         [`أريد أن أصعد إلى ${B}.`,`uridu an asʿada ila ___ .`,`I want to go up to the ___ floor.`],
                         [`سأذهب إلى ${B}.`,`sa'adhhabu ila ___ .`,`I'll go to the ___ floor.`]]);
-    const lines=[ln("k1",K,v.e,...K1,1)];
+    const lines=[S.mosque&&S.mosque.picked?ln("mk1",K,v.e,`سننزل إلى الطابق الأرضي. سأضغط زرّ ${B}.`,`sananzilu ila al-tabiq al-ardi. sa'adghatu zirra ___ .`,"We'll go down to the ground floor. I'll press ___.",1):ln("k1",K,v.e,...K1,1)];
     if(S.wrongAt!=null&&S.phase==="inside")lines.push(ln("w"+S.wrongAt,K,v.e,...pickL("w",[
       ["أوه! أخطأت. هذا ليس الطابق الصحيح.","oh! akhta'tu. hadha laysa al-tabiqa al-sahih.","Oops! Wrong floor."],
       ["لا! هذا طابقٌ خطأ. سأحاول مرّة أخرى.","la! hadha tabiqun khata'. sa'uhawilu marratan ukhra.","No! Wrong floor. I'll try again."]]),1));
-    const banner=S.wrongAt!=null&&S.phase==="inside"?`<div class="alert">🙈 هذا ${FL[S.wrongAt].ar}! ${S.wrongAt===0?"":`سكّان هذا الطابق: ${S.res[S.wrongAt].map(r=>r.e).join(" ")}. `}لكنّ ${t.ar} ${G(t,"ليس","ليست")} هنا.${S.tr?`<div class="tr">hadha ${FL[S.wrongAt].tr}! lakinna ${t.tr} ${G(t,"laysa","laysat")} huna.</div>`:""}</div>`:"";
+    const banner=S.mosque&&S.mosque.picked&&S.wrongAt!=null&&S.phase==="inside"?`<div class="alert">🙈 ${P(`هذا ${FL[S.wrongAt].ar}! المسجد بجانب الطابق الأرضي.`,`hadha ${FL[S.wrongAt].tr}! al-masjidu bi-janib al-tabiq al-ardi.`)}</div>`:S.wrongAt!=null&&S.phase==="inside"?`<div class="alert">🙈 هذا ${FL[S.wrongAt].ar}! ${S.wrongAt===0?"":`سكّان هذا الطابق: ${S.res[S.wrongAt].map(r=>r.e).join(" ")}. `}لكنّ ${t.ar} ${G(t,"ليس","ليست")} هنا.${S.tr?`<div class="tr">hadha ${FL[S.wrongAt].tr}! lakinna ${t.tr} ${G(t,"laysa","laysat")} huna.</div>`:""}</div>`:"";
     h+=banner+(S.phase==="ride"?`<div class="win center">🛗 ${P("المصعد يتحرّك…","al-misʿad yataharrak")}</div>`:"")+
       focus(lines,`<div class="keypad">${[...Array(TOP+1)].map((_,i)=>TOP-i).map(f=>`<button data-fl="${f}" ${S.phase==="ride"?"disabled":""}>${ar(f)}</button>`).join("")}<span></span><button class="alarm" disabled>🔔</button></div>`);
   }
@@ -1112,6 +1305,20 @@ function renderPanel(){
       ln("s4",Tc,"💁‍♂️",GV("اضغط الزرّ الأحمر!","اضغطي الزرّ الأحمر!"),GV("idghat al-zirra al-ahmar!","idghati al-zirra al-ahmar!"),"Press the red button!"),
     ],`<div class="keypad one"><button class="alarm pulse" id="alarmB">🔔</button></div>`);
   }
+  else if(S.phase==="mosque"){
+    const pr=S.mosque.p;
+    if(S.reward==null)S.reward=pickFurn();
+    const RW=FURN[S.reward];
+    h+=`<div class="win">🕌 ${P("وصلتما إلى المسجد!","wasaltuma ila al-masjid!")}</div>`+focus([
+      ln("m1",K,v.e,"وصلنا إلى المسجد في الوقت!","wasalna ila al-masjidi fi al-waqt!","We got to the mosque on time!",1),
+      ln("m2",Tc,t.e,`الحمد لله! ${GV("شكراً لكَ لأنّكَ أخذتَني","شكراً لكِ لأنّكِ أخذتِني")}.`,`al-hamdu lillah! ${GV("shukran laka li'annaka akhadhtani","shukran laki li'annaki akhadhtini")}.`,"Praise be to Allah! Thank you for taking me."),
+      ln("m3",K,v.e,`اسمع! هذا أذان ${pr.ar}.`,`isma'! hadha adhanu ${pr.tr}.`,`Listen! That's the ${pr.tr} adhan.`,1),
+    ],`<div class="finish"><div class="bigstar">🕌</div><h2>${P("أنجزتَ المهمة!","anjazta al-mahamma!")}</h2>
+      <div class="tog center"><button class="big" id="adhanReplay">🔊 ${P("استمع إلى الأذان","istamiʿ ila al-adhan")}</button><button id="adhanStopP">⏹ ${P("أوقف الأذان","awqif al-adhan")}</button></div>
+      <div class="win center">🎁 ${P(`حصلتَ على: ${RW[1]}`,`hasalta ʿala: ${RW[2]}`)}</div>
+      ${S.rewardTaken?`<div class="hint center">✓ ${P("وضعتَه في شقّتك","wadaʿtahu fi shaqqatik")}</div>`:`<div class="tog center"><button class="big huge" id="placeB">🏠 ${P(HOME.f?"ضعه في شقّتي":"استأجر شقّتك وضعه فيها","daʿhu fi shaqqati")}</button></div>`}
+      <div class="tog center"><button class="big huge" id="next">🚀 ${P("مهمة جديدة","mahamma jadida")}</button></div></div>`);
+  }
   else if(S.phase==="door"){
     const lines=[ln("k2",K,v.e,...pickL("k2",[[`سأطرق باب الشقة ${B}.`,`sa'atruqu baba al-shaqqa ___ .`,`I'll knock on the door of apartment ___.`],
                                               [`هذه هي الشقة ${B}! سأطرق الباب.`,`hadhihi hiya al-shaqqa ___ ! sa'atruqu al-bab.`,`This is apartment ___! I'll knock on the door.`]]),1)];
@@ -1119,7 +1326,15 @@ function renderPanel(){
     let banner=`<div class="win">🛎️ ${P(`وصلتَ إلى ${FL[S.pos].ar}!`,`wasalta ila ${FL[S.pos].tr}!`)}</div>`;
     if(S.knocked!==null){
       const right=S.knocked===S.side, r=S.res[S.pos][S.knocked], k="d"+S.knocked+(S.hide?"h":"");
-      if(S.goHome&&right){
+      if(S.mosque&&right&&!r.home){
+        const pr=S.mosque.p;
+        banner=`<div class="win">🚪 ${P(`فتح${G(t,"","ت")} ${t.ar} الباب!`,`fataha${G(t,"","t")} ${t.tr} al-bab!`)}</div>`;
+        lines.push(ln(k+"ma",Tc,t.e,"مَن عند الباب؟","man ʿinda al-bab?","Who's at the door?"),
+          ln(k+"mb",K,v.e,`السلام عليكم! أنا ${v.ar}. حان وقت صلاة ${pr.ar}. هل ${G(t,"تذهب","تذهبين")} معي إلى المسجد؟`,`al-salamu ʿalaykum! ana ${v.tr}. hana waqtu salat ${pr.tr}. hal ${G(t,"tadhhabu","tadhhabina")} maʿi ila al-masjid?`,`Peace be upon you! I'm ${v.en}. It's time for ${pr.tr} prayer. Will you come with me to the mosque?`,1),
+          ln(k+"mc",Tc,t.e,`وعليكم السلام! نعم، ${GV("جزاكَ","جزاكِ")} الله خيراً. ${GV("انتظرني","انتظريني")} قليلاً، سألبس حذائي.`,`wa ʿalaykum al-salam! naʿam, ${GV("jazaka","jazaki")} allahu khayran. ${GV("intazirni","intazirini")} qalilan, sa'albasu hidha'i.`,"Yes, may Allah reward you! Wait a moment, I'll put on my shoes."),
+          ln(k+"md",K,v.e,`هيّا بنا! ${G(t,"تعالَ","تعالي")} معي إلى المصعد.`,`hayya bina! ${G(t,"taʿala","taʿali")} maʿi ila al-misʿad.`,"Let's go! Come with me to the elevator.",1));
+        after=`<div class="tog center"><button class="big huge" id="mosqueGo">🛗 ${P("ارجعا إلى المصعد","irjiʿa ila al-misʿad")}</button></div>`;
+      } else if(S.goHome&&right){
         banner=`<div class="win">🔑 ${P("وصلتَ إلى شقّتك!","wasalta ila shaqqatik!")}</div>`;
         lines.push(ln(k+"hm",K,v.e,...pickL("hm",[["وصلتُ إلى شقّتي! سأفتح الباب بالمفتاح.","wasaltu ila shaqqati! sa'aftahu al-baba bil-miftah.","I've reached my apartment! I'll open the door with the key."],
                                                  ["هذه شقّتي! أين المفتاح؟ ها هو!","hadhihi shaqqati! ayna al-miftah? ha huwa!","This is my apartment! Where's the key? Here it is!"]]),1));
@@ -1230,6 +1445,10 @@ function renderPanel(){
   on("enterHome",openHome);
   bindLive();
   on("homeTrip",startHomeTrip);
+  on("mosqueTrip",startMosque);
+  on("mosqueGo",mosqueBoard);
+  on("adhanReplay",playAdhan);
+  on("adhanStopP",stopAdhan);
   on("visitBy",()=>startVisit(PL.by.home.f,PL.by.home.s));
   on("visitIb",()=>startVisit(PL.ib.home.f,PL.ib.home.s));
 }
@@ -1321,6 +1540,10 @@ function continueRide(){
   setTimeout(step,350);
 }
 function arrive(){
+  if(S.mosque&&S.mosque.picked){
+    if(S.pos===0){S.exiting=true;render();setTimeout(()=>{S.exiting=false;S.phase="mosque";S.lifts[S.lift].open=false;yay();render();playAdhan();},1500);return;}
+    S.phase="inside";S.wrongAt=S.pos;render();return;
+  }
   if(S.pos===S.t){
     S.exiting=true;render();
     setTimeout(()=>{S.exiting=false;S.phase="door";S.knocked=null;S.lifts[S.lift].open=false;yay();render();announce("أُغلِقت الأبواب.","ughliqat al-abwab.");},1500);
@@ -1335,7 +1558,7 @@ function render(){
   $("players").innerHTML=`<span class="hint">${P("اللاعب:","al-la'ib:")}</span>`+["ib","by"].map(k=>`<button class="pl ${k===CUR?"on":""}" data-pl="${k}">${PL_INFO[k].e} ${P(PL_INFO[k].name,PL_INFO[k].tr)} <small>⭐${ar(k===CUR?S.stars:PL[k].stars)}</small></button>`).join("");
   $("players").querySelectorAll("[data-pl]").forEach(b=>b.onclick=()=>switchPlayer(b.dataset.pl));
   $("homeInfo").innerHTML=HOME.f?P(`${FL[HOME.f].ar}، الشقّة ${aptNo(HOME.f,HOME.s)} · ${ar(HOME.items.length)} قطع أثاث ${HOME.items.map(x=>FURN[x.i][0]).join("")}`,`${HOME.items.length} pieces`):P("لم تستأجر شقّة بعد. أنجز مهمّة!","lam tasta'jir shaqqa baʿd.");
-  renderPanel();renderScene();renderCast();
+  renderPanel();renderScene();renderCast();renderPrayerInfo();
 }
 
 $("tTr").onclick=()=>{S.tr=!S.tr;$("tTr").classList.toggle("on",S.tr);render();};
@@ -1343,6 +1566,8 @@ $("tEn").onclick=()=>{S.en=!S.en;$("tEn").classList.toggle("on",S.en);render();}
 S.detOn=PL[CUR].cfg.det;S.stars=PL[CUR].stars;S.vi=VIS.findIndex(v=>v.id===PL_INFO[CUR].vis);$("detB").classList.toggle("on",S.detOn);
 $("detB").onclick=()=>{S.detOn=!S.detOn;PL[CUR].cfg.det=S.detOn;saveHome();$("detB").classList.toggle("on",S.detOn);render();};
 $("homeB").onclick=openHome;
+$("adhanB").onclick=openAdhanSet;
+$("adhanStop").onclick=stopAdhan;
 $("chatB").onclick=openChat;
 $("swap").onclick=()=>{S.swap=!S.swap;$("swap").classList.toggle("on",S.swap);render();};
 $("snd").onclick=()=>{S.sound=!S.sound;$("snd").classList.toggle("on",S.sound);$("snd").textContent=S.sound?"🔊":"🔇";};
