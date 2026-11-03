@@ -359,6 +359,9 @@ button.tile:hover{border-color:var(--bld)}
 .prow input[type=time]{width:auto}
 .chk{display:flex;gap:8px;align-items:center;font-weight:600}
 .adhanstop{position:fixed;left:max(16px,env(safe-area-inset-left,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:45;background:var(--good);color:#fff;border-color:var(--good);font-weight:800;padding:10px 18px;border-radius:999px;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+
+.msg.endmsg{align-self:center;background:#fff7d6;border:2px dashed var(--gold);text-align:center;font-weight:700;max-width:90%}
+#homeB.ping{animation:bump 1s 3;box-shadow:0 0 0 3px #ffe7a3}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style><script src="config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.js"></script></head><body>
 
@@ -688,7 +691,7 @@ function markSeen(){try{localStorage.setItem("tower-seen-"+CUR,String(Date.now()
 const pair=m=>(m.from===CUR&&m.to===other())||(m.from===other()&&m.to===CUR);
 const unread=()=>{const t=lastSeen();return CHAT.filter(m=>m.to===CUR&&m.from===other()&&m.ts>t).length;};
 const hhmm=ts=>{const d=new Date(ts);return ar(String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"));};
-const bubble=m=>{const p=PL_INFO[m.from]||PL_INFO.ib;return `<div class="msg ${m.from===CUR?"mine":"theirs"}"><div class="mhead">${p.e} ${p.name}</div><div class="mtext">${esc(m.text)}</div><div class="mtime">${hhmm(m.ts)}</div></div>`;};
+const bubble=m=>{if(typeof m.text==="string"&&m.text.startsWith("§END§"))return `<div class="msg endmsg">👋 ${P("انتهت الزيارة. هديّة لشقّة كلّ واحد منكما! 🎁","intahat al-ziyara.")}<div class="mtime">${hhmm(m.ts)}</div></div>`;const p=PL_INFO[m.from]||PL_INFO.ib;return `<div class="msg ${m.from===CUR?"mine":"theirs"}"><div class="mhead">${p.e} ${p.name}</div><div class="mtext">${esc(m.text)}</div><div class="mtime">${hhmm(m.ts)}</div></div>`;};
 function ingest(m){
   if(!m||typeof m.text!=="string"||typeof m.ts!=="number"||typeof m.id!=="string")return false;
   if(!PL_INFO[m.from]||!PL_INFO[m.to]||m.from===m.to)return false;
@@ -738,7 +741,7 @@ function syncPlayer(){
     const mr=await SB.from("tower_messages").select("*").order("ts",{ascending:false}).limit(300);
     if(!mr.error&&mr.data){
       const fresh=[];mr.data.reverse().forEach(r=>{const m=rowToMsg(r);if(ingest(m))fresh.push(m);});
-      CHAT.sort((a,b)=>a.ts-b.ts);saveChat();
+      CHAT.sort((a,b)=>a.ts-b.ts);saveChat();claimGifts();
       // push anything this device wrote while offline
       const known=new Set(mr.data.map(r=>r.id));
       const pending=CHAT.filter(m=>!known.has(m.id)&&m.ts>Date.now()-7*864e5);
@@ -748,7 +751,7 @@ function syncPlayer(){
     // live: new messages + other player's progress
     SB.channel("tower-db")
       .on("postgres_changes",{event:"INSERT",schema:"public",table:"tower_messages"},p=>{
-        const m=rowToMsg(p.new);if(ingest(m)){CHAT.sort((a,b)=>a.ts-b.ts);saveChat();notifyFresh([m]);if(CHT.open)drawChat();render();}})
+        const m=rowToMsg(p.new);if(ingest(m)){CHAT.sort((a,b)=>a.ts-b.ts);saveChat();if(isEndMsg(m))claimGifts();else notifyFresh([m]);if(CHT.open)drawChat();render();}})
       .on("postgres_changes",{event:"*",schema:"public",table:"tower_players"},p=>{
         const row=p.new;if(!row||!PL[row.id]||row.id===CUR||!row.data||!row.data.home)return;
         PL[row.id]=Object.assign(PL[row.id],row.data);layout();render();})
@@ -832,10 +835,28 @@ function bindLive(){
     const t=$("liveIn");if(t&&t.focus)t.focus();
   });
   on("liveSkip",()=>{L.turn=L.turn==="host"?"vis":"host";render();});
-  on("liveEnd",()=>{L.done=true;yay();render();});
+  on("liveEnd",()=>{
+    const host=other(),two=online();
+    sendChat(END_TAG+(two?"":"L"),CUR);
+    if(!two){const g=giveGift(host);saveHome();syncPlayerKey(host);L.hostGift=g;}
+    L.done=true;yay();render();
+  });
 }
 const HOME_RES={e:"🏠",ar:"شقّتي",tr:"shaqqati",en:"my apartment",g:"f",m:1,home:true,ab:"",abt:"",abe:""};
 function applyHome(){layout();}
+
+/* ---- end-of-visit gift: both the visitor and the host get a piece of furniture ---- */
+const END_TAG="§END§";
+const isEndMsg=m=>typeof m.text==="string"&&m.text.startsWith(END_TAG);
+function pickFurnFor(k){const owned=new Set(((PL[k].home||{}).items||[]).map(i=>i.i).concat(PL[k].pend||[]));const free=FURN.map((_,i)=>i).filter(i=>!owned.has(i));const pool=free.length?free:FURN.map((_,i)=>i);return pool[Math.floor(Math.random()*pool.length)];}
+function syncPlayerKey(k){if(!SB)return;const data=JSON.parse(JSON.stringify(PL[k]));SB.from("tower_players").upsert({id:k,data,updated_at:new Date().toISOString()}).then(()=>{});}
+function giveGift(k){(PL[k].pend=PL[k].pend||[]).push(pickFurnFor(k));return PL[k].pend[PL[k].pend.length-1];}
+// a gift message reached this player from another device: claim it once
+function claimGifts(){
+  const me=PL[CUR];me.claimed=me.claimed||[];let got=null;
+  CHAT.forEach(m=>{if(m.to===CUR&&isEndMsg(m)&&!m.text.endsWith("L")&&!me.claimed.includes(m.id)){me.claimed.push(m.id);got=giveGift(CUR);}});
+  if(got!=null){me.claimed=me.claimed.slice(-60);saveHome();yay();pop(FURN[got][0],`انتهت الزيارة! حصلتَ على ${FURN[got][1]} لشقّتك 🎁`);render();}
+}
 function pickFurn(){const owned=new Set(HOME.items.map(i=>i.i));const free=FURN.map((_,i)=>i).filter(i=>!owned.has(i));const pool=free.length?free:FURN.map((_,i)=>i);return pool[Math.floor(Math.random()*pool.length)];}
 
 let H={open:false,step:"room",fx:10,sx:0,spot:null};
@@ -849,7 +870,8 @@ function startHomeTrip(){
 function closeHome(){H.open=false;$("home").hidden=true;render();}
 function drawHome(){
   const o=$("home");if(!H.open){o.hidden=true;return;}o.hidden=false;
-  const it=S.reward!=null&&!S.rewardTaken?FURN[S.reward]:null;
+  const src=S.reward!=null&&!S.rewardTaken?{i:S.reward,from:"round"}:((PL[CUR].pend||[]).length?{i:PL[CUR].pend[0],from:"pend"}:null);
+  const it=src?FURN[src.i]:null;
   let b=`<div class="homecard"><div class="homehead"><h2>🏠 ${P("شقّتي","shaqqati")}</h2><button id="hClose">✕</button></div>`;
   if(H.step==="rent"){
     const fl=FL[H.fx];
@@ -898,7 +920,7 @@ function drawHome(){
   on("hMove",()=>{H.step="rent";H.moving=true;H.fx=HOME.f;H.sx=HOME.s;drawHome();});
   on("hCancel",()=>{H.step="room";H.moving=false;drawHome();});
   o.querySelectorAll("[data-spot]").forEach(x=>x.onclick=()=>{if(!it)return;H.spot=+x.dataset.spot;beep();drawHome();});
-  on("hPlace",()=>{HOME.items.push({i:S.reward,p:H.spot});S.rewardTaken=true;saveHome();addStars(2);yay();confetti(50);H.spot=null;drawHome();render();});
+  on("hPlace",()=>{HOME.items.push({i:src.i,p:H.spot});if(src.from==="round")S.rewardTaken=true;else PL[CUR].pend.shift();saveHome();addStars(2);yay();confetti(50);H.spot=null;drawHome();render();});
 }
 
 /* --- detective mode: find the floor by asking yes/no questions --- */
@@ -1353,6 +1375,7 @@ function renderPanel(){
           after=`<div class="finish"><div class="bigstar">${RW[0]}</div><h2>${P("زيارة رائعة!","ziyara ra'iʿa!")}</h2>
             <div class="msgs wabody">${liveLog().map(bubble).join("")}</div>
             <div class="win center">🎁 ${P(`حصلتَ على: ${RW[1]}`,`hasalta ʿala: ${RW[2]}`)}</div>
+            <div class="hint center">🎁 ${P(`و${PL_INFO[other()].name} ${other()==="by"?"حصلت":"حصل"} على قطعة أثاث لشقّت${other()==="by"?"ها":"ه"} أيضاً!`,"the host got a gift too!")}</div>
             ${S.rewardTaken?`<div class="hint center">✓ ${P("وضعتَه في شقّتك","wadaʿtahu fi shaqqatik")}</div>`:`<div class="tog center"><button class="big huge" id="placeB">🏠 ${P("ضعه في شقّتي","daʿhu fi shaqqati")}</button></div>`}
             <div class="tog center"><button class="big huge" id="next">🚀 ${P("مهمة جديدة","mahamma jadida")}</button></div></div>`;
         }
@@ -1557,6 +1580,7 @@ function render(){
   const un=unread();$("chatN").textContent=un?ar(un):"";$("chatB").classList.toggle("ping",un>0);
   $("players").innerHTML=`<span class="hint">${P("اللاعب:","al-la'ib:")}</span>`+["ib","by"].map(k=>`<button class="pl ${k===CUR?"on":""}" data-pl="${k}">${PL_INFO[k].e} ${P(PL_INFO[k].name,PL_INFO[k].tr)} <small>⭐${ar(k===CUR?S.stars:PL[k].stars)}</small></button>`).join("");
   $("players").querySelectorAll("[data-pl]").forEach(b=>b.onclick=()=>switchPlayer(b.dataset.pl));
+  const pend=(PL[CUR].pend||[]).length;$("homeB").innerHTML=pend?`🏠 شقّتي 🎁${ar(pend)}`:"🏠 شقّتي";$("homeB").classList.toggle("ping",pend>0);
   $("homeInfo").innerHTML=HOME.f?P(`${FL[HOME.f].ar}، الشقّة ${aptNo(HOME.f,HOME.s)} · ${ar(HOME.items.length)} قطع أثاث ${HOME.items.map(x=>FURN[x.i][0]).join("")}`,`${HOME.items.length} pieces`):P("لم تستأجر شقّة بعد. أنجز مهمّة!","lam tasta'jir shaqqa baʿd.");
   renderPanel();renderScene();renderCast();renderPrayerInfo();
 }
