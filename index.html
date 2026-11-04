@@ -373,7 +373,8 @@ button.tile:hover{border-color:var(--bld)}
 .lcard button.go:disabled{opacity:.6}.lcard .err{color:#c62828;min-height:20px;font-size:14px;margin-top:8px}.lcard .ok{color:#2e7d32}
 .lcard .lk{background:none;border:0;color:#555;margin-top:8px;cursor:pointer;font-size:14px}
 .mebadge{font-weight:700;padding:4px 10px;border-radius:999px;background:#eef3ff;color:#223}
-</style><script src="config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.js"></script></head><body>
+img.emoji{height:1em;width:1em;margin:0 .05em;vertical-align:-0.12em;display:inline-block;pointer-events:none}
+</style><script src="config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.js"></script><script src="https://cdn.jsdelivr.net/npm/@twemoji/api@15.1.0/dist/twemoji.min.js"></script></head><body>
 
 <div class="wrap" dir="rtl">
   <header>
@@ -1666,5 +1667,20 @@ $("pwF").onsubmit=async e=>{
   }catch(err){$("pErr").textContent="تعذّر الحفظ · Could not save";}
   $("pGo").disabled=false;
 };
+
+/* ---------- emojis as images, so they show on every device ---------- */
+(function(){
+  if(!window.twemoji)return;
+  const OPT={folder:"svg",ext:".svg",base:"https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/"};
+  const SKIP="select,option,textarea,input,script,style";
+  let q=new Set(),busy=false,raf=0;
+  const run=()=>{raf=0;busy=true;
+    for(const n of q){const el=n.nodeType===1?n:n.parentElement;if(!el||!el.isConnected||el.closest(SKIP))continue;try{twemoji.parse(el,OPT);}catch(e){}}
+    q.clear();busy=false;};
+  const add=n=>{q.add(n);if(!raf)raf=requestAnimationFrame(run);};
+  new MutationObserver(ms=>{if(busy)return;for(const m of ms){if(m.type==="characterData")add(m.target);else m.addedNodes.forEach(n=>{if(n.nodeType===1||n.nodeType===3)add(n);});}})
+    .observe(document.body,{childList:true,subtree:true,characterData:true});
+  add(document.body);
+})();
 </script>
 </body></html>
