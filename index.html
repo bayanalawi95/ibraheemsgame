@@ -1602,8 +1602,8 @@ function knockDoor(s){knock();S.knocked=s;if(s===S.side&&(S.goHome||(!S.hide&&!S
 function render(){
   $("stars").textContent="⭐ "+ar(S.stars);
   const un=unread();$("chatN").textContent=un?ar(un):"";$("chatB").classList.toggle("ping",un>0);
-  $("players").innerHTML=`<span class="mebadge">${PL_INFO[CUR].e} ${P(PL_INFO[CUR].name,PL_INFO[CUR].tr)} <small>⭐${ar(S.stars)}</small></span> <button class="pl" id="pwB" title="Change password">🔑 ${P("كلمة المرور","kalimat al-murur")}</button>`;
-  $("pwB").onclick=openPw;
+  $("players").innerHTML=`<span class="mebadge">${PL_INFO[CUR].e} ${P(PL_INFO[CUR].name,PL_INFO[CUR].tr)} <small>⭐${ar(S.stars)}</small></span> <button class="pl" id="pwB" title="Change password">🔑 ${P("كلمة المرور","kalimat al-murur")}</button> <button class="pl" id="outB" title="Log out">🚪 ${P("خروج","khuruj")}</button>`;
+  $("pwB").onclick=openPw;$("outB").onclick=logOut;
   const pend=(PL[CUR].pend||[]).length;$("homeB").innerHTML=pend?`🏠 شقّتي 🎁${ar(pend)}`:"🏠 شقّتي";$("homeB").classList.toggle("ping",pend>0);
   $("homeInfo").innerHTML=HOME.f?P(`${FL[HOME.f].ar}، الشقّة ${aptNo(HOME.f,HOME.s)} · ${ar(HOME.items.length)} قطع أثاث ${HOME.items.map(x=>FURN[x.i][0]).join("")}`,`${HOME.items.length} pieces`):P("لم تستأجر شقّة بعد. أنجز مهمّة!","lam tasta'jir shaqqa baʿd.");
   renderPanel();renderScene();renderCast();renderPrayerInfo();
@@ -1645,6 +1645,13 @@ else{
   (async()=>{try{const c=authClient();if(!c)return;const {data,error}=await c.rpc("tower_check",{p_token:AUTH.t});
     if(!error&&data!==AUTH.pl){localStorage.removeItem("tower-auth");showLogin("انتهت الجلسة، سجّل الدخول من جديد · Please log in again");}}catch(e){}})();
 }
+function logOut(){
+  if(!confirmOut()){return;}
+  try{saveHome();}catch(e){}
+  setTimeout(()=>{try{localStorage.removeItem("tower-auth");localStorage.removeItem("tower-player");}catch(e){}location.reload();},800);
+}
+let outArm=0;
+function confirmOut(){const b=$("outB");if(Date.now()-outArm<4000)return true;outArm=Date.now();if(b){b.innerHTML="🚪 "+P("اضغط مرّة أخرى للخروج","idghat marra ukhra");setTimeout(()=>{if(Date.now()-outArm>=4000)render();},4100);}return false;}
 function openPw(){["pOld","pNew","pNew2"].forEach(id=>$(id).value="");$("pErr").textContent="";$("pErr").className="err";$("pwSet").hidden=false;setTimeout(()=>$("pOld").focus(),50);}
 $("pClose").onclick=()=>{$("pwSet").hidden=true;};
 $("pwF").onsubmit=async e=>{
