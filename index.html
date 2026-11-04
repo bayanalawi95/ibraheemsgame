@@ -363,6 +363,16 @@ button.tile:hover{border-color:var(--bld)}
 .msg.endmsg{align-self:center;background:#fff7d6;border:2px dashed var(--gold);text-align:center;font-weight:700;max-width:90%}
 #homeB.ping{animation:bump 1s 3;box-shadow:0 0 0 3px #ffe7a3}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+#login{position:fixed;inset:0;z-index:9999;background:linear-gradient(160deg,#1d2b53,#3b1f5c);display:flex;align-items:center;justify-content:center;padding:16px}
+#pwSet{position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:16px}
+#login[hidden],#pwSet[hidden]{display:none}
+.lcard{background:#fff;color:#222;border-radius:20px;padding:22px 20px;width:100%;max-width:360px;box-shadow:0 10px 40px rgba(0,0,0,.35);text-align:center;direction:rtl}
+.lcard h2{margin:4px 0 2px;font-size:24px}.lcard .sub{color:#666;font-size:13px;margin-bottom:14px}
+.lcard input{width:100%;box-sizing:border-box;font-size:17px;padding:11px 12px;margin:6px 0;border:2px solid #ccd;border-radius:12px;direction:ltr;text-align:left}
+.lcard button.go{width:100%;font-size:19px;padding:12px;margin-top:10px;border:0;border-radius:12px;background:#2e9e5b;color:#fff;font-weight:700;cursor:pointer}
+.lcard button.go:disabled{opacity:.6}.lcard .err{color:#c62828;min-height:20px;font-size:14px;margin-top:8px}.lcard .ok{color:#2e7d32}
+.lcard .lk{background:none;border:0;color:#555;margin-top:8px;cursor:pointer;font-size:14px}
+.mebadge{font-weight:700;padding:4px 10px;border-radius:999px;background:#eef3ff;color:#223}
 </style><script src="config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.js"></script></head><body>
 
 <div class="wrap" dir="rtl">
@@ -394,6 +404,19 @@ button.tile:hover{border-color:var(--bld)}
 <div id="fx" aria-hidden="true"></div>
 <div id="home" class="overlay" hidden></div>
 <div id="adhanSet" class="overlay" hidden></div>
+<div id="login"><form class="lcard" id="loginF" autocomplete="on">
+  <div style="font-size:44px">🏢</div><h2>تسجيل الدخول</h2><div class="sub">tasjil al-dukhul · Log in</div>
+  <input id="lEmail" type="email" placeholder="Email" autocomplete="username" required>
+  <input id="lPass" type="password" placeholder="Password" autocomplete="current-password" required>
+  <button class="go" id="lGo" type="submit">دخول · Log in</button>
+  <div class="err" id="lErr"></div></form></div>
+<div id="pwSet" hidden><form class="lcard" id="pwF">
+  <div style="font-size:38px">🔑</div><h2>تغيير كلمة المرور</h2><div class="sub">taghyir kalimat al-murur · Change password</div>
+  <input id="pOld" type="password" placeholder="Current password" autocomplete="current-password" required>
+  <input id="pNew" type="password" placeholder="New password" autocomplete="new-password" required>
+  <input id="pNew2" type="password" placeholder="Repeat new password" autocomplete="new-password" required>
+  <button class="go" id="pGo" type="submit">حفظ · Save</button>
+  <div class="err" id="pErr"></div><button type="button" class="lk" id="pClose">إغلاق · Close</button></form></div>
 <button id="adhanStop" class="adhanstop" hidden>⏹ أوقف الأذان</button>
 <div id="chat" class="overlay" hidden></div>
 <div id="ann" class="ann" aria-live="polite" hidden></div>
@@ -653,7 +676,8 @@ try{
   else{const old=JSON.parse(localStorage.getItem("tower-home-v1")||"null");if(old&&Array.isArray(old.items))PL.ib.home.items=old.items;}
 }catch(e){}
 for(const k of ["ib","by"]){PL[k].cfg=Object.assign({det:true},PL[k].cfg||{});PL[k].stars=PL[k].stars||0;if(!Array.isArray(PL[k].opts))PL[k].opts=[];}
-let CUR=(()=>{try{return localStorage.getItem("tower-player")==="by"?"by":"ib";}catch(e){return "ib";}})();
+const AUTH=(()=>{try{const a=JSON.parse(localStorage.getItem("tower-auth")||"null");return a&&a.t&&(a.pl==="ib"||a.pl==="by")?a:null;}catch(e){return null;}})();
+let CUR=AUTH?AUTH.pl:"ib";
 let HOME=PL[CUR].home;
 const other=()=>CUR==="ib"?"by":"ib";
 const isIb=()=>CUR==="ib", isBy=()=>CUR==="by";
@@ -1578,8 +1602,8 @@ function knockDoor(s){knock();S.knocked=s;if(s===S.side&&(S.goHome||(!S.hide&&!S
 function render(){
   $("stars").textContent="⭐ "+ar(S.stars);
   const un=unread();$("chatN").textContent=un?ar(un):"";$("chatB").classList.toggle("ping",un>0);
-  $("players").innerHTML=`<span class="hint">${P("اللاعب:","al-la'ib:")}</span>`+["ib","by"].map(k=>`<button class="pl ${k===CUR?"on":""}" data-pl="${k}">${PL_INFO[k].e} ${P(PL_INFO[k].name,PL_INFO[k].tr)} <small>⭐${ar(k===CUR?S.stars:PL[k].stars)}</small></button>`).join("");
-  $("players").querySelectorAll("[data-pl]").forEach(b=>b.onclick=()=>switchPlayer(b.dataset.pl));
+  $("players").innerHTML=`<span class="mebadge">${PL_INFO[CUR].e} ${P(PL_INFO[CUR].name,PL_INFO[CUR].tr)} <small>⭐${ar(S.stars)}</small></span> <button class="pl" id="pwB" title="Change password">🔑 ${P("كلمة المرور","kalimat al-murur")}</button>`;
+  $("pwB").onclick=openPw;
   const pend=(PL[CUR].pend||[]).length;$("homeB").innerHTML=pend?`🏠 شقّتي 🎁${ar(pend)}`:"🏠 شقّتي";$("homeB").classList.toggle("ping",pend>0);
   $("homeInfo").innerHTML=HOME.f?P(`${FL[HOME.f].ar}، الشقّة ${aptNo(HOME.f,HOME.s)} · ${ar(HOME.items.length)} قطع أثاث ${HOME.items.map(x=>FURN[x.i][0]).join("")}`,`${HOME.items.length} pieces`):P("لم تستأجر شقّة بعد. أنجز مهمّة!","lam tasta'jir shaqqa baʿd.");
   renderPanel();renderScene();renderCast();renderPrayerInfo();
@@ -1599,5 +1623,41 @@ $("brk").hidden=true;$("pop").hidden=true;
 $("brkB").onclick=brainBreak;
 newBuilding();newRound();
 
+
+/* ---------- login (accounts live in Supabase table tower_accounts; no signup) ---------- */
+function authClient(){return SB||(window.supabase&&SB_URL.startsWith("https://")?window.supabase.createClient(SB_URL,SB_KEY):null);}
+function showLogin(msg){$("login").hidden=false;$("lErr").textContent=msg||"";setTimeout(()=>$("lEmail").focus(),50);}
+$("loginF").onsubmit=async e=>{
+  e.preventDefault();const c=authClient();if(!c){$("lErr").textContent="لا يوجد اتصال بالخادم.";return;}
+  $("lGo").disabled=true;$("lErr").textContent="";
+  try{
+    const {data,error}=await c.rpc("tower_login",{p_email:$("lEmail").value.trim().toLowerCase(),p_pass:$("lPass").value});
+    if(error)throw error;
+    if(!data||!data.token){$("lErr").textContent="البريد أو كلمة المرور غير صحيحة · Wrong email or password";$("lGo").disabled=false;return;}
+    localStorage.setItem("tower-auth",JSON.stringify({t:data.token,pl:data.player}));
+    localStorage.setItem("tower-player",data.player);
+    location.reload();
+  }catch(err){$("lErr").textContent="تعذّر الدخول، حاول مرّة أخرى · Could not log in";$("lGo").disabled=false;}
+};
+if(!AUTH)showLogin();
+else{
+  $("login").hidden=true;
+  (async()=>{try{const c=authClient();if(!c)return;const {data,error}=await c.rpc("tower_check",{p_token:AUTH.t});
+    if(!error&&data!==AUTH.pl){localStorage.removeItem("tower-auth");showLogin("انتهت الجلسة، سجّل الدخول من جديد · Please log in again");}}catch(e){}})();
+}
+function openPw(){["pOld","pNew","pNew2"].forEach(id=>$(id).value="");$("pErr").textContent="";$("pErr").className="err";$("pwSet").hidden=false;setTimeout(()=>$("pOld").focus(),50);}
+$("pClose").onclick=()=>{$("pwSet").hidden=true;};
+$("pwF").onsubmit=async e=>{
+  e.preventDefault();const n=$("pNew").value;
+  if(n.length<4){$("pErr").textContent="٤ أحرف على الأقل · At least 4 characters";return;}
+  if(n!==$("pNew2").value){$("pErr").textContent="الكلمتان غير متطابقتين · Passwords don't match";return;}
+  const c=authClient();if(!c||!AUTH)return;$("pGo").disabled=true;
+  try{const {data,error}=await c.rpc("tower_change_pass",{p_token:AUTH.t,p_old:$("pOld").value,p_new:n});
+    if(error)throw error;
+    if(data===true){$("pErr").className="err ok";$("pErr").textContent="✅ تمّ تغيير كلمة المرور · Password changed";setTimeout(()=>{$("pwSet").hidden=true;},1400);}
+    else $("pErr").textContent="كلمة المرور الحالية غير صحيحة · Current password is wrong";
+  }catch(err){$("pErr").textContent="تعذّر الحفظ · Could not save";}
+  $("pGo").disabled=false;
+};
 </script>
 </body></html>
