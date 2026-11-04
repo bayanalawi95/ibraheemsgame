@@ -203,6 +203,8 @@ button:disabled{opacity:.45;cursor:default}
 .bigbolt{font-size:3.6rem}
 
 /* pronunciation under words */
+.pa{display:inline}
+.furnrow{display:inline-flex;flex-wrap:wrap;gap:4px;align-items:center;vertical-align:middle;margin-inline-start:4px;font-size:1.15em}
 .pw{display:inline-flex;flex-direction:column;align-items:center;line-height:1.15;vertical-align:middle}
 .pr{direction:ltr;font-size:.62em;font-weight:500;opacity:.85;font-family:var(--body);letter-spacing:0}
 .desk .table{height:auto;min-height:56px;padding-top:14px}
@@ -518,7 +520,7 @@ const aptNo=(f,s)=>ar((f-1)*4+s+1);
 const V=()=>VIS[S.vi], T=()=>S.res[S.t][S.side];
 const G=(p,m,f)=>p.g==="f"?f:m;
 const GV=(m,f)=>VIS[S.vi].g==="f"?f:m; // visitor gender
-const P=(a,t)=>S.tr&&t?`<span class="pw">${a}<small class="pr">${t}</small></span>`:a;
+const P=(a,t)=>S.tr&&t?`<span class="pw"><span class="pa">${a}</span><small class="pr">${t}</small></span>`:a;
 function W(){const t=T(),w=S.why,f=t.g==="f";
   return {ar:w.ar.replaceAll("{ه}",f?"ها":"ه"),tr:w.tr.replaceAll("{h}",f?"ha":"hu"),en:w.en.replaceAll("{o}",f?"her":"him").replaceAll("{p}",f?"her":"his")};}
 
@@ -1606,7 +1608,7 @@ function render(){
   $("players").innerHTML=`<span class="mebadge">${PL_INFO[CUR].e} ${P(PL_INFO[CUR].name,PL_INFO[CUR].tr)} <small>⭐${ar(S.stars)}</small></span> <button class="pl" id="pwB" title="Change password">🔑 ${P("كلمة المرور","kalimat al-murur")}</button> <button class="pl" id="outB" title="Log out">🚪 ${P("خروج","khuruj")}</button>`;
   $("pwB").onclick=openPw;$("outB").onclick=logOut;
   const pend=(PL[CUR].pend||[]).length;$("homeB").innerHTML=pend?`🏠 شقّتي 🎁${ar(pend)}`:"🏠 شقّتي";$("homeB").classList.toggle("ping",pend>0);
-  $("homeInfo").innerHTML=HOME.f?P(`${FL[HOME.f].ar}، الشقّة ${aptNo(HOME.f,HOME.s)} · ${ar(HOME.items.length)} قطع أثاث ${HOME.items.map(x=>FURN[x.i][0]).join("")}`,`${HOME.items.length} pieces`):P("لم تستأجر شقّة بعد. أنجز مهمّة!","lam tasta'jir shaqqa baʿd.");
+  $("homeInfo").innerHTML=HOME.f?P(`${FL[HOME.f].ar}، الشقّة ${aptNo(HOME.f,HOME.s)} · ${ar(HOME.items.length)} قطع أثاث <span class="furnrow">${HOME.items.map(x=>`<span>${FURN[x.i][0]}</span>`).join("")}</span>`,`${HOME.items.length} pieces`):P("لم تستأجر شقّة بعد. أنجز مهمّة!","lam tasta'jir shaqqa baʿd.");
   renderPanel();renderScene();renderCast();renderPrayerInfo();
 }
 
