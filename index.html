@@ -376,6 +376,11 @@ button.tile:hover{border-color:var(--bld)}
 .lcard .lk{background:none;border:0;color:#555;margin-top:8px;cursor:pointer;font-size:14px}
 .mebadge{font-weight:700;padding:4px 10px;border-radius:999px;background:#eef3ff;color:#223}
 img.emoji{height:1em;width:1em;margin:0 .05em;vertical-align:-0.12em;display:inline-block;pointer-events:none}
+.mpcard{max-width:640px;width:100%;max-height:86vh;overflow:auto}
+.mpgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px;margin-top:10px}
+.mpp{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 6px;border:2px solid #e3dcf5;border-radius:14px;background:#fff;cursor:pointer;font:inherit}
+.mpp:hover{border-color:var(--good);background:#f0fbf5}.mpp .mpe{font-size:2rem;line-height:1}.mpp .mpn{font-weight:700;font-size:.92rem;text-align:center}
+.mprand{background:#fff7d6;border-color:#f2c94c}
 </style><script src="config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.js"></script><script src="https://cdn.jsdelivr.net/npm/@twemoji/api@15.1.0/dist/twemoji.min.js"></script></head><body>
 
 <div class="wrap" dir="rtl">
@@ -407,6 +412,7 @@ img.emoji{height:1em;width:1em;margin:0 .05em;vertical-align:-0.12em;display:inl
 <div id="fx" aria-hidden="true"></div>
 <div id="home" class="overlay" hidden></div>
 <div id="adhanSet" class="overlay" hidden></div>
+<div id="mosquePick" class="overlay" hidden></div>
 <div id="login"><form class="lcard" id="loginF" autocomplete="on">
   <div style="font-size:44px">🏢</div><h2>تسجيل الدخول</h2><div class="sub">tasjil al-dukhul · Log in</div>
   <input id="lEmail" type="email" placeholder="Email" autocomplete="username" required>
@@ -1177,9 +1183,24 @@ function drawAdhanSet(){
 }
 
 /* the mission: pick someone up and take them to the mosque */
-function startMosque(){
-  const cands=[];for(let f=1;f<=TOP;f++)S.res[f].forEach((r,s)=>{if(r&&r.m===1&&!r.home)cands.push([f,s]);});
-  const [f,s]=cands[Math.floor(Math.random()*cands.length)];
+function mosqueCands(){const c=[];for(let f=1;f<=TOP;f++)S.res[f].forEach((r,s)=>{if(r&&r.m===1&&!r.home)c.push([f,s]);});return c;}
+function startMosque(){openMosquePick();}
+function openMosquePick(){
+  const o=$("mosquePick"),c=mosqueCands();
+  o.innerHTML=`<div class="homecard mpcard">
+    <div class="homehead"><h2>🕌 ${P("مَن ستأخذ إلى المسجد؟","man sata'khudhu ila al-masjid?")}</h2><button id="mpClose">✕</button></div>
+    <div class="hint">${P("اختر أيّ شخص من سكّان العمارة:","ikhtar ayya shakhsin min sukkan al-ʿimara:")}</div>
+    <div class="mpgrid"><button class="mpp mprand" data-mp="r"><span class="mpe">🎲</span><span class="mpn">${P("أيّ أحد","ayyu ahad")}</span></button>${c.map(([f,s])=>{const r=S.res[f][s];return `<button class="mpp" data-mp="${f}-${s}"><span class="mpe">${r.e}</span><span class="mpn">${P(r.ar,r.tr)}</span></button>`;}).join("")}</div></div>`;
+  o.hidden=false;
+  $("mpClose").onclick=()=>{o.hidden=true;};
+  o.onclick=e=>{if(e.target===o)o.hidden=true;};
+  o.querySelectorAll("[data-mp]").forEach(b=>b.onclick=()=>{
+    o.hidden=true;
+    const [f,s]=b.dataset.mp==="r"?c[Math.floor(Math.random()*c.length)]:b.dataset.mp.split("-").map(Number);
+    beginMosque(f,s);
+  });
+}
+function beginMosque(f,s){
   newRound(true);
   Object.assign(S,{t:f,side:s,hide:false,mosque:{p:nextPrayer().p,picked:false}});
   render();
