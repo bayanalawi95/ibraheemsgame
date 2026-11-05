@@ -341,6 +341,10 @@ button.tile:hover{border-color:var(--bld)}
 .wabody .msg{max-width:80%;border-radius:12px;padding:6px 10px 4px;box-shadow:0 1px 1px rgba(0,0,0,.12)}
 .wabody .msg.mine{align-self:flex-start;background:#d9fdd3;border-top-right-radius:2px}
 .wabody .msg.theirs{align-self:flex-end;background:#fff;border-top-left-radius:2px}
+.medit{display:none;background:none;border:0;cursor:pointer;font-size:.85rem;padding:0 4px;opacity:.6}.wabody .msg.mine .medit{display:inline}.medit:hover{opacity:1}
+.medited{font-style:italic;margin-inline-end:4px}
+.msg.editing{outline:2px dashed #25a35a}
+.waedit{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 12px;background:#e7f7ec;color:#1e7a45;font-weight:700;border-top:1px solid #cfe9d8}.waedit button{background:none;border:0;font-size:1rem;cursor:pointer}
 .mtime{font-size:.68rem;color:#667781;text-align:left;direction:ltr}
 .wa-opts{padding:6px 10px;background:#f6f6f6;margin:0}
 .wafoot{display:flex;gap:8px;padding:8px;background:#f0f2f5;align-items:flex-end}
@@ -727,12 +731,12 @@ function markSeen(){try{localStorage.setItem("tower-seen-"+CUR,String(Date.now()
 const pair=m=>(m.from===CUR&&m.to===other())||(m.from===other()&&m.to===CUR);
 const unread=()=>{const t=lastSeen();return CHAT.filter(m=>m.to===CUR&&m.from===other()&&m.ts>t).length;};
 const hhmm=ts=>{const d=new Date(ts);return ar(String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"));};
-const bubble=m=>{if(typeof m.text==="string"&&m.text.startsWith("§END§"))return `<div class="msg endmsg">👋 ${P("انتهت الزيارة. هديّة لشقّة كلّ واحد منكما! 🎁","intahat al-ziyara.")}<div class="mtime">${hhmm(m.ts)}</div></div>`;const p=PL_INFO[m.from]||PL_INFO.ib;return `<div class="msg ${m.from===CUR?"mine":"theirs"}"><div class="mhead">${p.e} ${p.name}</div><div class="mtext">${esc(m.text)}</div><div class="mtime">${hhmm(m.ts)}</div></div>`;};
+const bubble=m=>{if(typeof m.text==="string"&&m.text.startsWith("§END§"))return `<div class="msg endmsg">👋 ${P("انتهت الزيارة. هديّة لشقّة كلّ واحد منكما! 🎁","intahat al-ziyara.")}<div class="mtime">${hhmm(m.ts)}</div></div>`;const p=PL_INFO[m.from]||PL_INFO.ib;const mine=m.from===CUR;return `<div class="msg ${mine?"mine":"theirs"} ${CHT.editId===m.id?"editing":""}"><div class="mhead">${p.e} ${p.name}${mine?`<button class="medit" data-edit="${esc(m.id)}" title="تعديل">✏️</button>`:""}</div><div class="mtext">${esc(m.text)}</div><div class="mtime">${m.edited?`<span class="medited">${P("معدّلة","muʿaddala")}</span> `:""}${hhmm(m.ts)}</div></div>`;};
 function ingest(m){
   if(!m||typeof m.text!=="string"||typeof m.ts!=="number"||typeof m.id!=="string")return false;
   if(!PL_INFO[m.from]||!PL_INFO[m.to]||m.from===m.to)return false;
   if(CHAT.some(x=>x.id===m.id))return false;
-  CHAT.push({id:m.id.slice(0,40),from:m.from,to:m.to,text:m.text.slice(0,300),ts:m.ts});
+  CHAT.push({id:m.id.slice(0,40),from:m.from,to:m.to,text:m.text.slice(0,300),ts:m.ts,edited:!!m.edited});
   return true;
 }
 function sendChat(text,from=CUR){
@@ -747,7 +751,14 @@ const SB_URL=(window.TOWER_CFG&&window.TOWER_CFG.url)||"", SB_KEY=(window.TOWER_
 let SB=null,sbOn=false,onlineNow=new Set(),presCh=null;
 const TAB=Math.random().toString(36).slice(2,10);
 const otherHere=()=>onlineNow.has(other());
-const rowToMsg=r=>({id:r.id,from:r.from_pl,to:r.to_pl,text:r.body,ts:Number(r.ts)});
+const rowToMsg=r=>({id:r.id,from:r.from_pl,to:r.to_pl,text:r.body,ts:Number(r.ts),edited:!!r.edited});
+function applyEdit(m){const x=CHAT.find(y=>y.id===m.id);if(!x||typeof m.text!=="string"||(x.text===m.text&&!!x.edited===!!m.edited))return false;x.text=m.text.slice(0,300);x.edited=!!m.edited;return true;}
+function editChat(id,text){
+  const x=CHAT.find(y=>y.id===id);if(!x||x.from!==CUR||isEndMsg(x))return;
+  text=String(text).trim().slice(0,300);if(!text||text===x.text)return;
+  x.text=text;x.edited=true;saveChat();
+  if(SB)SB.from("tower_messages").update({body:text,edited:true}).eq("id",id).eq("from_pl",CUR).then(()=>{});
+}
 function notifyFresh(fresh){
   const toMe=fresh.filter(m=>m.to===CUR);
   if(!toMe.length)return;
@@ -776,7 +787,7 @@ function syncPlayer(){
     // message history
     const mr=await SB.from("tower_messages").select("*").order("ts",{ascending:false}).limit(300);
     if(!mr.error&&mr.data){
-      const fresh=[];mr.data.reverse().forEach(r=>{const m=rowToMsg(r);if(ingest(m))fresh.push(m);});
+      const fresh=[];mr.data.reverse().forEach(r=>{const m=rowToMsg(r);if(ingest(m))fresh.push(m);else applyEdit(m);});
       CHAT.sort((a,b)=>a.ts-b.ts);saveChat();claimGifts();
       // push anything this device wrote while offline
       const known=new Set(mr.data.map(r=>r.id));
@@ -788,6 +799,8 @@ function syncPlayer(){
     SB.channel("tower-db")
       .on("postgres_changes",{event:"INSERT",schema:"public",table:"tower_messages"},p=>{
         const m=rowToMsg(p.new);if(ingest(m)){CHAT.sort((a,b)=>a.ts-b.ts);saveChat();if(isEndMsg(m))claimGifts();else notifyFresh([m]);if(CHT.open)drawChat();render();}})
+      .on("postgres_changes",{event:"UPDATE",schema:"public",table:"tower_messages"},p=>{
+        const m=rowToMsg(p.new);if(applyEdit(m)){saveChat();if(CHT.open&&!CHT.editId)drawChat();render();}})
       .on("postgres_changes",{event:"*",schema:"public",table:"tower_players"},p=>{
         const row=p.new;if(!row||!PL[row.id]||row.id===CUR||!row.data||!row.data.home)return;
         PL[row.id]=Object.assign(PL[row.id],row.data);layout();render();})
@@ -802,9 +815,9 @@ function syncPlayer(){
   }catch(e){console.warn("supabase",e);}
 })();
 
-let CHT={open:false,draft:""};
+let CHT={open:false,draft:"",editId:null};
 function openChat(){CHT.open=true;markSeen();drawChat();render();}
-function closeChat(){CHT.open=false;$("chat").hidden=true;render();}
+function closeChat(){CHT.open=false;if(CHT.editId){CHT.editId=null;CHT.draft=CHT.saved||"";CHT.saved="";}$("chat").hidden=true;render();}
 function chatStatus(){
   const o=PL_INFO[other()];
   if(otherHere())return "🟢 "+P(`${o.name} ${other()==="by"?"متّصلة":"متّصل"} الآن`,"online");
@@ -819,13 +832,18 @@ function drawChat(){
     <div class="wahead"><span class="wav">${oth.e}</span><div><b>${oth.name}</b><small>${chatStatus()}</small></div><button id="cClose">✕</button></div>
     <div class="wabody" id="waBody">${msgs.map(bubble).join("")||`<div class="hint center">${P(`لا توجد رسائل بعد. اكتب أوّل رسالة إلى ${oth.name}!`,`uktub awwala risala!`)}</div>`}</div>
     ${(PL[CUR].opts||[]).length?`<div class="opts wa-opts">${PL[CUR].opts.map((t,i)=>`<button class="small" data-wo="${i}">${esc(t)}</button>`).join("")}</div>`:""}
-    <div class="wafoot"><textarea id="waIn" dir="rtl" lang="ar" rows="1" maxlength="300" placeholder="اكتب رسالة…"></textarea><button id="waSend" aria-label="أرسل">➤</button></div></div>`;
+    ${CHT.editId?`<div class="waedit">✏️ ${P("تعديل الرسالة","taʿdil al-risala")}<button id="waEditX" aria-label="إلغاء">✕</button></div>`:""}
+    <div class="wafoot"><textarea id="waIn" dir="rtl" lang="ar" rows="1" maxlength="300" placeholder="اكتب رسالة…"></textarea><button id="waSend" aria-label="${CHT.editId?"حفظ":"أرسل"}">${CHT.editId?"✓":"➤"}</button></div></div>`;
   const body=$("waBody");if(body&&body.scrollHeight!=null)body.scrollTop=body.scrollHeight;
   const ta=$("waIn");
-  const send=()=>{const t=(CHT.draft||"").trim();if(!t)return;sendChat(t);CHT.draft="";addStars(1);beep();markSeen();drawChat();render();const t2=$("waIn");if(t2&&t2.focus)t2.focus();};
+  const send=()=>{const t=(CHT.draft||"").trim();if(!t)return;
+    if(CHT.editId){editChat(CHT.editId,t);CHT.editId=null;CHT.draft=CHT.saved||"";CHT.saved="";beep();drawChat();render();return;}
+    sendChat(t);CHT.draft="";addStars(1);beep();markSeen();drawChat();render();const t2=$("waIn");if(t2&&t2.focus)t2.focus();};
   if(ta){ta.value=CHT.draft;ta.oninput=()=>{CHT.draft=ta.value;};ta.onkeydown=e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send();}};}
   const s=$("waSend");if(s)s.onclick=send;
   const c=$("cClose");if(c)c.onclick=closeChat;
+  o.querySelectorAll("[data-edit]").forEach(x=>x.onclick=()=>{const m=CHAT.find(y=>y.id===x.dataset.edit);if(!m)return;if(!CHT.editId)CHT.saved=CHT.draft;CHT.editId=m.id;CHT.draft=m.text;drawChat();const t2=$("waIn");if(t2&&t2.focus){t2.focus();t2.setSelectionRange&&t2.setSelectionRange(t2.value.length,t2.value.length);}});
+  const ex=$("waEditX");if(ex)ex.onclick=()=>{CHT.editId=null;CHT.draft=CHT.saved||"";CHT.saved="";drawChat();};
   o.querySelectorAll("[data-wo]").forEach(x=>x.onclick=()=>{CHT.draft=(CHT.draft?CHT.draft+" ":"")+PL[CUR].opts[+x.dataset.wo];drawChat();const t2=$("waIn");if(t2&&t2.focus)t2.focus();});
 }
 
