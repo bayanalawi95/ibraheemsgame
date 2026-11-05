@@ -98,6 +98,9 @@ button:disabled{opacity:.45;cursor:default}
 .keypad{direction:ltr;display:grid;grid-template-columns:repeat(3,62px);gap:8px;justify-content:center;background:var(--metal);padding:12px;border-radius:14px;width:max-content;margin:0 auto}
 .keypad.one{grid-template-columns:62px}
 .keypad button{border-radius:50%;width:62px;height:62px;font-size:1.4rem;font-weight:800;background:#f7f8fb;border:3px solid #b8bfcc;padding:0}
+.keypad button.req{background:#ffe08a;border-color:#f2b705;color:#7a5600;box-shadow:0 0 10px rgba(242,183,5,.7)}
+.nbmsg{text-align:center}
+.box .who{display:flex;justify-content:center;align-items:flex-end}.box .who:has(.fig+.fig) .fig{zoom:.78}
 .keypad .alarm{background:var(--bad);color:#fff;border-color:#a2302a}
 .dir{border:2px dashed var(--soft);border-radius:12px;padding:10px;display:grid;gap:6px;overflow-x:auto}
 .dir table{border-collapse:collapse;font-size:.85rem;width:100%}
@@ -551,7 +554,7 @@ function newRound(keepVisitor){
   do{S.t=1+Math.floor(Math.random()*TOP);S.side=Math.floor(Math.random()*4);}while(S.res[S.t][S.side].home);S.why=rnd(WHY);
   S.lifts.forEach(l=>{l.out=false;l.open=false;l.dir="";});
   if(Math.random()<.65)S.lifts[Math.floor(Math.random()*3)].out=true;
-  Object.assign(S,{phase:"reception",lift:null,pos:0,said:{},msg:"",dir:false,stuck:false,knocked:null,hide:Math.random()<.3,talking:false,outTried:null,wrongAt:null,ready:false,entering:false,exiting:false,arrived:false,skipped:null,vary:{},closed:false,goHome:false,mosque:null,live:null,hint:{},build:{},shuf:{},shown:{},lw:{},det:newDet(),reward:null,rewardTaken:false,rid:(S.rid||0)+1});
+  Object.assign(S,{phase:"reception",lift:null,pos:0,said:{},msg:"",dir:false,stuck:false,knocked:null,hide:Math.random()<.3,talking:false,outTried:null,wrongAt:null,ready:false,entering:false,exiting:false,arrived:false,skipped:null,vary:{},closed:false,goHome:false,mosque:null,nb:null,nbMsg:"",final:null,live:null,hint:{},build:{},shuf:{},shown:{},lw:{},det:newDet(),reward:null,rewardTaken:false,rid:(S.rid||0)+1});
   render();
 }
 /* ---------- rewards ---------- */
@@ -649,7 +652,7 @@ function renderScene(){
   const bld=`<div class="bld ${S.phase==="door"?"focus":""}"><div class="bname">${P("عمارة النجوم ✨","ʿimarat al-nujum")}</div>${rows}<div class="street"></div></div>`;
   let lifts="";
   S.lifts.forEach((l,i)=>{
-    const mine=S.lift===i, rider=mine&&(["inside","ride","stuck"].includes(S.phase)||S.entering)?fig(v.e,S.entering?"walk walkin":S.exiting?"walk walkout":"")+(S.mosque&&S.mosque.picked?fig(T().e,S.exiting?"walk walkout":""):""):"";
+    const mine=S.lift===i, rider=mine&&(["inside","ride","stuck"].includes(S.phase)||S.entering)?fig(v.e,S.entering?"walk walkin":S.exiting?"walk walkout":"")+(S.mosque&&S.mosque.picked?fig(T().e,S.exiting?"walk walkout":""):"")+(S.nb&&S.nb.aboard?fig(S.nb.r.e):""):"";
     const pickable=S.phase==="lift"&&S.ready;
     const callOn=S.lift!==null&&!S.arrived&&(S.phase==="lift"||S.phase==="reception"), callPulse=S.phase==="lift"&&S.ready&&S.lift===null;
     lifts+=`${i?`<button class="call ${callOn?"lit":""} ${callPulse?"pulse":""}" aria-label="زر استدعاء المصعد">${callOn?"▲":"△"}</button>`:""}<button class="lift ${l.open?"open":""} ${mine?"chosen":""} ${S.stuck&&mine?"stuck":""} " data-lift="${i}" aria-label="${LIFTS[i].ar}">
@@ -1362,8 +1365,9 @@ function renderPanel(){
       ["أوه! أخطأت. هذا ليس الطابق الصحيح.","oh! akhta'tu. hadha laysa al-tabiqa al-sahih.","Oops! Wrong floor."],
       ["لا! هذا طابقٌ خطأ. سأحاول مرّة أخرى.","la! hadha tabiqun khata'. sa'uhawilu marratan ukhra.","No! Wrong floor. I'll try again."]]),1));
     const banner=S.mosque&&S.mosque.picked&&S.wrongAt!=null&&S.phase==="inside"?`<div class="alert">🙈 ${P(`هذا ${FL[S.wrongAt].ar}! المسجد بجانب الطابق الأرضي.`,`hadha ${FL[S.wrongAt].tr}! al-masjidu bi-janib al-tabiq al-ardi.`)}</div>`:S.wrongAt!=null&&S.phase==="inside"?`<div class="alert">🙈 هذا ${FL[S.wrongAt].ar}! ${S.wrongAt===0?"":`سكّان هذا الطابق: ${S.res[S.wrongAt].map(r=>r.e).join(" ")}. `}لكنّ ${t.ar} ${G(t,"ليس","ليست")} هنا.${S.tr?`<div class="tr">hadha ${FL[S.wrongAt].tr}! lakinna ${t.tr} ${G(t,"laysa","laysat")} huna.</div>`:""}</div>`:"";
-    h+=banner+(S.phase==="ride"?`<div class="win center">🛗 ${P("المصعد يتحرّك…","al-misʿad yataharrak")}</div>`:"")+
-      focus(lines,`<div class="keypad">${[...Array(TOP+1)].map((_,i)=>TOP-i).map(f=>`<button data-fl="${f}" ${S.phase==="ride"?"disabled":""}>${ar(f)}</button>`).join("")}<span></span><button class="alarm" disabled>🔔</button></div>`);
+    const req=new Set();if(S.phase==="ride"&&S.final!=null)req.add(S.final);if(S.nb&&S.nb.aboard)req.add(S.nb.to);
+    h+=(S.nbMsg?S.nbMsg:banner)+(S.phase==="ride"&&!S.nbMsg?`<div class="win center">🛗 ${P("المصعد يتحرّك…","al-misʿad yataharrak")}</div>`:"")+
+      focus(lines,`<div class="keypad">${[...Array(TOP+1)].map((_,i)=>TOP-i).map(f=>`<button data-fl="${f}" class="${req.has(f)?"req":""}" ${S.phase==="ride"?"disabled":""}>${ar(f)}</button>`).join("")}<span></span><button class="alarm" disabled>🔔</button></div>`);
   }
   else if(S.phase==="stuck"){
     h+=`<div class="alert shake">⚠️ ${P("تحذير! المصعد علق!","tahdhir! al-misʿad ʿaliq!")}</div>`+focus([
@@ -1596,19 +1600,81 @@ function pressFloor(f){
   if(S.phase!=="inside")return;
   beep();
   if(f===S.pos)return;
-  target=f;S.phase="ride";S.willStick=Math.abs(f-S.pos)>=2&&Math.random()<.25;
+  target=f;S.final=f;S.phase="ride";S.willStick=Math.abs(f-S.pos)>=2&&Math.random()<.25;
+  S.nbMsg="";
+  // going up from the ground floor: the lift stops on floor 1-6 for a neighbour
+  if(S.pos===0&&f>=2&&!S.nb&&!(S.mosque&&S.mosque.picked)){
+    const sf=1+Math.floor(Math.random()*Math.min(6,f-1));
+    const sides=[0,1,2,3].filter(x=>S.res[sf][x]&&!S.res[sf][x].home);
+    if(sides.length){
+      const fl=[];for(let x=sf+1;x<=TOP;x++)if(x!==f)fl.push(x);
+      S.nb={f:sf,r:S.res[sf][sides[Math.floor(Math.random()*sides.length)]],to:fl[Math.floor(Math.random()*fl.length)],aboard:false,done:false};
+      target=sf;S.willStick=false;
+    }
+  }
   if(S.lifts[S.lift].open)announce("أُغلِقت الأبواب.","ughliqat al-abwab.");
   S.lifts[S.lift].open=false;render();continueRide();
 }
 function continueRide(){
   const l=S.lifts[S.lift];l.open=false;updateLifts();const spd=Math.max(170,560-30*Math.abs(target-l.f));
   const step=()=>{
-    if(l.f===target){l.dir="";S.pos=target;updateLifts();openThen(l,arrive);return;}
+    if(l.f===target){l.dir="";updateLifts();atStop(l);return;}
     l.dir=target>l.f?"▲":"▼";l.f+=target>l.f?1:-1;beep();updateLifts();
     if(S.willStick&&l.f!==target&&Math.random()<.6){S.willStick=false;S.stuck=true;S.phase="stuck";l.dir="";alarm();render();return;}
     setTimeout(step,spd);
   };
   setTimeout(step,350);
+}
+function nbTr(r,m,f){return G(r,m,f);}
+function atStop(l){
+  const nb=S.nb;
+  // neighbour gets on
+  if(nb&&!nb.aboard&&!nb.done&&l.f===nb.f){
+    openThen(l,()=>{
+      nb.aboard=true;
+      S.nbMsg=`<div class="win nbmsg">🛗 ${P(`توقّف المصعد في ${FL[nb.f].ar}. ${G(nb.r,"دخلَ","دخلتْ")} ${nb.r.ar} ${nb.r.e} و${G(nb.r,"ضغطَ","ضغطتْ")} زرّ ${FL[nb.to].ar}.`,`tawaqqafa al-misʿad fi ${FL[nb.f].tr}. ${G(nb.r,"dakhala","dakhalat")} ${nb.r.tr} wa ${G(nb.r,"daghata","daghatat")} zirra ${FL[nb.to].tr}.`)}<div>${nb.r.e} «${P("السلام عليكم!","al-salamu ʿalaykum!")}»</div></div>`;
+      beep();render();
+      setTimeout(()=>{target=Math.min(nb.to,S.final);render();continueRide();},2600);
+    });
+    return;
+  }
+  // neighbour gets off before us
+  if(nb&&nb.aboard&&l.f===nb.to&&l.f!==S.final){
+    openThen(l,()=>{nbOff();render();setTimeout(()=>{target=S.final;render();continueRide();},2200);});
+    return;
+  }
+  // our floor
+  S.pos=l.f;
+  if(nb&&nb.aboard&&nb.to>l.f){
+    const right=!(S.mosque&&S.mosque.picked)&&S.pos===S.t;
+    if(right){
+      // we get off; the lift keeps going up with the neighbour
+      openThen(l,()=>{arrive();setTimeout(()=>{l.open=false;updateLifts();keepGoing(l);},1700);});
+    }else{
+      // wrong floor: the doors open, then the lift carries on up to the neighbour's floor
+      openThen(l,()=>{S.wrongAt=l.f;S.phase="ride";S.nbMsg=`<div class="alert">🙈 ${P(`هذا ${FL[l.f].ar}! لكنّ ${T().ar} ${G(T(),"ليس","ليست")} هنا. المصعد سيكمل الصعود…`,`hadha ${FL[l.f].tr}! al-misʿad sa-yukmilu al-suʿud…`)}</div>`;render();
+        setTimeout(()=>{target=nb.to;S.final=nb.to;continueRide();},2200);});
+    }
+    return;
+  }
+  if(nb&&nb.aboard&&l.f===nb.to){
+    // reached the neighbour's floor after a wrong stop
+    openThen(l,()=>{nbOff();S.phase="inside";render();});
+    return;
+  }
+  S.nbMsg="";openThen(l,arrive);
+}
+function nbOff(){
+  const nb=S.nb;nb.aboard=false;nb.done=true;
+  S.nbMsg=`<div class="win nbmsg">👋 ${P(`${G(nb.r,"نزلَ","نزلتْ")} ${nb.r.ar} في ${FL[nb.to].ar}. ${G(nb.r,"قال","قالت")}: «مع السلامة!»`,`${G(nb.r,"nazala","nazalat")} ${nb.r.tr} fi ${FL[nb.to].tr}. ${G(nb.r,"qala","qalat")}: «maʿa al-salama!»`)}</div>`;
+}
+function keepGoing(l){
+  const nb=S.nb,rid=S.rid;if(!nb)return;
+  const step=()=>{
+    if(l.f===nb.to){l.dir="";l.open=true;updateLifts();ding();nb.aboard=false;nb.done=true;setTimeout(()=>{l.open=false;updateLifts();},1500);return;}
+    l.dir="▲";l.f++;updateLifts();setTimeout(step,420);
+  };
+  setTimeout(step,500);
 }
 function arrive(){
   if(S.mosque&&S.mosque.picked){
