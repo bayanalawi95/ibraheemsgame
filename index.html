@@ -100,7 +100,7 @@ button:disabled{opacity:.45;cursor:default}
 .keypad button{border-radius:50%;width:62px;height:62px;font-size:1.4rem;font-weight:800;background:#f7f8fb;border:3px solid #b8bfcc;padding:0}
 .keypad button.req{background:#ffe08a;border-color:#f2b705;color:#7a5600;box-shadow:0 0 10px rgba(242,183,5,.7)}
 .nbmsg{text-align:center}
-.box .who{display:flex;justify-content:center;align-items:flex-end}.box .who:has(.fig+.fig) .fig{zoom:.78}
+.box .who{display:flex;justify-content:center;align-items:flex-end}.box .who:has(.fig+.fig) .fig{zoom:.78}.box .who:has(.fig+.fig+.fig) .fig{zoom:.58}
 .keypad .alarm{background:var(--bad);color:#fff;border-color:#a2302a}
 .dir{border:2px dashed var(--soft);border-radius:12px;padding:10px;display:grid;gap:6px;overflow-x:auto}
 .dir table{border-collapse:collapse;font-size:.85rem;width:100%}
@@ -516,7 +516,11 @@ const WHY=[
  {ar:"لأنّ معي طبقَ كبسةٍ لذيذاً",tr:"li'anna maʿi tabaqa kabsatin ladhidhan",en:"because I have a tasty plate of kabsa"},
  {ar:"لأنّ معي علبةَ حلوى",tr:"li'anna maʿi ʿulbata halwa",en:"because I have a box of sweets"},
  {ar:"لأنّ معي صحنَ كنافة",tr:"li'anna maʿi sahna kunafa",en:"because I have a plate of kunafa"},
- {ar:"لأنّ معي هديّةً لعيد ميلاد{ه}",tr:"li'anna maʿi hadiyyatan li-ʿidi miladi{h}",en:"because I have a birthday present for {o}"},
+ {ar:"لأنّ معي تمراً وقهوةً من أمّي",tr:"li'anna maʿi tamran wa qahwatan min ummi",en:"because I have dates and coffee from my mom"},
+ {ar:"لأنّني أريد أن أهنّئ{ه} بالعيد",tr:"li'annani uridu an uhanni'a{h} bil-ʿid",en:"because I want to wish {o} a happy Eid"},
+ {ar:"لأنّني أريد أن أزور{ه} وأسأل عن صحّت{ه}",tr:"li'annani uridu an azura{h} wa as'ala ʿan sihhati{h}",en:"because I want to visit {o} and ask about {p} health"},
+ {ar:"لأنّني أريد أن أدعو{ه} إلى الإفطار",tr:"li'annani uridu an adʿuwa{h} ila al-iftar",en:"because I want to invite {o} to iftar"},
+ {ar:"لأنّ معي صحنَ سمبوسة من بيتنا",tr:"li'anna maʿi sahna sambusa min baytina",en:"because I have a plate of sambusa from our home"},
  {ar:"لأنّني أريد أن ألعب مع{ه}",tr:"li'annani uridu an alʿaba maʿa{h}",en:"because I want to play with {o}"},
  {ar:"لأنّ معي رسالةً سرّية",tr:"li'anna maʿi risalatan sirriyya",en:"because I have a secret message"},
  {ar:"لأنّ تلفاز{ه} معطّل، وأريد أن أصلحه",tr:"li'anna tilfaza{h} muʿattal, wa uridu an uslihahu",en:"because {p} TV is broken and I want to fix it"},
@@ -558,7 +562,7 @@ function newRound(keepVisitor){
   do{S.t=1+Math.floor(Math.random()*TOP);S.side=Math.floor(Math.random()*4);}while(S.res[S.t][S.side].home);S.why=rnd(WHY);
   S.lifts.forEach(l=>{l.out=false;l.open=false;l.dir="";});
   if(Math.random()<.65)S.lifts[Math.floor(Math.random()*3)].out=true;
-  Object.assign(S,{phase:"reception",lift:null,pos:0,said:{},msg:"",dir:false,stuck:false,knocked:null,hide:Math.random()<.3,talking:false,outTried:null,wrongAt:null,ready:false,entering:false,exiting:false,arrived:false,skipped:null,vary:{},closed:false,goHome:false,mosque:null,nb:null,nbMsg:"",final:null,live:null,hint:{},build:{},shuf:{},shown:{},lw:{},det:newDet(),reward:null,rewardTaken:false,rid:(S.rid||0)+1});
+  Object.assign(S,{phase:"reception",lift:null,pos:0,said:{},msg:"",dir:false,stuck:false,knocked:null,hide:Math.random()<.3,talking:false,outTried:null,wrongAt:null,ready:false,entering:false,exiting:false,arrived:false,skipped:null,vary:{},closed:false,goHome:false,mosque:null,nb:null,nbUp:0,nbDown:0,nbMsg:"",final:null,live:null,hint:{},build:{},shuf:{},shown:{},lw:{},det:newDet(),reward:null,rewardTaken:false,rid:(S.rid||0)+1});
   render();
 }
 /* ---------- rewards ---------- */
@@ -681,7 +685,7 @@ function renderScene(){
 
 /* ===================== new learning features ===================== */
 /* --- my apartment (saved in this browser) --- */
-const FURN=[["🛏️","السرير","al-sarir"],["🛋️","الكنبة","al-kanaba"],["🪑","الكرسي","al-kursi"],["💻","الحاسوب","al-hasub"],["📺","التلفاز","al-tilfaz"],["💡","المصباح","al-misbah"],["🪴","النبتة","al-nabta"],["📚","المكتبة","al-maktaba"],["🕰️","الساعة","al-saʿa"],["🎮","جهاز الألعاب","jihaz al-alʿab"],["🐠","حوض السمك","hawd al-samak"],["🖼️","اللوحة","al-lawha"],["🧸","الدبدوب","al-dabdub"],["🚲","الدرّاجة","al-darraja"],["🤖","الروبوت","al-robot"],["🗄️","الخزانة","al-khizana"],["⚽","الكرة","al-kura"],["🎸","الجيتار","al-gitar"]];
+const FURN=[["🛏️","السرير","al-sarir"],["🛋️","الكنبة","al-kanaba"],["🪑","الكرسي","al-kursi"],["💻","الحاسوب","al-hasub"],["📺","التلفاز","al-tilfaz"],["💡","المصباح","al-misbah"],["🪴","النبتة","al-nabta"],["📚","المكتبة","al-maktaba"],["🕰️","الساعة","al-saʿa"],["🎮","جهاز الألعاب","jihaz al-alʿab"],["🐠","حوض السمك","hawd al-samak"],["🖼️","اللوحة","al-lawha"],["🧸","الدبدوب","al-dabdub"],["🚲","الدرّاجة","al-darraja"],["🤖","الروبوت","al-robot"],["🗄️","الخزانة","al-khizana"],["⚽","الكرة","al-kura"],["🧺","السلّة","al-salla"]];
 const SPOTS=[["بجانب النافذة","bi-janib al-nafidha"],["تحت النافذة","tahta al-nafidha"],["في الزاوية","fi al-zawiya"],["بجانب الباب","bi-janib al-bab"],["في الوسط","fi al-wasat"],["على اليمين","ʿala al-yamin"]];
 /* ---------- two players: Ibraheem and Bayan, each with own stars, apartment and settings ---------- */
 const PL_INFO={ib:{name:"إبراهيم",tr:"ibrahim",e:"👦",vis:"ib"},by:{name:"بيان",tr:"bayan",e:"👩‍🏫",vis:"by"}};
@@ -952,8 +956,10 @@ function drawHome(){
     } else {
       const n=HOME.items.length;
       b+=n?`<div class="now me"><div class="nowwho"><b>${V().e}</b><span>${P("صِف شقّتك:","sif shaqqatak:")}</span></div>
-          <div class="ar big">في شقّتي ${B}، و${B} ${B}.</div>${S.tr?`<div class="tr">fi shaqqati ___ , wa ___ ___ .</div>`:""}
-          <div class="hint">${P("مثلاً: في شقّتي سريرٌ، والمصباح بجانب النافذة.","mathalan: fi shaqqati sarirun, wal-misbahu bi-janib al-nafidha.")}</div></div>`
+          ${(()=>{const L=HOME.items.slice(-2).map(x=>[FURN[x.i],SPOTS[x.p]||SPOTS[0]]);
+            const a=L.length>1?`في شقّتي ${L[0][0][1]} ${L[0][1][0]}، و${L[1][0][1]} ${L[1][1][0]}.`:`في شقّتي ${L[0][0][1]} ${L[0][1][0]}.`;
+            const tt=L.length>1?`fi shaqqati ${L[0][0][2]} ${L[0][1][1]}, wa ${L[1][0][2]} ${L[1][1][1]}.`:`fi shaqqati ${L[0][0][2]} ${L[0][1][1]}.`;
+            return `<div class="ar big">${a}</div>${S.tr?`<div class="tr">${tt}</div>`:""}`;})()}</div>`
         :`<div class="hint center">${P("شقّتك فارغة! أنجز مهمّة لتحصل على أوّل قطعة أثاث.","shaqqatuka farigha! anjiz mahamma li-tahsula ʿala awwali qitʿat athath.")}</div>`;
       b+=`<div class="tog center">${!S.goHome||S.phase!=="door"?`<button class="big" id="hGo">🚶 ${P("اذهب إلى شقّتي في العمارة","idhhab ila shaqqati fi al-ʿimara")}</button>`:""}<button id="hMove">🔁 ${P("غيّر مكان شقّتي","ghayyir makana shaqqati")}</button></div>`;
     }
@@ -1239,6 +1245,25 @@ function mosqueScene(){
 
 /* ---------- one line at a time ---------- */
 const B=`<span class="blank"></span>`;
+// fill the ___ blanks of a line [ar,tr,en] with the right words: fs=[[ar,tr,en],...]
+function fillB(l,fs){
+  let a=0,b=0,c=0;const f=(i,k)=>fs[i]?fs[i][k]:null;
+  return [l[0].split(B).map((part,n)=>n?(f(n-1,0)??B)+part:part).join(""),
+          (l[1]||"").replace(/___/g,()=>f(b++,1)??"___"),
+          (l[2]||"").replace(/___/g,()=>f(c++,2)??"___"),...l.slice(3)];
+}
+const fFloor=f=>[FL[f].ar,FL[f].tr,f?enOrd(f):"ground"];
+const fApt=(f,s)=>[aptNo(f,s),String((f-1)*4+s+1),String((f-1)*4+s+1)];
+const fLift=i=>[LIFTS[i].ar,LIFTS[i].tr,["first","second","third"][i]];
+// the accountant's greeting changes each time the page is loaded
+const ACC_G=Math.floor(Math.random()*4);
+function accHello(){
+  return [[["أهلاً وسهلاً!","ahlan wa sahlan!","Welcome!"],["أهلاً بك! السلام عليكم.","ahlan bik! al-salamu ʿalaykum.","Hello to you! Peace be upon you."],"وعليكم السلام! ","wa ʿalaykum al-salam! ","And peace be upon you! "],
+          [["مرحباً!","marhaban!","Hello!"],["مرحباً بك! السلام عليكم.","marhaban bik! al-salamu ʿalaykum.","Hello to you! Peace be upon you."],"وعليكم السلام! ","wa ʿalaykum al-salam! ","And peace be upon you! "],
+          [["السلام عليكم!","al-salamu ʿalaykum!","Peace be upon you!"],["وعليكم السلام ورحمة الله!","wa ʿalaykum al-salamu wa rahmatu allah!","And peace and Allah's mercy be upon you!"],"","",""],
+          [[GV("كيف الحال؟ كيف حالك؟","كيف الحال؟ كيف حالكِ؟"),GV("kayfa al-hal? kayfa haluk?","kayfa al-hal? kayfa haluki?"),"How are things? How are you?"],["بخير، الحمد لله! وكيف حالك أنت؟","bi-khayr, al-hamdu lillah! wa kayfa haluka anta?","Fine, praise be to Allah! And how are you?"],"الحمد لله، بخير! ","al-hamdu lillah, bi-khayr! ","Fine, praise be to Allah! "]][ACC_G];
+}
+
 const ln=(id,who,e,a,tr,en,mine)=>({id,who,e,a,tr,en,mine});
 function focus(lines,afterHtml){
   const idx=lines.findIndex(l=>!S.said[l.id]);
@@ -1275,10 +1300,11 @@ function renderPanel(){
     const pr=S.mosque.p,n=nextPrayer();
     const GO=`<div class="win">👍 ${P("عرفتَ المكان! هيّا إلى المصاعد.","ʿarafta al-makan! hayya ila al-masaʿid.")}</div><div class="tog"><button class="big huge" id="go">🛗 ${P("اذهب إلى المصاعد","idhhab ila al-masaʿid")}</button></div>`;
     h+=`<div class="win">🕌 ${P(`أذان ${n.p.ar} بعد ${durTxt(n.mins)}`,`adhan ${n.p.tr}`)}</div>`+focus([
-      ln("q1",K,v.e,"السلام عليكم!","al-salamu ʿalaykum!","Peace be upon you!",1),
-      ln("q2",Tc,"💁‍♂️","وعليكم السلام! كيف يمكنني مساعدتك؟","wa ʿalaykum al-salam! kayfa yumkinuni musaʿadatuk?","And peace be upon you! How can I help you?"),
+      ln("q0",Tc,"💁‍♂️",...accHello()[0]),
+      ln("q1",K,v.e,...accHello()[1],1),
+      ln("q2",Tc,"💁‍♂️",accHello()[2]+"كيف يمكنني مساعدتك؟",accHello()[3]+"kayfa yumkinuni musaʿadatuk?",accHello()[4]+"How can I help you?"),
       ln("q3",K,v.e,`سآخذ ${t.ar} إلى المسجد لصلاة ${pr.ar}. أين ${he}؟`,`sa'akhudhu ${t.tr} ila al-masjid li-salat ${pr.tr}. ayna ${heT}?`,`I'll take ${t.en} to the mosque for ${pr.tr} prayer. Where does ${G(t,"he","she")} live?`,1),
-      ln("q4",Tc,"💁‍♂️",`${he} في ${B}، في الشقة ${B}. ${GV("أسرِع","أسرِعي")}، الأذان قريب!`,`${heT} fi ___ , fi al-shaqqa ___ . ${GV("asriʿ","asriʿi")}, al-adhanu qarib!`,`On the ___ floor, apartment ___. Hurry, the adhan is soon!`),
+      ln("q4",Tc,"💁‍♂️",...fillB([`${he} في ${B}، في الشقة ${B}. ${GV("أسرِع","أسرِعي")}، الأذان قريب!`,`${heT} fi ___ , fi al-shaqqa ___ . ${GV("asriʿ","asriʿi")}, al-adhanu qarib!`,`On the ___ floor, apartment ___. Hurry, the adhan is soon!`],[fFloor(S.t),fApt(S.t,S.side)])),
       ln("q5",K,v.e,"شكراً! سأذهب الآن.","shukran! sa'adhhabu al-an.","Thanks! I'll go now.",1),
     ],GO);
     h+=`<div class="tog"><button id="dirB" class="small">📋 دليل العمارة (للمعلّم)</button></div>`;
@@ -1289,11 +1315,12 @@ function renderPanel(){
     let waiting=S.closed&&S.lift===null?CLOSED():"";
     if(S.lift!==null)waiting=S.arrived?`<div class="win">🛗 ${P("المصعد ينتظرك! لكن أكمل كلامك مع المحاسب أولاً.","al-misʿad yantaziruk! lakin akmil kalamaka maʿa al-muhasib awwalan.")}</div>`:`<div class="win">🛗 ${P("المصعد قادم…","al-misʿad qadim…")}</div>`;
     h+=waiting+focus([
-      ln("h1",K,v.e,...pickL("hg",[["السلام عليكم!","al-salamu ʿalaykum!","Peace be upon you!"],["السلام عليكم، مساء الخير!","al-salamu ʿalaykum, masa' al-khayr!","Peace be upon you, good evening!"]]),1),
-      ln("h2",Tc,"💁‍♂️",`وعليكم السلام! ${GV("أهلاً بك، هل تريد أن تستأجر شقّة؟","أهلاً بكِ، هل تريدين أن تستأجري شقّة؟")}`,`wa ʿalaykum al-salam! ${GV("ahlan bik, hal turidu an tasta'jira shaqqa?","ahlan biki, hal turidina an tasta'jiri shaqqa?")}`,"Welcome! Do you want to rent an apartment?"),
+      ln("h0",Tc,"💁‍♂️",...accHello()[0]),
+      ln("h1",K,v.e,...accHello()[1],1),
+      ln("h2",Tc,"💁‍♂️",`${accHello()[2]}${GV("هل تريد أن تستأجر شقّة؟","هل تريدين أن تستأجري شقّة؟")}`,`${accHello()[3]}${GV("hal turidu an tasta'jira shaqqa?","hal turidina an tasta'jiri shaqqa?")}`,accHello()[4]+"Do you want to rent an apartment?"),
       ln("h3",K,v.e,`لا، أنا ${GV("ساكنٌ","ساكنةٌ")} هنا! أنا ${GV("ذاهبٌ","ذاهبةٌ")} إلى شقّتي.`,`la, ana ${GV("sakinun","sakinatun")} huna! ana ${GV("dhahibun","dhahibatun")} ila shaqqati.`,"No, I live here! I'm going to my apartment.",1),
       ln("h4",Tc,"💁‍♂️",`${GV("أهلاً بك","أهلاً بكِ")}! في أيّ طابقٍ ${GV("شقّتك","شقّتكِ")}؟ وما رقمها؟`,`${GV("ahlan bik","ahlan biki")}! fi ayyi tabiqin ${GV("shaqqatuka","shaqqatuki")}? wa ma raqmuha?`,"Welcome! Which floor is your apartment on? What's its number?"),
-      ln("h5",K,v.e,`شقّتي في ${B}، ورقمها ${B}.`,`shaqqati fi ___ , wa raqmuha ___ .`,"My apartment is on the ___ floor, number ___.",1),
+      ln("h5",K,v.e,...fillB([`شقّتي في ${B}، ورقمها ${B}.`,`shaqqati fi ___ , wa raqmuha ___ .`,"My apartment is on the ___ floor, number ___."],[fFloor(S.t),fApt(S.t,S.side)]),1),
       ln("h6",Tc,"💁‍♂️",`صحيح! ${GV("تفضّل","تفضّلي")}، المصاعد هناك.`,`sahih! ${GV("tafaddal","tafaddali")}, al-masaʿid hunak.`,"Right! Go ahead, the elevators are over there."),
     ],GO);
     h+=`<div class="tog"><button id="dirB" class="small">📋 دليل العمارة (للمعلّم)</button></div>`;
@@ -1305,25 +1332,23 @@ function renderPanel(){
         ${isIb()?(PL.by.home.f?`<button class="big" id="visitBy">👩‍🏫 ${P("أريد أن أزور جارتي المعلّمة بيان","uridu an azura jarati al-muʿallima bayan")}</button>`:"")
                 :PL.ib.home.f?`<button class="big" id="visitIb">👦 ${P("أريد أن أزور جاري إبراهيم","uridu an azura jari ibrahim")}</button>`:""}</div>`;
     }
-    const gi=vr("greet",3);
-    const R1=[["السلام عليكم!","al-salamu ʿalaykum!","Peace be upon you!"],
-              ["السلام عليكم ورحمة الله!","al-salamu ʿalaykum wa rahmatu allah!","Peace and mercy of Allah be upon you!"],
-              ["السلام عليكم، صباح الخير!","al-salamu ʿalaykum, sabah al-khayr!","Peace be upon you, good morning!"]][gi];
-    const R2=[[`وعليكم السلام! أيّ طابقٍ ${GV("تريد أن تستأجر","تريدين أن تستأجري")}؟`,`wa ʿalaykum al-salam! ayya tabiqin ${GV("turidu an tasta'jir","turidina an tasta'jiri")}?`,"And peace be upon you! Which floor do you want to rent?"],
-              [`وعليكم السلام ورحمة الله وبركاته! أيّ طابقٍ ${GV("تريد أن تستأجر","تريدين أن تستأجري")}؟`,`wa ʿalaykum al-salam wa rahmatu allahi wa barakatuh! ayya tabiqin ${GV("turidu an tasta'jir","turidina an tasta'jiri")}?`,"And peace, mercy and blessings! Which floor do you want to rent?"],
-              [`وعليكم السلام، صباح النور! أيّ طابقٍ ${GV("تريد أن تستأجر","تريدين أن تستأجري")}؟`,`wa ʿalaykum al-salam, sabah al-nur! ayya tabiqin ${GV("turidu an tasta'jir","turidina an tasta'jiri")}?`,"And peace be upon you, good morning! Which floor do you want to rent?"]][gi];
+    const AH=accHello();
+    const R1=AH[1];
+    const R2=pickL("r2q",[[`${AH[2]}أيّ طابقٍ ${GV("تريد أن تستأجر","تريدين أن تستأجري")}؟`,`${AH[3]}ayya tabiqin ${GV("turidu an tasta'jir","turidina an tasta'jiri")}?`,`${AH[4]}Which floor do you want to rent?`],
+              [`${AH[2]}${GV("تفضّل","تفضّلي")}، أيّ طابقٍ ${GV("تريد أن تستأجر","تريدين أن تستأجري")}؟`,`${AH[3]}${GV("tafaddal","tafaddali")}, ayya tabiqin ${GV("turidu an tasta'jir","turidina an tasta'jiri")}?`,`${AH[4]}Please, which floor do you want to rent?`],
+              [`${AH[2]}حيّاك الله! أيّ طابقٍ ${GV("تريد أن تستأجر","تريدين أن تستأجري")}؟`,`${AH[3]}hayyaka allah! ayya tabiqin ${GV("turidu an tasta'jir","turidina an tasta'jiri")}?`,`${AH[4]}Welcome! Which floor do you want to rent?`]]);
     const R3=pickL("r3",[
       [`لا، لا أريد أن أستأجر. أنا ${v.ar}، وأبحث عن ${t.ar}. أين ${he}؟`,`la, la uridu an asta'jir. ana ${v.tr}, wa abhathu ʿan ${t.tr}. ayna ${heT}?`,`No, I don't want to rent. I'm ${v.en}, and I'm looking for ${t.en}. Where does ${G(t,"he","she")} live?`],
       [`لا، شكراً. أنا ${v.ar}، وأريد أن أزور ${t.ar}. في أيّ طابقٍ ${he}؟`,`la, shukran. ana ${v.tr}, wa uridu an azura ${t.tr}. fi ayyi tabiqin ${heT}?`,`No, thanks. I'm ${v.en}, and I want to visit ${t.en}. Which floor does ${G(t,"he","she")} live on?`],
       [`لا أريد أن أستأجر شقّة. أنا ${v.ar}، جئتُ لزيارة ${t.ar}. أين ${G(t,"شقّته","شقّتها")}؟`,`la uridu an asta'jira shaqqa. ana ${v.tr}, ji'tu li-ziyarati ${t.tr}. ayna ${G(t,"shaqqatuhu","shaqqatuha")}?`,`I don't want to rent an apartment. I'm ${v.en}, I came to visit ${t.en}. Where is ${G(t,"his","her")} apartment?`]]);
-    const R4=pickL("r4",[
+    const R4=fillB(pickL("r4",[
       [`${he} في ${B}، في الشقة ${B}.`,`${heT} fi ___ , fi al-shaqqa ___ .`,`${G(t,"He","She")} lives on the ___ floor, in apartment ___.`],
       [`${G(t,"شقّته","شقّتها")} في ${B}، ورقمها ${B}.`,`${G(t,"shaqqatuhu","shaqqatuha")} fi ___ , wa raqmuha ___ .`,`${G(t,"His","Her")} apartment is on the ___ floor, number ___.`],
-      [`${GV("اصعد","اصعدي")} إلى ${B}، و${GV(G(t,"ستجده","ستجدها"),G(t,"ستجدينه","ستجدينها"))} في الشقة ${B}.`,`${GV("isʿad","isʿadi")} ila ___ , wa ${GV(G(t,"satajiduhu","satajiduha"),G(t,"satajidinahu","satajidinaha"))} fi al-shaqqa ___ .`,`Go up to the ___ floor, you'll find ${G(t,"him","her")} in apartment ___.`]]);
-    const R5=pickL("r5",[
+      [`${GV("اصعد","اصعدي")} إلى ${B}، و${GV(G(t,"ستجده","ستجدها"),G(t,"ستجدينه","ستجدينها"))} في الشقة ${B}.`,`${GV("isʿad","isʿadi")} ila ___ , wa ${GV(G(t,"satajiduhu","satajiduha"),G(t,"satajidinahu","satajidinaha"))} fi al-shaqqa ___ .`,`Go up to the ___ floor, you'll find ${G(t,"him","her")} in apartment ___.`]]),[fFloor(S.t),fApt(S.t,S.side)]);
+    const R5=fillB(pickL("r5",[
       [`هل تقصد ${B}؟ شكراً لك!`,`hal taqsidu ___ ? shukran lak!`,`You mean the ___ floor? Thank you!`],
       [`حسناً، ${B}، الشقة ${B}. شكراً جزيلاً!`,`hasanan, ___ , al-shaqqa ___ . shukran jazilan!`,`OK, the ___ floor, apartment ___. Thank you very much!`],
-      [`فهمتُ: ${B}. جزاك الله خيراً!`,`fahimtu: ___ . jazaka allahu khayran!`,`Got it: the ___ floor. May Allah reward you!`]]);
+      [`فهمتُ: ${B}. جزاك الله خيراً!`,`fahimtu: ___ . jazaka allahu khayran!`,`Got it: the ___ floor. May Allah reward you!`]]),[fFloor(S.t),fApt(S.t,S.side)]);
     let waiting=S.closed&&S.lift===null?CLOSED():"";
     if(S.lift!==null)waiting=S.arrived
       ?`<div class="win">🛗 ${P("المصعد ينتظرك! لكن أكمل كلامك مع المحاسب أولاً.","al-misʿad yantaziruk! lakin akmil kalamaka maʿa al-muhasib awwalan.")}</div>`
@@ -1333,13 +1358,14 @@ function renderPanel(){
       const d=S.det;
       const RS=pickL("rs",[[`هذا سرّ! 🤫 ${GV("اسألني","اسأليني")}، وسأجيبك بنعم أو لا.`,`hadha sirr! ${GV("is'alni","is'alini")}, wa sa-ujibuka bi-naʿam aw la.`,"It's a secret! Ask me, and I'll answer yes or no."],
                            [`لن أخبرك! ${GV("خمِّن","خمِّني")}… ${GV("اسألني","اسأليني")} أسئلةً جوابها نعم أو لا.`,`lan ukhbiraka! ${GV("khammin","khammini")}… ${GV("is'alni","is'alini")} as'ilatan jawabuha naʿam aw la.`,"I won't tell you! Guess… ask me yes/no questions."]]);
-      const lines=[ln("r1",K,v.e,...R1,1),ln("r2",Tc,"💁‍♂️",...R2),ln("r3",K,v.e,...R3,1),ln("rs",Tc,"💁‍♂️",...RS)];
+      const lines=[ln("r0",Tc,"💁‍♂️",...AH[0]),ln("r1",K,v.e,...R1,1),ln("r2",Tc,"💁‍♂️",...R2),ln("r3",K,v.e,...R3,1),ln("rs",Tc,"💁‍♂️",...RS)];
       if(d.done)lines.push(
         ln("ra",Tc,"💁‍♂️",`${GV("أحسنتَ","أحسنتِ")}! ${G(t,"يسكن","تسكن")} في ${FL[S.t].ar}، في الشقّة رقم ${aptNo(S.t,S.side)}.`,`${GV("ahsanta","ahsanti")}! ${heT} fi ${FL[S.t].tr}, fi al-shaqqa raqm ${(S.t-1)*4+S.side+1}.`,`Well done! ${G(t,"He","She")} lives on the ${FL[S.t].en}, apartment ${(S.t-1)*4+S.side+1}.`),
         ln("r5",K,v.e,...R5,1));
       h+=waiting+(d.done?`<div class="win">🕵️ ${P(`وجدتَ الطابق بـ ${ar(d.n)} أسئلة!`,`wajadta al-tabiq bi-${d.n} as'ila!`)}</div>`:"")+focus(lines,d.done?GO:detBuilder());
     } else {
       h+=waiting+focus([
+        ln("r0",Tc,"💁‍♂️",...AH[0]),
         ln("r1",K,v.e,...R1,1),
         ln("r2",Tc,"💁‍♂️",...R2),
         ln("r3",K,v.e,...R3,1),
@@ -1375,10 +1401,10 @@ function renderPanel(){
     h+=focus(lines,after);
   }
   else if(S.phase==="inside"||S.phase==="ride"){
-    const K1=pickL("k1",[[`سأضغط زرّ ${B}.`,`sa'adghatu zirra ___ .`,`I'll press the ___ floor button.`],
+    const K1=fillB(pickL("k1",[[`سأضغط زرّ ${B}.`,`sa'adghatu zirra ___ .`,`I'll press the ___ floor button.`],
                         [`أريد أن أصعد إلى ${B}.`,`uridu an asʿada ila ___ .`,`I want to go up to the ___ floor.`],
-                        [`سأذهب إلى ${B}.`,`sa'adhhabu ila ___ .`,`I'll go to the ___ floor.`]]);
-    const lines=[S.mosque&&S.mosque.picked?ln("mk1",K,v.e,`سننزل إلى الطابق الأرضي. سأضغط زرّ ${B}.`,`sananzilu ila al-tabiq al-ardi. sa'adghatu zirra ___ .`,"We'll go down to the ground floor. I'll press ___.",1):ln("k1",K,v.e,...K1,1)];
+                        [`سأذهب إلى ${B}.`,`sa'adhhabu ila ___ .`,`I'll go to the ___ floor.`]]),[fFloor(S.t)]);
+    const lines=[S.mosque&&S.mosque.picked?ln("mk1",K,v.e,...fillB([`سننزل إلى الطابق الأرضي. سأضغط زرّ ${B}.`,`sananzilu ila al-tabiq al-ardi. sa'adghatu zirra ___ .`,"We'll go down to the ground floor. I'll press ___."],[[ar(0),"0","0"]]),1):ln("k1",K,v.e,...K1,1)];
     if(S.wrongAt!=null&&S.phase==="inside")lines.push(ln("w"+S.wrongAt,K,v.e,...pickL("w",[
       ["أوه! أخطأت. هذا ليس الطابق الصحيح.","oh! akhta'tu. hadha laysa al-tabiqa al-sahih.","Oops! Wrong floor."],
       ["لا! هذا طابقٌ خطأ. سأحاول مرّة أخرى.","la! hadha tabiqun khata'. sa'uhawilu marratan ukhra.","No! Wrong floor. I'll try again."]]),1));
@@ -1393,7 +1419,7 @@ function renderPanel(){
                                    ["النجدة! المصعد توقّف!","al-najda! al-misʿad tawaqqaf!","Help! The elevator stopped!"]]),1),
       ln("s2",Tc,"💁‍♂️",...pickL("s2",[[GV("لا تخف! في أيّ مصعد أنتَ؟","لا تخافي! في أيّ مصعد أنتِ؟"),GV("la takhaf! fi ayyi misʿadin anta?","la takhafi! fi ayyi misʿadin anti?"),"Don't be scared! Which elevator are you in?"],
                                         [GV("اهدأ يا بطل! أخبرني: في أيّ مصعد أنتَ؟","اهدئي يا بطلة! أخبريني: في أيّ مصعد أنتِ؟"),GV("ihda' ya batal! akhbirni: fi ayyi misʿadin anta?","ihda'i ya batala! akhbirini: fi ayyi misʿadin anti?"),"Calm down, hero! Tell me: which elevator are you in?"]])),
-      ln("s3",K,v.e,`أنا في ${B}.`,`ana fi al-misʿadi ___ .`,`I'm in the ___ elevator.`,1),
+      ln("s3",K,v.e,...fillB([`أنا في ${B}.`,`ana fi ___ .`,`I'm in the ___ elevator.`],[fLift(S.lift??0)]),1),
       ln("s4",Tc,"💁‍♂️",GV("اضغط الزرّ الأحمر!","اضغطي الزرّ الأحمر!"),GV("idghat al-zirra al-ahmar!","idghati al-zirra al-ahmar!"),"Press the red button!"),
     ],`<div class="keypad one"><button class="alarm pulse" id="alarmB">🔔</button></div>`);
   }
@@ -1412,8 +1438,8 @@ function renderPanel(){
       <div class="tog center"><button class="big huge" id="next">🚀 ${P("مهمة جديدة","mahamma jadida")}</button></div></div>`);
   }
   else if(S.phase==="door"){
-    const lines=[ln("k2",K,v.e,...pickL("k2",[[`سأطرق باب الشقة ${B}.`,`sa'atruqu baba al-shaqqa ___ .`,`I'll knock on the door of apartment ___.`],
-                                              [`هذه هي الشقة ${B}! سأطرق الباب.`,`hadhihi hiya al-shaqqa ___ ! sa'atruqu al-bab.`,`This is apartment ___! I'll knock on the door.`]]),1)];
+    const lines=[ln("k2",K,v.e,...fillB(pickL("k2",[[`سأطرق باب الشقة ${B}.`,`sa'atruqu baba al-shaqqa ___ .`,`I'll knock on the door of apartment ___.`],
+                                              [`هذه هي الشقة ${B}! سأطرق الباب.`,`hadhihi hiya al-shaqqa ___ ! sa'atruqu al-bab.`,`This is apartment ___! I'll knock on the door.`]]),[fApt(S.t,S.side)]),1)];
     let after=`<div class="hint center">👆 ${P("اضغط على النافذة في العمارة، أو هنا:","idghat ʿala al-nafidha fi al-ʿimara, aw huna")}</div><div class="tog center">${POS.map((ps,s)=>`<button class="big" data-door="${s}">✊ ${aptNo(S.pos,s)}</button>`).join("")}</div>`;
     let banner=`<div class="win">🛎️ ${P(`وصلتَ إلى ${FL[S.pos].ar}!`,`wasalta ila ${FL[S.pos].tr}!`)}</div>`;
     if(S.knocked!==null){
@@ -1483,18 +1509,64 @@ function renderPanel(){
           // the resident thanks him, then asks a different personal question each time
           const thx=pickL("thx",r.m?[[GV("شكراً لكَ!","شكراً لكِ!"),GV("shukran laka!","shukran laki!"),"Thank you!"],[GV("جزاكَ الله خيراً!","جزاكِ الله خيراً!"),GV("jazaka allahu khayran!","jazaki allahu khayran!"),"May Allah reward you!"],[GV("ما شاء الله! أنتَ لطيفٌ جدّاً.","ما شاء الله! أنتِ لطيفةٌ جدّاً."),GV("ma sha'a allah! anta latifun jiddan.","ma sha'a allah! anti latifatun jiddan."),"Masha'Allah! You're very kind."]]
                                    :[[GV("شكراً لكَ!","شكراً لكِ!"),GV("shukran laka!","shukran laki!"),"Thank you!"],[GV("أنتَ لطيفٌ جدّاً!","أنتِ لطيفةٌ جدّاً!"),GV("anta latifun jiddan!","anti latifatun jiddan!"),"You're very kind!"]]);
-          const QA=pickL("qa",[
-            [[GV("ما لعبتُكَ المفضّلة؟","ما لعبتُكِ المفضّلة؟"),GV("ma luʿbatuka al-mufaddala?","ma luʿbatuki al-mufaddala?"),"What's your favorite game?"],[`لعبتي المفضّلة ${B} لأنّ ${B}.`,"luʿbati al-mufaddala ___ li'anna ___ .","My favorite game is ___ because ___."]],
-            [[GV("ماذا تحبّ أن تأكل؟","ماذا تحبّين أن تأكلي؟"),GV("madha tuhibbu an ta'kul?","madha tuhibbina an ta'kuli?"),"What do you like to eat?"],[`أحبّ أن آكل ${B} لأنّه ${B}.`,"uhibbu an akula ___ li'annahu ___ .","I like to eat ___ because it's ___."]],
-            [[GV("ماذا فعلتَ اليوم؟","ماذا فعلتِ اليوم؟"),GV("madha faʿalta al-yawm?","madha faʿalti al-yawm?"),"What did you do today?"],[`اليوم ${B}، ثمّ ${B}.`,"al-yawma ___ , thumma ___ .","Today I ___, then I ___."]],
-            [[GV("ما لونُكَ المفضّل؟","ما لونُكِ المفضّل؟"),GV("ma lawnuka al-mufaddal?","ma lawnuki al-mufaddal?"),"What's your favorite color?"],[`لوني المفضّل ${B} لأنّ ${B}.`,"lawni al-mufaddal ___ li'anna ___ .","My favorite color is ___ because ___."]],
-            [[GV("مَن صديقُكَ المفضّل؟","مَن صديقتُكِ المفضّلة؟"),GV("man sadiquka al-mufaddal?","man sadiqatuki al-mufaddala?"),"Who's your best friend?"],[GV(`صديقي المفضّل ${B}، ونحن نحبّ أن ${B}.`,`صديقتي المفضّلة ${B}، ونحن نحبّ أن ${B}.`),GV("sadiqi al-mufaddal ___ , wa nahnu nuhibbu an ___ .","sadiqati al-mufaddala ___ , wa nahnu nuhibbu an ___ ."),"My best friend is ___, and we like to ___."]],
-            [[GV("ماذا تحبّ أن تفعل في العطلة؟","ماذا تحبّين أن تفعلي في العطلة؟"),GV("madha tuhibbu an tafʿala fi al-ʿutla?","madha tuhibbina an tafʿali fi al-ʿutla?"),"What do you like to do on holiday?"],[`في العطلة أحبّ أن ${B} مع ${B}.`,"fi al-ʿutla uhibbu an ___ maʿa ___ .","On holiday I like to ___ with ___."]],
-            [[GV("ما الحيوان الذي تحبّه؟","ما الحيوان الذي تحبّينه؟"),GV("ma al-hayawanu alladhi tuhibbuh?","ma al-hayawanu alladhi tuhibbinah?"),"Which animal do you like?"],[`أحبّ ${B} لأنّه ${B}.`,"uhibbu ___ li'annahu ___ .","I like the ___ because it's ___."]],
-            [[GV("كم عمرُكَ؟ وأين تسكن؟","كم عمرُكِ؟ وأين تسكنين؟"),GV("kam ʿumruka? wa ayna taskun?","kam ʿumruki? wa ayna taskunin?"),"How old are you? Where do you live?"],[`عمري ${B} سنة، وأسكن في ${B}.`,"ʿumri ___ sana, wa askunu fi ___ .","I'm ___ years old, and I live in ___."]],
-            [[GV("ما الرياضة التي تحبّها؟","ما الرياضة التي تحبّينها؟"),GV("ma al-riyadatu allati tuhibbuha?","ma al-riyadatu allati tuhibbinaha?"),"Which sport do you like?"],[`أحبّ ${B} لأنّها ${B}.`,"uhibbu ___ li'annaha ___ .","I like ___ because it's ___."]],
-            [[GV("ما الشيء الذي تحبّه في العربية؟","ما الشيء الذي تحبّينه في العربية؟"),GV("ma al-shay'u alladhi tuhibbuhu fi al-ʿarabiyya?","ma al-shay'u alladhi tuhibbinahu fi al-ʿarabiyya?"),"What do you like about Arabic?"],[`أحبّ ${B} لأنّ ${B}.`,"uhibbu ___ li'anna ___ .","I like ___ because ___."]],
-          ]);
+          const QS=[
+            [[GV("ما لعبتُكَ المفضّلة؟","ما لعبتُكِ المفضّلة؟"),GV("ma luʿbatuka al-mufaddala?","ma luʿbatuki al-mufaddala?"),"What's your favorite game?"],[
+              ["لعبتي المفضّلة كرة القدم، لأنّها ممتعة جدّاً.","luʿbati al-mufaddala kuratu al-qadam, li'annaha mumtiʿa jiddan.","My favorite game is football, because it's really fun."],
+              ["لعبتي المفضّلة الألغاز، لأنّها تجعلني أفكّر.","luʿbati al-mufaddala al-alghaz, li'annaha tajʿaluni ufakkir.","My favorite game is puzzles, because they make me think."],
+              ["لعبتي المفضّلة الاختباء، وألعبها مع إخوتي.","luʿbati al-mufaddala al-ikhtiba', wa alʿabuha maʿa ikhwati.","My favorite game is hide and seek, I play it with my siblings."]]],
+            [[GV("ماذا تحبّ أن تأكل؟","ماذا تحبّين أن تأكلي؟"),GV("madha tuhibbu an ta'kul?","madha tuhibbina an ta'kuli?"),"What do you like to eat?"],[
+              ["أحبّ أن آكل الكبسة، لأنّها لذيذة جدّاً.","uhibbu an akula al-kabsa, li'annaha ladhidha jiddan.","I like to eat kabsa, because it's very tasty."],
+              ["أحبّ أن آكل التمر، فهو حلوٌ ومفيد.","uhibbu an akula al-tamr, fahuwa hulwun wa mufid.","I like to eat dates; they're sweet and healthy."],
+              ["أحبّ أن آكل المندي مع عائلتي يوم الجمعة.","uhibbu an akula al-mandi maʿa ʿa'ilati yawma al-jumuʿa.","I like to eat mandi with my family on Friday."]]],
+            [[GV("ماذا فعلتَ اليوم؟","ماذا فعلتِ اليوم؟"),GV("madha faʿalta al-yawm?","madha faʿalti al-yawm?"),"What did you do today?"],[
+              ["اليوم صلّيتُ الفجر، ثمّ ذهبتُ إلى المدرسة.","al-yawma sallaytu al-fajr, thumma dhahabtu ila al-madrasa.","Today I prayed Fajr, then I went to school."],
+              ["اليوم قرأتُ القرآن، ثمّ لعبتُ مع أصدقائي.","al-yawma qara'tu al-qur'an, thumma laʿibtu maʿa asdiqa'i.","Today I read Quran, then I played with my friends."],
+              ["اليوم ساعدتُ أمّي في البيت، ثمّ درستُ العربية.","al-yawma saʿadtu ummi fi al-bayt, thumma darastu al-ʿarabiyya.","Today I helped my mom at home, then I studied Arabic."]]],
+            [[GV("ما لونُكَ المفضّل؟","ما لونُكِ المفضّل؟"),GV("ma lawnuka al-mufaddal?","ma lawnuki al-mufaddal?"),"What's your favorite color?"],[
+              ["لوني المفضّل الأزرق، لأنّه لون السماء.","lawni al-mufaddal al-azraq, li'annahu lawnu al-sama'.","My favorite color is blue, because it's the color of the sky."],
+              ["لوني المفضّل الأخضر، لأنّه لون الأشجار.","lawni al-mufaddal al-akhdar, li'annahu lawnu al-ashjar.","My favorite color is green, because it's the color of trees."],
+              ["لوني المفضّل الأبيض، لأنّه لون الغيوم.","lawni al-mufaddal al-abyad, li'annahu lawnu al-ghuyum.","My favorite color is white, because it's the color of clouds."]]],
+            [[GV("مَن صديقُكَ المفضّل؟","مَن صديقتُكِ المفضّلة؟"),GV("man sadiquka al-mufaddal?","man sadiqatuki al-mufaddala?"),GV("Who's your best friend?","Who's your best friend?")],GV([
+              ["صديقي المفضّل أخي، ونحن نحبّ أن نلعب معاً.","sadiqi al-mufaddal akhi, wa nahnu nuhibbu an nalʿaba maʿan.","My best friend is my brother; we love playing together."],
+              ["صديقي المفضّل يوسف، ونحن نذهب إلى المسجد معاً.","sadiqi al-mufaddal yusuf, wa nahnu nadhhabu ila al-masjid maʿan.","My best friend is Yusuf; we go to the mosque together."],
+              ["صديقي المفضّل عمر، ونحن نحبّ أن نركب الدرّاجة.","sadiqi al-mufaddal ʿumar, wa nahnu nuhibbu an narkaba al-darraja.","My best friend is Omar; we love riding bikes."]],[
+              ["صديقتي المفضّلة أختي، ونحن نحبّ أن نلعب معاً.","sadiqati al-mufaddala ukhti, wa nahnu nuhibbu an nalʿaba maʿan.","My best friend is my sister; we love playing together."],
+              ["صديقتي المفضّلة مريم، ونحن نحفظ القرآن معاً.","sadiqati al-mufaddala maryam, wa nahnu nahfazu al-qur'ana maʿan.","My best friend is Maryam; we memorize Quran together."],
+              ["صديقتي المفضّلة سارة، ونحن نحبّ أن نرسم.","sadiqati al-mufaddala sara, wa nahnu nuhibbu an narsum.","My best friend is Sara; we love drawing."]])],
+            [[GV("ماذا تحبّ أن تفعل في العطلة؟","ماذا تحبّين أن تفعلي في العطلة؟"),GV("madha tuhibbu an tafʿala fi al-ʿutla?","madha tuhibbina an tafʿali fi al-ʿutla?"),"What do you like to do on holiday?"],[
+              ["في العطلة أحبّ أن أزور جدّي وجدّتي.","fi al-ʿutla uhibbu an azura jaddi wa jaddati.","On holiday I like to visit my grandpa and grandma."],
+              ["في العطلة أحبّ أن أذهب إلى البحر مع عائلتي.","fi al-ʿutla uhibbu an adhhaba ila al-bahr maʿa ʿa'ilati.","On holiday I like to go to the sea with my family."],
+              ["في العطلة أحبّ أن أعتمر وأزور مكّة.","fi al-ʿutla uhibbu an aʿtamira wa azura makka.","On holiday I like to do Umrah and visit Makkah."]]],
+            [[GV("ما الحيوان الذي تحبّه؟","ما الحيوان الذي تحبّينه؟"),GV("ma al-hayawanu alladhi tuhibbuh?","ma al-hayawanu alladhi tuhibbinah?"),"Which animal do you like?"],[
+              ["أحبّ الجمل، لأنّه قويٌّ وصبور.","uhibbu al-jamal, li'annahu qawiyyun wa sabur.","I like the camel, because it's strong and patient."],
+              ["أحبّ القطّة، لأنّها لطيفة.","uhibbu al-qitta, li'annaha latifa.","I like the cat, because it's gentle."],
+              ["أحبّ الحصان، لأنّه سريعٌ جدّاً.","uhibbu al-hisan, li'annahu sariʿun jiddan.","I like the horse, because it's very fast."]]],
+            [[GV("أين تسكن؟","أين تسكنين؟"),GV("ayna taskun?","ayna taskunin?"),"Where do you live?"],HOME.f?[
+              fillB([`أسكن في هذه العمارة، في ${B}.`,`askunu fi hadhihi al-ʿimara, fi ___ .`,"I live in this building, on the ___ floor."],[fFloor(HOME.f)]),
+              fillB([`أنا ${GV("جارُك","جارتُك")}! شقّتي رقم ${B}.`,`ana ${GV("jaruk","jaratuk")}! shaqqati raqm ___ .`,"I'm your neighbor! My apartment is number ___."],[fApt(HOME.f,HOME.s)])]:[
+              ["أسكن قريباً من هنا، بجانب المسجد.","askunu qariban min huna, bi-janib al-masjid.","I live near here, next to the mosque."]]],
+            [[GV("ما الرياضة التي تحبّها؟","ما الرياضة التي تحبّينها؟"),GV("ma al-riyadatu allati tuhibbuha?","ma al-riyadatu allati tuhibbinaha?"),"Which sport do you like?"],[
+              ["أحبّ السباحة، لأنّها مفيدة للجسم.","uhibbu al-sibaha, li'annaha mufida lil-jism.","I like swimming, because it's good for the body."],
+              ["أحبّ ركوب الخيل، لأنّه ممتع.","uhibbu rukuba al-khayl, li'annahu mumtiʿ.","I like horse riding, because it's fun."],
+              ["أحبّ الرماية، لأنّها تحتاج إلى تركيز.","uhibbu al-rimaya, li'annaha tahtaju ila tarkiz.","I like archery, because it needs focus."]]],
+            [[GV("ما الشيء الذي تحبّه في العربية؟","ما الشيء الذي تحبّينه في العربية؟"),GV("ma al-shay'u alladhi tuhibbuhu fi al-ʿarabiyya?","ma al-shay'u alladhi tuhibbinahu fi al-ʿarabiyya?"),"What do you like about Arabic?"],[
+              ["أحبّ العربية، لأنّها لغة القرآن.","uhibbu al-ʿarabiyya, li'annaha lughatu al-qur'an.","I love Arabic, because it's the language of the Quran."],
+              ["أحبّ الحروف العربية، لأنّها جميلة.","uhibbu al-hurufa al-ʿarabiyya, li'annaha jamila.","I love the Arabic letters, because they're beautiful."],
+              ["أحبّ الكلمات الجديدة، لأنّني أتعلّم كلّ يوم.","uhibbu al-kalimati al-jadida, li'annani ataʿallamu kulla yawm.","I love new words, because I learn every day."]]],
+            [[GV("ما السورة التي تحفظها؟","ما السورة التي تحفظينها؟"),GV("ma al-suratu allati tahfazuha?","ma al-suratu allati tahfazinaha?"),"Which surah have you memorized?"],[
+              ["أحفظ سورة الفاتحة، وأقرؤها في كلّ صلاة.","ahfazu surata al-fatiha, wa aqra'uha fi kulli salah.","I know Surat al-Fatiha, and I read it in every prayer."],
+              ["أحفظ سورة الإخلاص، وهي قصيرة وجميلة.","ahfazu surata al-ikhlas, wa hiya qasira wa jamila.","I know Surat al-Ikhlas; it's short and beautiful."],
+              ["أحفظ سورة الكوثر، وأريد أن أحفظ سورة المُلك.","ahfazu surata al-kawthar, wa uridu an ahfaza surata al-mulk.","I know Surat al-Kawthar, and I want to memorize Surat al-Mulk."]]],
+            [[GV("ماذا تقول قبل الأكل؟","ماذا تقولين قبل الأكل؟"),GV("madha taqulu qabla al-akl?","madha taqulina qabla al-akl?"),"What do you say before eating?"],[
+              ["أقول: بسم الله.","aqulu: bismillah.","I say: Bismillah."],
+              ["أقول: بسم الله، وآكل بيدي اليمنى.","aqulu: bismillah, wa akulu bi-yadi al-yumna.","I say Bismillah, and I eat with my right hand."],
+              ["أقول: بسم الله، وبعد الأكل أقول: الحمد لله.","aqulu: bismillah, wa baʿda al-akli aqulu: al-hamdu lillah.","I say Bismillah, and after eating I say: Alhamdulillah."]]],
+            [[GV("ماذا تحبّ أن تفعل في رمضان؟","ماذا تحبّين أن تفعلي في رمضان؟"),GV("madha tuhibbu an tafʿala fi ramadan?","madha tuhibbina an tafʿali fi ramadan?"),"What do you like to do in Ramadan?"],[
+              ["أحبّ أن أصوم، وأفطر مع عائلتي.","uhibbu an asuma, wa uftira maʿa ʿa'ilati.","I like to fast, and break my fast with my family."],
+              ["أحبّ صلاة التراويح في المسجد.","uhibbu salata al-tarawih fi al-masjid.","I love Taraweeh prayer at the mosque."],
+              ["أحبّ أن أعطي الطعام للجيران.","uhibbu an uʿtiya al-taʿama lil-jiran.","I like to give food to the neighbors."]]],
+          ];
+          const qi=vr("qa",QS.length),QA=[QS[qi][0],pickL("qaa"+qi,QS[qi][1])];
           const bye=r.m?["في أمان الله!","fi amani allah!","Go in Allah's protection!"]:["إلى اللقاء!","ila al-liqa'!","Goodbye!"];
           lines.push(ln(k+"f",K,v.e,...pickL("came",[
                        [`جئتُ ${w.ar}!`,`ji'tu ${w.tr}!`,`I came ${w.en}!`],
@@ -1620,15 +1692,24 @@ function pressFloor(f){
   if(f===S.pos)return;
   target=f;S.final=f;S.phase="ride";S.willStick=Math.abs(f-S.pos)>=2&&Math.random()<.25;
   S.nbMsg="";
+  const mq=!!(S.mosque&&S.mosque.picked);
+  const pickNb=(sf,dests)=>{
+    const sides=[0,1,2,3].filter(x=>S.res[sf][x]&&!S.res[sf][x].home&&!(sf===S.t&&x===S.side));
+    if(!sides.length||!dests.length)return false;
+    S.nb={f:sf,r:S.res[sf][sides[Math.floor(Math.random()*sides.length)]],to:dests[Math.floor(Math.random()*dests.length)],aboard:false,done:false};
+    target=sf;S.willStick=false;return true;
+  };
   // going up from the ground floor: the lift stops on floor 1-6 for a neighbour
-  if(S.pos===0&&f>=2&&!S.nb&&!(S.mosque&&S.mosque.picked)){
-    const sf=1+Math.floor(Math.random()*Math.min(6,f-1));
-    const sides=[0,1,2,3].filter(x=>S.res[sf][x]&&!S.res[sf][x].home);
-    if(sides.length){
-      const fl=[];for(let x=sf+1;x<=TOP;x++)if(x!==f)fl.push(x);
-      S.nb={f:sf,r:S.res[sf][sides[Math.floor(Math.random()*sides.length)]],to:fl[Math.floor(Math.random()*fl.length)],aboard:false,done:false};
-      target=sf;S.willStick=false;
-    }
+  if(S.pos===0&&f>=2&&!S.nbUp&&!mq){
+    S.nbUp=1;const sf=1+Math.floor(Math.random()*Math.min(6,f-1));
+    const fl=[];for(let x=sf+1;x<=TOP;x++)if(x!==f)fl.push(x);
+    pickNb(sf,fl);
+  }
+  // going down to the mosque: someone else gets on and presses 0-6
+  else if(mq&&f<S.pos&&S.pos-f>=2&&!S.nbDown){
+    S.nbDown=1;const sf=f+1+Math.floor(Math.random()*(S.pos-f-1));
+    const fl=[];for(let x=0;x<=Math.min(6,sf-1);x++)fl.push(x);
+    pickNb(sf,fl);
   }
   if(S.lifts[S.lift].open)announce("أُغلِقت الأبواب.","ughliqat al-abwab.");
   S.lifts[S.lift].open=false;render();continueRide();
@@ -1646,13 +1727,15 @@ function continueRide(){
 function nbTr(r,m,f){return G(r,m,f);}
 function atStop(l){
   const nb=S.nb;
+  const dn=S.final<l.f||(nb&&nb.aboard&&nb.to<l.f&&S.final<=l.f);   // travelling down?
+  const before=(x,y)=>dn?x>y:x<y;                                     // x comes before y on this trip
   // neighbour gets on
   if(nb&&!nb.aboard&&!nb.done&&l.f===nb.f){
     openThen(l,()=>{
       nb.aboard=true;
       S.nbMsg=`<div class="win nbmsg">🛗 ${P(`توقّف المصعد في ${FL[nb.f].ar}. ${G(nb.r,"دخلَ","دخلتْ")} ${nb.r.ar} ${nb.r.e} و${G(nb.r,"ضغطَ","ضغطتْ")} زرّ ${FL[nb.to].ar}.`,`tawaqqafa al-misʿad fi ${FL[nb.f].tr}. ${G(nb.r,"dakhala","dakhalat")} ${nb.r.tr} wa ${G(nb.r,"daghata","daghatat")} zirra ${FL[nb.to].tr}.`)}<div>${nb.r.e} «${P("السلام عليكم!","al-salamu ʿalaykum!")}»</div></div>`;
       beep();render();
-      setTimeout(()=>{target=Math.min(nb.to,S.final);render();continueRide();},2600);
+      setTimeout(()=>{target=before(nb.to,S.final)?nb.to:S.final;render();continueRide();},2600);
     });
     return;
   }
@@ -1663,23 +1746,27 @@ function atStop(l){
   }
   // our floor
   S.pos=l.f;
-  if(nb&&nb.aboard&&nb.to>l.f){
-    const right=!(S.mosque&&S.mosque.picked)&&S.pos===S.t;
+  const mq=!!(S.mosque&&S.mosque.picked);
+  const right=mq?S.pos===0:S.pos===S.t;
+  if(nb&&nb.aboard&&nb.to===l.f){
+    // the neighbour gets off here with us
+    openThen(l,()=>{nbOff();if(!right)S.nbMsg="";arrive();});
+    return;
+  }
+  if(nb&&nb.aboard&&before(l.f,nb.to)){
     if(right){
-      // we get off; the lift keeps going up with the neighbour
+      // we get off; the lift keeps going with the neighbour
       openThen(l,()=>{arrive();setTimeout(()=>{l.open=false;updateLifts();keepGoing(l);},1700);});
     }else{
-      // wrong floor: the doors open, then the lift carries on up to the neighbour's floor
-      openThen(l,()=>{S.wrongAt=l.f;S.phase="ride";S.nbMsg=`<div class="alert">🙈 ${P(`هذا ${FL[l.f].ar}! لكنّ ${T().ar} ${G(T(),"ليس","ليست")} هنا. المصعد سيكمل الصعود…`,`hadha ${FL[l.f].tr}! al-misʿad sa-yukmilu al-suʿud…`)}</div>`;render();
+      // wrong floor: the doors open, then the lift carries on to the neighbour's floor
+      const msg=mq?P(`هذا ${FL[l.f].ar}! المسجد بجانب الطابق الأرضي. المصعد سيكمل النزول…`,`hadha ${FL[l.f].tr}! al-misʿad sa-yukmilu al-nuzul…`)
+                  :P(`هذا ${FL[l.f].ar}! لكنّ ${T().ar} ${G(T(),"ليس","ليست")} هنا. المصعد سيكمل ${dn?"النزول":"الصعود"}…`,`hadha ${FL[l.f].tr}! al-misʿad sa-yukmilu ${dn?"al-nuzul":"al-suʿud"}…`);
+      openThen(l,()=>{S.wrongAt=l.f;S.phase="ride";S.nbMsg=`<div class="alert">🙈 ${msg}</div>`;render();
         setTimeout(()=>{target=nb.to;S.final=nb.to;continueRide();},2200);});
     }
     return;
   }
-  if(nb&&nb.aboard&&l.f===nb.to){
-    // reached the neighbour's floor after a wrong stop
-    openThen(l,()=>{nbOff();S.phase="inside";render();});
-    return;
-  }
+  if(nb&&nb.aboard&&l.f===nb.to){openThen(l,()=>{nbOff();S.phase="inside";render();});return;}
   S.nbMsg="";openThen(l,arrive);
 }
 function nbOff(){
@@ -1690,7 +1777,7 @@ function keepGoing(l){
   const nb=S.nb,rid=S.rid;if(!nb)return;
   const step=()=>{
     if(l.f===nb.to){l.dir="";l.open=true;updateLifts();ding();nb.aboard=false;nb.done=true;setTimeout(()=>{l.open=false;updateLifts();},1500);return;}
-    l.dir="▲";l.f++;updateLifts();setTimeout(step,420);
+    const up=nb.to>l.f;l.dir=up?"▲":"▼";l.f+=up?1:-1;updateLifts();setTimeout(step,420);
   };
   setTimeout(step,500);
 }
