@@ -1566,8 +1566,8 @@ function renderPanel(){
             <div class="tog center"><button class="small" id="kCancel">✕ ${P("إلغاء الزيارة","ilgha' al-ziyara")}</button></div></div>`;
         }else{
           banner=`<div class="alert">🙏 ${P(`${hn.name} لا ${she?"تستطيع":"يستطيع"} استقبالك الآن.`,`${hn.tr} la ${she?"tastatiʿu":"yastatiʿu"} istiqbalaka al-an.`)}</div>`;
-          after=`<div class="finish"><div class="bigstar">🚪</div><h2>${P("لا بأس! زُره في وقت آخر.","la ba's! zurhu fi waqtin akhar.")}</h2>
-            <div class="tog center"><button class="big huge" id="next">🚀 ${P("مهمة جديدة","mahamma jadida")}</button></div></div>`;
+          after=`<div class="finish"><div class="bigstar">🚪</div><h2>${P(`لا بأس! ${she?"زُرها":"زُره"} في وقت آخر.`,`la ba's! ${she?"zurha":"zurhu"} fi waqtin akhar.`)}</h2>
+            <div class="tog center"><button class="big huge" id="kAgain">✊ ${P("اطرق مرّة أخرى","utruq marratan ukhra")}</button><button class="big" id="next">🚀 ${P("مهمة جديدة","mahamma jadida")}</button></div></div>`;
         }
       } else if(right&&r===RES_OF[other()]){
         if(!S.live)S.live={log:[],turn:"host",draft:"",done:false,start:Date.now()-1000};
@@ -1713,6 +1713,7 @@ function renderPanel(){
   on("alarmB",()=>{alarm();setTimeout(()=>{S.stuck=false;S.phase="ride";render();continueRide();},900);});
   on("bonus",()=>{if(!S.said.bonus){S.said.bonus=1;addStars(2);yay();render();}});
   on("next",()=>{S.rounds++;newRound(false);});
+  on("kAgain",()=>{knock();S.knockReq=null;render();});
   on("kCancel",()=>{if(S.knockReq&&S.knockReq.st==="wait")sendChat(CAN_TAG+S.knockReq.id);S.rounds++;newRound(false);});
   on("brk2",brainBreak);
   on("placeB",openHome);
