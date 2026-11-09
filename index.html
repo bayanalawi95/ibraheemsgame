@@ -351,6 +351,9 @@ button.tile:hover{border-color:var(--bld)}
 .mimg{display:block;max-width:240px;max-height:300px;width:100%;border-radius:10px;margin:2px 0}
 .waitbox{text-align:center;padding:14px;border:2px dashed var(--line);border-radius:16px;background:#fffdf3}.waitbox .spin{font-size:2.6rem;animation:wb 1.6s ease-in-out infinite}@keyframes wb{50%{transform:rotate(180deg)}}
 .knockcard{max-width:440px;text-align:center}
+.typing{color:#25d366;font-weight:700}.wahead .typing{color:#b8f5c8}.livetyping{min-height:1.4em;text-align:center;font-size:.95rem}
+.dots i{font-style:normal;display:inline-block;animation:tdot 1.2s infinite;font-weight:900}.dots i:nth-child(2){animation-delay:.2s}.dots i:nth-child(3){animation-delay:.4s}
+@keyframes tdot{0%,60%,100%{opacity:.2;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}
 .mtime{font-size:.68rem;color:#667781;text-align:left;direction:ltr}
 .wa-opts{padding:6px 10px;background:#f6f6f6;margin:0}
 .wafoot{display:flex;gap:8px;padding:8px;background:#f0f2f5;align-items:flex-end}
@@ -764,7 +767,21 @@ function sendChat(text,from=CUR){
 
 /* ---- online sync through Supabase (messages + each player's progress) ---- */
 const SB_URL=(window.TOWER_CFG&&window.TOWER_CFG.url)||"", SB_KEY=(window.TOWER_CFG&&window.TOWER_CFG.key)||"";
-let SB=null,sbOn=false,onlineNow=new Set(),presCh=null;
+let SB=null,sbOn=false,onlineNow=new Set(),presCh=null,typCh=null;
+const TYP={until:0,sent:0,t:null};
+function typingNow(){return Date.now()<TYP.until;}
+function typingHtml(){const she=other()==="by";return `<span class="typing">✍️ ${P(she?"تكتب":"يكتب",she?"taktub":"yaktub")}<span class="dots"><i>.</i><i>.</i><i>.</i></span></span>`;}
+function showTyping(){
+  const on=typingNow();
+  const st=document.getElementById("waStatus");if(st)st.innerHTML=on?typingHtml():chatStatus();
+  const lt=document.getElementById("liveTyping");if(lt)lt.innerHTML=on?`${PL_INFO[other()].e} ${PL_INFO[other()].name} ${typingHtml()}`:"";
+  clearTimeout(TYP.t);if(on)TYP.t=setTimeout(showTyping,TYP.until-Date.now()+50);
+}
+function sendTyping(on){
+  if(!typCh)return;const now=Date.now();
+  if(on&&now-TYP.sent<1500)return;TYP.sent=on?now:0;
+  typCh.send({type:"broadcast",event:"typing",payload:{pl:CUR,on}}).catch(()=>{});
+}
 const TAB=Math.random().toString(36).slice(2,10);
 const otherHere=()=>onlineNow.has(other());
 const rowToMsg=r=>({id:r.id,from:r.from_pl,to:r.to_pl,text:r.body,ts:Number(r.ts),edited:!!r.edited});
@@ -781,6 +798,7 @@ function editChat(id,text){
   if(SB)SB.from("tower_messages").update({body:text,edited:true}).eq("id",id).eq("from_pl",CUR).then(()=>{});
 }
 function notifyFresh(fresh){
+  if(fresh.some(m=>m.from===other())){TYP.until=0;showTyping();}
   const toMe=fresh.filter(m=>m.to===CUR&&!isCtl(m));
   if(!toMe.length)return;
   if(CHT.open)markSeen();
@@ -827,6 +845,9 @@ function syncPlayer(){
         PL[row.id]=Object.assign(PL[row.id],row.data);layout();render();})
       .subscribe();
     // who is online now
+    typCh=SB.channel("tower-typing",{config:{broadcast:{self:false}}})
+      .on("broadcast",{event:"typing"},({payload:p})=>{if(!p||p.pl!==other())return;TYP.until=p.on?Date.now()+3500:0;showTyping();})
+      .subscribe();
     presCh=SB.channel("tower-online",{config:{presence:{key:TAB}}});
     presCh.on("presence",{event:"sync"},()=>{
       const st=presCh.presenceState();onlineNow=new Set();
@@ -883,7 +904,8 @@ function drawKnock(){
     <div class="ar big">${he?"هل تسمح له بالدخول؟":"هل تسمح لها بالدخول؟"}</div><div class="tr">${he?"hal tasmahu lahu bil-dukhul?":"hal tasmahu laha bil-dukhul?"}</div><div class="en">Do you let ${he?"him":"her"} come in?</div>
     <div class="tog center"><button class="big huge" id="kYes">✅ ${P("تفضّل، ادخل!","tafaddal, udkhul!")}</button><button class="big" id="kNo">❌ ${P("ليس الآن","laysa al-an")}</button></div></div>`;
   o.hidden=false;
-  const ans=tag=>{const id=KNOCK.id;sendChat(tag+id);KNOCK=null;o.hidden=true;beep();handleCtl();render();};
+  const ans=tag=>{const id=KNOCK.id;sendChat(tag+id);KNOCK=null;o.hidden=true;beep();handleCtl();
+    if(tag===ACC_TAG){const v=PL_INFO[other()];if(!CHT.open)openChat();else{drawChat();render();}pop("🚪",`${v.name} ${other()==="ib"?"دخل":"دخلت"} شقّتك! تكلّما هنا في المحادثة.`);}else render();};
   $("kYes").onclick=()=>ans(ACC_TAG);$("kNo").onclick=()=>ans(DEN_TAG);
 }
 setInterval(()=>{if(KNOCK&&Date.now()-KNOCK.ts>KNOCK_TTL)handleCtl();},30000);
@@ -900,7 +922,7 @@ function drawChat(){
   const oth=PL_INFO[other()];
   const msgs=CHAT.filter(m=>pair(m)&&!isCtl(m));
   o.innerHTML=`<div class="wa">
-    <div class="wahead"><span class="wav">${oth.e}</span><div><b>${oth.name}</b><small>${chatStatus()}</small></div><button id="cClose">✕</button></div>
+    <div class="wahead"><span class="wav">${oth.e}</span><div><b>${oth.name}</b><small id="waStatus">${typingNow()?typingHtml():chatStatus()}</small></div><button id="cClose">✕</button></div>
     <div class="wabody" id="waBody">${msgs.map(bubble).join("")}${CHT.uploading?`<div class="msg mine"><div class="mtext">⏳ ${P("جارٍ إرسال الصورة…","jarin irsal al-sura…")}</div></div>`:""}${msgs.length||CHT.uploading?"":`<div class="hint center">${P(`لا توجد رسائل بعد. اكتب أوّل رسالة إلى ${oth.name}!`,`uktub awwala risala!`)}</div>`}</div>
     ${(PL[CUR].opts||[]).length?`<div class="opts wa-opts">${PL[CUR].opts.map((t,i)=>`<button class="small" data-wo="${i}">${esc(t)}</button>`).join("")}</div>`:""}
     ${CHT.editId?`<div class="waedit">✏️ ${P("تعديل الرسالة","taʿdil al-risala")}<button id="waEditX" aria-label="إلغاء">✕</button></div>`:""}
@@ -909,8 +931,8 @@ function drawChat(){
   const ta=$("waIn");
   const send=()=>{const t=(CHT.draft||"").trim();if(!t)return;
     if(CHT.editId){editChat(CHT.editId,t);CHT.editId=null;CHT.draft=CHT.saved||"";CHT.saved="";beep();drawChat();render();return;}
-    sendChat(t);CHT.draft="";addStars(1);beep();markSeen();drawChat();render();const t2=$("waIn");if(t2&&t2.focus)t2.focus();};
-  if(ta){ta.value=CHT.draft;ta.oninput=()=>{CHT.draft=ta.value;};ta.onkeydown=e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send();}};}
+    sendChat(t);sendTyping(false);CHT.draft="";addStars(1);beep();markSeen();drawChat();render();const t2=$("waIn");if(t2&&t2.focus)t2.focus();};
+  if(ta){ta.value=CHT.draft;ta.oninput=()=>{CHT.draft=ta.value;sendTyping(!!ta.value.trim());};ta.onkeydown=e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send();}};}
   const s=$("waSend");if(s)s.onclick=send;
   const pic=$("waPic");if(pic)pic.onchange=()=>{const f=pic.files&&pic.files[0];pic.value="";if(f)sendPic(f);};
   const c=$("cClose");if(c)c.onclick=closeChat;
@@ -931,6 +953,7 @@ function liveView(){
   const log=liveLog();
   return `<div class="live">
     <div class="dethead">🗣️ ${P(`زيارة حرّة! ${PL_INFO[CUR].name} و${PL_INFO[host].name} يكتبان كلامهما.`,`ziyara hurra!`)}<span class="cnt">${on?"🟢 "+P("جهازان","jihazan"):"📱 "+P("جهاز واحد","jihaz wahid")} · ${P(`الجمل: ${ar(log.length)}`,`al-jumal: ${log.length}`)}</span></div>
+    <div class="livetyping" id="liveTyping">${typingNow()?`${PL_INFO[other()].e} ${PL_INFO[other()].name} ${typingHtml()}`:""}</div>
     <div class="msgs wabody" id="liveMsgs">${log.map(bubble).join("")||`<div class="hint center">${P("الباب مفتوح… ابدأا الكلام!","al-babu maftuh… ibda'a al-kalam!")}</div>`}</div>
     <div class="turn"><b>${I.e}</b> ${on?P(`اكتب، و${PL_INFO[host].name} ${host==="by"?"تردّ":"يردّ"} من جهاز${host==="by"?"ها":"ه"}:`,`uktub…`):P(`دور ${I.name} ${who==="by"?"لتكتب":"ليكتب"}:`,`dawru ${I.tr} li-yaktub:`)}</div>
     <div class="opts">${(PL[who].opts||[]).map((t,i)=>`<span class="optchip"><button class="small" data-ls="${i}">${esc(t)}</button><button class="x" data-lx="${i}" aria-label="احذف هذا الخيار">×</button></span>`).join("")||`<span class="hint">${P(`لا توجد خيارات لـ${I.name} بعد. اكتب خياراتك!`,"la tujadu khiyarat baʿd.")}</span>`}</div>
@@ -942,7 +965,7 @@ function liveView(){
 }
 function bindLive(){
   const L=S.live;if(!L)return;
-  const ta=$("liveIn");if(ta){ta.value=L.draft||"";ta.oninput=()=>{L.draft=ta.value;};}
+  const ta=$("liveIn");if(ta){ta.value=L.draft||"";ta.oninput=()=>{L.draft=ta.value;if(online())sendTyping(!!ta.value.trim());};}
   const ms=$("liveMsgs");if(ms&&ms.scrollHeight!=null)ms.scrollTop=ms.scrollHeight;
   const who=online()?CUR:(L.turn==="host"?other():CUR);
   const oi=$("optIn");if(oi){oi.value=L.optDraft||"";oi.oninput=()=>{L.optDraft=oi.value;};oi.onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();addOpt();}};}
@@ -953,7 +976,7 @@ function bindLive(){
   const on=(id,f)=>{const e=$(id);if(e)e.onclick=f;};
   on("liveSend",()=>{
     const text=(L.draft||"").trim();if(!text){const t=$("liveIn");if(t&&t.focus)t.focus();return;}
-    if(online()){sendChat(text);addStars(1);}
+    if(online()){sendChat(text);sendTyping(false);addStars(1);}
     else{
       const by=L.turn==="host"?other():CUR;
       sendChat(text,by);
