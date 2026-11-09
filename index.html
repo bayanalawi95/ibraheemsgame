@@ -398,7 +398,8 @@ img.emoji{height:1em;width:1em;margin:0 .05em;vertical-align:-0.12em;display:inl
 .mpcard{max-width:640px;width:100%;max-height:86vh;overflow:auto}
 .mpgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px;margin-top:10px}
 .mpp{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 6px;border:2px solid #e3dcf5;border-radius:14px;background:#fff;cursor:pointer;font:inherit}
-.mpp:hover{border-color:var(--good);background:#f0fbf5}.mpp .mpe{font-size:2rem;line-height:1}.mpp .mpn{font-weight:700;font-size:.92rem;text-align:center}
+.mpp:hover{border-color:var(--good);background:#f0fbf5}.mpp small{font-size:.75rem;color:#666}
+.mpp .mpe{font-size:2rem;line-height:1}.mpp .mpn{font-weight:700;font-size:.92rem;text-align:center}
 .mprand{background:#fff7d6;border-color:#f2c94c}
 </style><script src="config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.js"></script><script src="https://cdn.jsdelivr.net/npm/@twemoji/api@15.1.0/dist/twemoji.min.js"></script></head><body>
 
@@ -520,7 +521,7 @@ const VIS=[
  {e:"🧑‍🚀",ar:"رائد فضاء",tr:"ra'id fada'",en:"an astronaut"},
  {e:"🦸",ar:"بطل خارق",tr:"batal khariq",en:"a superhero"},
  {e:"🕵️",ar:"محقّق",tr:"muhaqqiq",en:"a detective"},
- {e:"🛵",ar:"عامل توصيل",tr:"ʿamil tawsil",en:"a delivery driver"},
+ {e:"🛵",ar:"عامل توصيل",tr:"ʿamil tawsil",en:"a delivery driver",id:"dl"},
  {e:"👩‍🏫",ar:"المعلّمة بيان",tr:"al-muʿallima bayan",en:"Teacher Bayan",g:"f",id:"by"},
  {e:"🦖",ar:"ديناصور",tr:"dinasor",en:"a dinosaur"},
 ];
@@ -575,7 +576,7 @@ function newRound(keepVisitor){
   do{S.t=1+Math.floor(Math.random()*TOP);S.side=Math.floor(Math.random()*4);}while(S.res[S.t][S.side].home);S.why=rnd(WHY);
   S.lifts.forEach(l=>{l.out=false;l.open=false;l.dir="";});
   if(Math.random()<.65)S.lifts[Math.floor(Math.random()*3)].out=true;
-  Object.assign(S,{phase:"reception",lift:null,pos:0,said:{},msg:"",dir:false,stuck:false,knocked:null,hide:Math.random()<.3,talking:false,outTried:null,wrongAt:null,ready:false,entering:false,exiting:false,arrived:false,skipped:null,vary:{},closed:false,goHome:false,mosque:null,knockReq:null,nb:null,nbUp:0,nbDown:0,nbMsg:"",final:null,live:null,hint:{},build:{},shuf:{},shown:{},lw:{},det:newDet(),reward:null,rewardTaken:false,rid:(S.rid||0)+1});
+  Object.assign(S,{phase:"reception",lift:null,pos:0,said:{},msg:"",dir:false,stuck:false,knocked:null,hide:Math.random()<.3,talking:false,outTried:null,wrongAt:null,ready:false,entering:false,exiting:false,arrived:false,skipped:null,vary:{},closed:false,goHome:false,mosque:null,knockReq:null,dlChosen:false,dlItem:null,nb:null,nbUp:0,nbDown:0,nbMsg:"",final:null,live:null,hint:{},build:{},shuf:{},shown:{},lw:{},det:newDet(),reward:null,rewardTaken:false,rid:(S.rid||0)+1});
   render();
 }
 /* ---------- rewards ---------- */
@@ -1323,6 +1324,32 @@ function drawAdhanSet(){
 }
 
 /* the mission: pick someone up and take them to the mosque */
+const DLV=[
+ ["مقاضي{ك} من البقالة: خبزٌ وحليبٌ وبيض","maqadi{kt} min al-baqala: khubzun wa halibun wa bayd","your groceries from the shop: bread, milk and eggs"],
+ ["طلب{ك} من مطعم النخلة: كبسةُ دجاج","talabu{kt} min matʿam al-nakhla: kabsatu dajaj","your order from Al-Nakhla restaurant: chicken kabsa"],
+ ["طلب{ك} من مطعم ليالي الشام: شاورما وعصير","talabu{kt} min matʿam layali al-sham: shawarma wa ʿasir","your order from Layali Al-Sham restaurant: shawarma and juice"],
+ ["طلب{ك} من مطعم البحر: سمكٌ وأرزّ","talabu{kt} min matʿam al-bahr: samakun wa aruzz","your order from Al-Bahr restaurant: fish and rice"],
+ ["صندوقَ تمرٍ من محلّ التمور","sunduqa tamrin min mahalli al-tumur","a box of dates from the date shop"],
+ ["حلويات من محلّ الحلويات: كنافةٌ وبسبوسة","halawiyyat min mahalli al-halawiyyat: kunafatun wa basbusa","sweets from the sweet shop: kunafa and basbousa"],
+ ["كتب{ك} من المكتبة","kutuba{kt} min al-maktaba","your books from the bookshop"],
+ ["خضاراً وفواكه من السوق","khudaran wa fawakiha min al-suq","vegetables and fruit from the market"],
+];
+function dlText(t){const it=S.dlItem||DLV[0],f=t.g==="f";return [it[0].replaceAll("{ك}","ك"),it[1].replaceAll("{kt}",f?"ki":"ka"),it[2]];}
+function openDlPick(){
+  const o=$("mosquePick"),c=[];for(let f=1;f<=TOP;f++)S.res[f].forEach((r,s)=>{if(r&&!r.home)c.push([f,s]);});
+  o.innerHTML=`<div class="homecard mpcard">
+    <div class="homehead"><h2>🛵 ${P("إلى أيّ شقّة ستوصل الطلب؟","ila ayyi shaqqa satuwassilu al-talab?")}</h2><button id="mpClose">✕</button></div>
+    <div class="hint">${P("اختر أيّ شقّة في العمارة:","ikhtar ayya shaqqa fi al-ʿimara:")}</div>
+    <div class="mpgrid"><button class="mpp mprand" data-dl="r"><span class="mpe">🎲</span><span class="mpn">${P("أيّ شقّة","ayyu shaqqa")}</span></button>${c.map(([f,s])=>{const r=S.res[f][s];return `<button class="mpp" data-dl="${f}-${s}"><span class="mpe">${r.e}</span><span class="mpn">${P(`الشقّة ${aptNo(f,s)}`,`al-shaqqa ${(f-1)*4+s+1}`)}</span><small>${r.ar}</small></button>`;}).join("")}</div></div>`;
+  o.hidden=false;
+  $("mpClose").onclick=()=>{o.hidden=true;};
+  o.onclick=e=>{if(e.target===o)o.hidden=true;};
+  o.querySelectorAll("[data-dl]").forEach(b=>b.onclick=()=>{
+    o.hidden=true;
+    const [f,s]=b.dataset.dl==="r"?c[Math.floor(Math.random()*c.length)]:b.dataset.dl.split("-").map(Number);
+    Object.assign(S,{t:f,side:s,hide:false,dlChosen:true,dlItem:rnd(DLV)});beep();render();
+  });
+}
 function mosqueCands(){const c=[];for(let f=1;f<=TOP;f++)S.res[f].forEach((r,s)=>{if(r&&r.m===1&&!r.home)c.push([f,s]);});return c;}
 function startMosque(){openMosquePick();}
 function openMosquePick(){
@@ -1406,7 +1433,7 @@ const CLOSED=()=>`<div class="alert">🚪 ${P("أُغلق باب المصعد، 
 function renderPanel(){
   const p=$("panel"),v=V(),t=T(),w=W(),K=kid(),Tc=teach();
   const he=G(t,"يسكن","تسكن"), heT=G(t,"yaskunu","taskunu");
-  let h=`<div class="top"><span class="avatar">${v.e}</span><div style="flex:1;min-width:180px"><div class="mission">${S.mosque?`🕌 ${P("خذ","khudh")} <b>${t.e} ${P(t.ar,t.tr)}</b> ${P(`إلى المسجد لصلاة ${S.mosque.p.ar}`,`ila al-masjid li-salat ${S.mosque.p.tr}`)}`:`🎯 ${S.goHome?P("اذهب إلى","idhhab ila"):P("زُر","zur")} <b>${t.e} ${P(t.ar,t.tr)}</b>`}</div>
+  let h=`<div class="top"><span class="avatar">${v.e}</span><div style="flex:1;min-width:180px"><div class="mission">${S.mosque?`🕌 ${P("خذ","khudh")} <b>${t.e} ${P(t.ar,t.tr)}</b> ${P(`إلى المسجد لصلاة ${S.mosque.p.ar}`,`ila al-masjid li-salat ${S.mosque.p.tr}`)}`:(v.id==="dl"&&!S.goHome?(S.dlChosen?`📦 ${P("وصّل الطلب إلى","wassil al-talab ila")} <b>${t.e} ${P(t.ar,t.tr)}</b> · ${P(`الشقّة ${aptNo(S.t,S.side)}`,`al-shaqqa ${(S.t-1)*4+S.side+1}`)}`:`🛵 ${P("اختر شقّة لتوصل إليها الطلب","ikhtar shaqqa")}`):`🎯 ${S.goHome?P("اذهب إلى","idhhab ila"):P("زُر","zur")} <b>${t.e} ${P(t.ar,t.tr)}</b>`)}</div>
     ${S.en?`<div class="en">Visit ${t.en}.</div>`:""}</div>${steps()}</div>`;
 
   if(S.phase==="reception"&&S.mosque){
@@ -1438,6 +1465,11 @@ function renderPanel(){
     ],GO);
     h+=`<div class="tog"><button id="dirB" class="small">📋 دليل العمارة (للمعلّم)</button></div>`;
     if(S.dir)h+=`<div class="dir"><div class="target">🏠 ${FL[S.t].ar}، رقم ${aptNo(S.t,S.side)}</div></div>`;
+  }
+  else if(S.phase==="reception"&&v.id==="dl"&&!S.dlChosen){
+    h+=`<div class="win center">🛵 ${P("أنت عامل التوصيل! معك طلبٌ جديد.","anta ʿamilu al-tawsil! maʿaka talabun jadid.")}</div>
+      <div class="tog center"><button class="big huge" id="dlPick">📦 ${P("اختر الشقّة التي ستوصل إليها","ikhtar al-shaqqa allati satuwassilu ilayha")}</button></div>
+      <div class="tog center"><button class="big mosqueb" id="mosqueTrip">🕌 ${P("خذ أحداً إلى المسجد","khudh ahadan ila al-masjid")}</button>${HOME.f?`<button class="big" id="homeTrip">🏠 ${P("أريد أن أذهب إلى شقّتي","uridu an adhhaba ila shaqqati")}</button>`:""}</div>`;
   }
   else if(S.phase==="reception"){
     if(!Object.keys(S.said).length){
@@ -1695,7 +1727,16 @@ function renderPanel(){
           ];
           const qi=vr("qa",QS.length),QA=[QS[qi][0],pickL("qaa"+qi,QS[qi][1])];
           const bye=r.m?["في أمان الله!","fi amani allah!","Go in Allah's protection!"]:["إلى اللقاء!","ila al-liqa'!","Goodbye!"];
-          lines.push(ln(k+"f",K,v.e,...pickL("came",[
+          if(v.id==="dl"){const d=dlText(t);lines.push(
+                     ln(k+"f",K,v.e,`معي ${d[0]}. ${G(r,"تفضّل","تفضّلي")}!`,`maʿi ${d[1]}. ${G(r,"tafaddal","tafaddali")}!`,`I have ${d[2]}. Here you go!`,1),
+                     ln(k+"g",Tc,r.e,...pickL("dlg",[[`${GV("جزاكَ","جزاكِ")} الله خيراً! كم الحساب؟`,`${GV("jazaka","jazaki")} allahu khayran! kam al-hisab?`,"May Allah reward you! How much is it?"],
+                                                    [`ما شاء الله، وصل بسرعة! كم الحساب؟`,`ma sha'a allah, wasala bi-surʿa! kam al-hisab?`,"Masha'Allah, that was fast! How much is it?"]])),
+                     ln(k+"h",K,v.e,...pickL("dlh",[["الطلب مدفوع. بالهناء والشفاء!","al-talabu madfuʿ. bil-hana'i wal-shifa'!","It's already paid. Enjoy, and good health!"],
+                                                   ["الحساب عشرون ريالاً، من فضلك.","al-hisabu ʿishruna riyalan, min fadlik.","It's twenty riyals, please."],
+                                                   [`الحساب خمسون ريالاً. ${G(r,"شكراً لكَ!","شكراً لكِ!")}`,`al-hisabu khamsuna riyalan. ${G(r,"shukran laka!","shukran laki!")}`,"It's fifty riyals. Thank you!"]]),1),
+                     ln(k+"i",K,v.e,`مع السلامة!`,`maʿa al-salama!`,`Goodbye!`,1),
+                     ln(k+"j",Tc,r.e,...bye));}
+          else lines.push(ln(k+"f",K,v.e,...pickL("came",[
                        [`جئتُ ${w.ar}!`,`ji'tu ${w.tr}!`,`I came ${w.en}!`],
                        [`جئتُ لزيارت${G(t,"كَ","كِ")} ${w.ar}!`,`ji'tu li-ziyarati${G(t,"ka","ki")} ${w.tr}!`,`I came to visit you ${w.en}!`]]),1),
                      ln(k+"g",Tc,r.e,`${thx[0]} ${QA[0][0]}`,`${thx[1]} ${QA[0][1]}`,`${thx[2]} ${QA[0][2]}`),
@@ -1740,6 +1781,7 @@ function renderPanel(){
   bindLive();
   on("homeTrip",startHomeTrip);
   on("mosqueTrip",startMosque);
+  on("dlPick",openDlPick);
   on("mosqueGo",mosqueBoard);
   on("adhanReplay",playAdhan);
   on("adhanStopP",stopAdhan);
