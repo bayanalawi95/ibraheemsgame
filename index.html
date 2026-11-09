@@ -345,6 +345,10 @@ button.tile:hover{border-color:var(--bld)}
 .medited{font-style:italic;margin-inline-end:4px}
 .msg.editing{outline:2px dashed #25a35a}
 .waedit{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 12px;background:#e7f7ec;color:#1e7a45;font-weight:700;border-top:1px solid #cfe9d8}.waedit button{background:none;border:0;font-size:1rem;cursor:pointer}
+.waattach{font-size:1.5rem;cursor:pointer;padding:6px 4px;align-self:center}
+.mimg{display:block;max-width:240px;max-height:300px;width:100%;border-radius:10px;margin:2px 0}
+.waitbox{text-align:center;padding:14px;border:2px dashed var(--line);border-radius:16px;background:#fffdf3}.waitbox .spin{font-size:2.6rem;animation:wb 1.6s ease-in-out infinite}@keyframes wb{50%{transform:rotate(180deg)}}
+.knockcard{max-width:440px;text-align:center}
 .mtime{font-size:.68rem;color:#667781;text-align:left;direction:ltr}
 .wa-opts{padding:6px 10px;background:#f6f6f6;margin:0}
 .wafoot{display:flex;gap:8px;padding:8px;background:#f0f2f5;align-items:flex-end}
@@ -435,6 +439,7 @@ img.emoji{height:1em;width:1em;margin:0 .05em;vertical-align:-0.12em;display:inl
   <div class="err" id="pErr"></div><button type="button" class="lk" id="pClose">إغلاق · Close</button></form></div>
 <button id="adhanStop" class="adhanstop" hidden>⏹ أوقف الأذان</button>
 <div id="chat" class="overlay" hidden></div>
+<div id="knockBox" class="overlay" hidden style="z-index:60"></div>
 <div id="ann" class="ann" aria-live="polite" hidden></div>
 <div id="pop" class="overlay" aria-live="polite"></div>
 <div id="brk" class="overlay"></div>
@@ -562,7 +567,7 @@ function newRound(keepVisitor){
   do{S.t=1+Math.floor(Math.random()*TOP);S.side=Math.floor(Math.random()*4);}while(S.res[S.t][S.side].home);S.why=rnd(WHY);
   S.lifts.forEach(l=>{l.out=false;l.open=false;l.dir="";});
   if(Math.random()<.65)S.lifts[Math.floor(Math.random()*3)].out=true;
-  Object.assign(S,{phase:"reception",lift:null,pos:0,said:{},msg:"",dir:false,stuck:false,knocked:null,hide:Math.random()<.3,talking:false,outTried:null,wrongAt:null,ready:false,entering:false,exiting:false,arrived:false,skipped:null,vary:{},closed:false,goHome:false,mosque:null,nb:null,nbUp:0,nbDown:0,nbMsg:"",final:null,live:null,hint:{},build:{},shuf:{},shown:{},lw:{},det:newDet(),reward:null,rewardTaken:false,rid:(S.rid||0)+1});
+  Object.assign(S,{phase:"reception",lift:null,pos:0,said:{},msg:"",dir:false,stuck:false,knocked:null,hide:Math.random()<.3,talking:false,outTried:null,wrongAt:null,ready:false,entering:false,exiting:false,arrived:false,skipped:null,vary:{},closed:false,goHome:false,mosque:null,knockReq:null,nb:null,nbUp:0,nbDown:0,nbMsg:"",final:null,live:null,hint:{},build:{},shuf:{},shown:{},lw:{},det:newDet(),reward:null,rewardTaken:false,rid:(S.rid||0)+1});
   render();
 }
 /* ---------- rewards ---------- */
@@ -728,14 +733,17 @@ function switchPlayer(k){
 let CHAT=[];try{const c=JSON.parse(localStorage.getItem("tower-chat-v1")||"[]");if(Array.isArray(c))CHAT=c;}catch(e){}
 CHAT.forEach(m=>{if(!m.id)m.id=m.ts+"-"+m.from;if(!m.from&&m.by)m.from=m.by;});
 function saveChat(){try{localStorage.setItem("tower-chat-v1",JSON.stringify(CHAT.slice(-400)));}catch(e){}}
+const REQ_TAG="§REQ§",ACC_TAG="§ACC§",DEN_TAG="§DEN§",CAN_TAG="§CAN§",IMG_TAG="§IMG§";
+const isCtl=m=>typeof m.text==="string"&&/^§(REQ|ACC|DEN|CAN)§/.test(m.text);
+const isImg=m=>typeof m.text==="string"&&m.text.startsWith(IMG_TAG);
 const esc=t=>String(t).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const newId=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
 const lastSeen=()=>{try{return +localStorage.getItem("tower-seen-"+CUR)||0;}catch(e){return 0;}};
 function markSeen(){try{localStorage.setItem("tower-seen-"+CUR,String(Date.now()));}catch(e){}}
 const pair=m=>(m.from===CUR&&m.to===other())||(m.from===other()&&m.to===CUR);
-const unread=()=>{const t=lastSeen();return CHAT.filter(m=>m.to===CUR&&m.from===other()&&m.ts>t).length;};
+const unread=()=>{const t=lastSeen();return CHAT.filter(m=>m.to===CUR&&m.from===other()&&m.ts>t&&!isCtl(m)&&!isEndMsg(m)).length;};
 const hhmm=ts=>{const d=new Date(ts);return ar(String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"));};
-const bubble=m=>{if(typeof m.text==="string"&&m.text.startsWith("§END§"))return `<div class="msg endmsg">👋 ${P("انتهت الزيارة. هديّة لشقّة كلّ واحد منكما! 🎁","intahat al-ziyara.")}<div class="mtime">${hhmm(m.ts)}</div></div>`;const p=PL_INFO[m.from]||PL_INFO.ib;const mine=m.from===CUR;return `<div class="msg ${mine?"mine":"theirs"} ${CHT.editId===m.id?"editing":""}"><div class="mhead">${p.e} ${p.name}${mine?`<button class="medit" data-edit="${esc(m.id)}" title="تعديل">✏️</button>`:""}</div><div class="mtext">${esc(m.text)}</div><div class="mtime">${m.edited?`<span class="medited">${P("معدّلة","muʿaddala")}</span> `:""}${hhmm(m.ts)}</div></div>`;};
+const bubble=m=>{if(typeof m.text==="string"&&m.text.startsWith("§END§"))return `<div class="msg endmsg">👋 ${P("انتهت الزيارة. هديّة لشقّة كلّ واحد منكما! 🎁","intahat al-ziyara.")}<div class="mtime">${hhmm(m.ts)}</div></div>`;const p=PL_INFO[m.from]||PL_INFO.ib;const mine=m.from===CUR,img=isImg(m),url=img?m.text.slice(IMG_TAG.length):"";const okUrl=/^https:\/\/[a-z0-9.-]+\.supabase\.co\//i.test(url);return `<div class="msg ${mine?"mine":"theirs"} ${CHT.editId===m.id?"editing":""}"><div class="mhead">${p.e} ${p.name}${mine&&!img?`<button class="medit" data-edit="${esc(m.id)}" title="تعديل">✏️</button>`:""}</div>${img?(okUrl?`<a href="${esc(url)}" target="_blank" rel="noopener"><img class="mimg" src="${esc(url)}" alt="صورة" loading="lazy"></a>`:`<div class="mtext">🖼️</div>`):`<div class="mtext">${esc(m.text)}</div>`}<div class="mtime">${m.edited?`<span class="medited">${P("معدّلة","muʿaddala")}</span> `:""}${hhmm(m.ts)}</div></div>`;};
 function ingest(m){
   if(!m||typeof m.text!=="string"||typeof m.ts!=="number"||typeof m.id!=="string")return false;
   if(!PL_INFO[m.from]||!PL_INFO[m.to]||m.from===m.to)return false;
@@ -758,13 +766,13 @@ const otherHere=()=>onlineNow.has(other());
 const rowToMsg=r=>({id:r.id,from:r.from_pl,to:r.to_pl,text:r.body,ts:Number(r.ts),edited:!!r.edited});
 function applyEdit(m){const x=CHAT.find(y=>y.id===m.id);if(!x||typeof m.text!=="string"||(x.text===m.text&&!!x.edited===!!m.edited))return false;x.text=m.text.slice(0,300);x.edited=!!m.edited;return true;}
 function editChat(id,text){
-  const x=CHAT.find(y=>y.id===id);if(!x||x.from!==CUR||isEndMsg(x))return;
+  const x=CHAT.find(y=>y.id===id);if(!x||x.from!==CUR||isEndMsg(x)||isCtl(x)||isImg(x))return;
   text=String(text).trim().slice(0,300);if(!text||text===x.text)return;
   x.text=text;x.edited=true;saveChat();
   if(SB)SB.from("tower_messages").update({body:text,edited:true}).eq("id",id).eq("from_pl",CUR).then(()=>{});
 }
 function notifyFresh(fresh){
-  const toMe=fresh.filter(m=>m.to===CUR);
+  const toMe=fresh.filter(m=>m.to===CUR&&!isCtl(m));
   if(!toMe.length)return;
   if(CHT.open)markSeen();
   else{tone(880,.12);tone(1180,.15,.12);pop("💬",`رسالة جديدة من ${PL_INFO[toMe[toMe.length-1].from].name}!`);}
@@ -792,7 +800,7 @@ function syncPlayer(){
     const mr=await SB.from("tower_messages").select("*").order("ts",{ascending:false}).limit(300);
     if(!mr.error&&mr.data){
       const fresh=[];mr.data.reverse().forEach(r=>{const m=rowToMsg(r);if(ingest(m))fresh.push(m);else applyEdit(m);});
-      CHAT.sort((a,b)=>a.ts-b.ts);saveChat();claimGifts();
+      CHAT.sort((a,b)=>a.ts-b.ts);saveChat();claimGifts();handleCtl();
       // push anything this device wrote while offline
       const known=new Set(mr.data.map(r=>r.id));
       const pending=CHAT.filter(m=>!known.has(m.id)&&m.ts>Date.now()-7*864e5);
@@ -802,7 +810,7 @@ function syncPlayer(){
     // live: new messages + other player's progress
     SB.channel("tower-db")
       .on("postgres_changes",{event:"INSERT",schema:"public",table:"tower_messages"},p=>{
-        const m=rowToMsg(p.new);if(ingest(m)){CHAT.sort((a,b)=>a.ts-b.ts);saveChat();if(isEndMsg(m))claimGifts();else notifyFresh([m]);if(CHT.open)drawChat();render();}})
+        const m=rowToMsg(p.new);if(ingest(m)){CHAT.sort((a,b)=>a.ts-b.ts);saveChat();if(isEndMsg(m))claimGifts();else if(isCtl(m))handleCtl();else notifyFresh([m]);if(CHT.open)drawChat();render();}})
       .on("postgres_changes",{event:"UPDATE",schema:"public",table:"tower_messages"},p=>{
         const m=rowToMsg(p.new);if(applyEdit(m)){saveChat();if(CHT.open&&!CHT.editId)drawChat();render();}})
       .on("postgres_changes",{event:"*",schema:"public",table:"tower_players"},p=>{
@@ -821,6 +829,55 @@ function syncPlayer(){
 
 let CHT={open:false,draft:"",editId:null};
 function openChat(){CHT.open=true;markSeen();drawChat();render();}
+async function shrinkPic(file){
+  const url=URL.createObjectURL(file);
+  try{
+    const img=await new Promise((ok,bad)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=bad;i.src=url;});
+    const k=Math.min(1,1280/Math.max(img.width,img.height)),c=document.createElement("canvas");
+    c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+    return await new Promise(ok=>c.toBlob(ok,"image/jpeg",.82));
+  }finally{URL.revokeObjectURL(url);}
+}
+async function sendPic(file){
+  if(!/^image\//.test(file.type)){pop("⚠️","هذا ليس ملفّ صورة.");return;}
+  if(!SB){pop("⚠️","إرسال الصور يحتاج إلى اتصال بالإنترنت.");return;}
+  CHT.uploading=true;drawChat();
+  try{
+    const blob=await shrinkPic(file);
+    const path=`${CUR}/${Date.now().toString(36)}-${Math.random().toString(36).slice(2,8)}.jpg`;
+    const up=await SB.storage.from("tower-pics").upload(path,blob,{contentType:"image/jpeg",upsert:false});
+    if(up.error)throw up.error;
+    const pub=SB.storage.from("tower-pics").getPublicUrl(path).data.publicUrl;
+    sendChat(IMG_TAG+pub);addStars(1);beep();markSeen();
+  }catch(e){pop("⚠️","تعذّر إرسال الصورة، حاول مرّة أخرى.");}
+  CHT.uploading=false;drawChat();render();
+}
+const KNOCK_TTL=15*60*1000;let KNOCK=null;
+function answered(id){return CHAT.some(m=>typeof m.text==="string"&&(m.text===ACC_TAG+id||m.text===DEN_TAG+id||m.text===CAN_TAG+id));}
+function handleCtl(){
+  // replies to my request
+  const kr=S.knockReq;
+  if(kr&&kr.st==="wait"){
+    if(CHAT.some(m=>m.to===CUR&&m.text===ACC_TAG+kr.id)){kr.st="ok";yay();pop("🚪",`${PL_INFO[other()].name}: تفضّل، ادخل!`);render();}
+    else if(CHAT.some(m=>m.to===CUR&&m.text===DEN_TAG+kr.id)){kr.st="no";tone(300,.2);render();}
+  }
+  // someone knocking on my door
+  const req=CHAT.filter(m=>m.to===CUR&&m.text===REQ_TAG&&Date.now()-m.ts<KNOCK_TTL&&!answered(m.id)).pop();
+  if(req&&(!KNOCK||KNOCK.id!==req.id)){KNOCK=req;knock();drawKnock();}
+  else if(!req&&KNOCK){KNOCK=null;drawKnock();}
+}
+function drawKnock(){
+  const o=$("knockBox");if(!KNOCK){o.hidden=true;return;}
+  const v=PL_INFO[KNOCK.from],he=KNOCK.from==="ib";
+  o.innerHTML=`<div class="homecard knockcard"><div class="bigstar">🚪✊</div>
+    <h2>${P(`${v.e} ${v.name} ${he?"يطرق":"تطرق"} باب شقّتك!`,`${v.tr} ${he?"yatruqu":"tatruqu"} baba shaqqatik!`)}</h2>
+    <div class="ar big">${he?"هل تسمح له بالدخول؟":"هل تسمح لها بالدخول؟"}</div><div class="tr">${he?"hal tasmahu lahu bil-dukhul?":"hal tasmahu laha bil-dukhul?"}</div><div class="en">Do you let ${he?"him":"her"} come in?</div>
+    <div class="tog center"><button class="big huge" id="kYes">✅ ${P("تفضّل، ادخل!","tafaddal, udkhul!")}</button><button class="big" id="kNo">❌ ${P("ليس الآن","laysa al-an")}</button></div></div>`;
+  o.hidden=false;
+  const ans=tag=>{const id=KNOCK.id;sendChat(tag+id);KNOCK=null;o.hidden=true;beep();handleCtl();render();};
+  $("kYes").onclick=()=>ans(ACC_TAG);$("kNo").onclick=()=>ans(DEN_TAG);
+}
+setInterval(()=>{if(KNOCK&&Date.now()-KNOCK.ts>KNOCK_TTL)handleCtl();},30000);
 function closeChat(){CHT.open=false;if(CHT.editId){CHT.editId=null;CHT.draft=CHT.saved||"";CHT.saved="";}$("chat").hidden=true;render();}
 function chatStatus(){
   const o=PL_INFO[other()];
@@ -831,20 +888,21 @@ function chatStatus(){
 function drawChat(){
   const o=$("chat");if(!CHT.open){o.hidden=true;return;}o.hidden=false;
   const oth=PL_INFO[other()];
-  const msgs=CHAT.filter(pair);
+  const msgs=CHAT.filter(m=>pair(m)&&!isCtl(m));
   o.innerHTML=`<div class="wa">
     <div class="wahead"><span class="wav">${oth.e}</span><div><b>${oth.name}</b><small>${chatStatus()}</small></div><button id="cClose">✕</button></div>
-    <div class="wabody" id="waBody">${msgs.map(bubble).join("")||`<div class="hint center">${P(`لا توجد رسائل بعد. اكتب أوّل رسالة إلى ${oth.name}!`,`uktub awwala risala!`)}</div>`}</div>
+    <div class="wabody" id="waBody">${msgs.map(bubble).join("")}${CHT.uploading?`<div class="msg mine"><div class="mtext">⏳ ${P("جارٍ إرسال الصورة…","jarin irsal al-sura…")}</div></div>`:""}${msgs.length||CHT.uploading?"":`<div class="hint center">${P(`لا توجد رسائل بعد. اكتب أوّل رسالة إلى ${oth.name}!`,`uktub awwala risala!`)}</div>`}</div>
     ${(PL[CUR].opts||[]).length?`<div class="opts wa-opts">${PL[CUR].opts.map((t,i)=>`<button class="small" data-wo="${i}">${esc(t)}</button>`).join("")}</div>`:""}
     ${CHT.editId?`<div class="waedit">✏️ ${P("تعديل الرسالة","taʿdil al-risala")}<button id="waEditX" aria-label="إلغاء">✕</button></div>`:""}
-    <div class="wafoot"><textarea id="waIn" dir="rtl" lang="ar" rows="1" maxlength="300" placeholder="اكتب رسالة…"></textarea><button id="waSend" aria-label="${CHT.editId?"حفظ":"أرسل"}">${CHT.editId?"✓":"➤"}</button></div></div>`;
-  const body=$("waBody");if(body&&body.scrollHeight!=null)body.scrollTop=body.scrollHeight;
+    <div class="wafoot"><label class="waattach" title="أرفق صورة" aria-label="أرفق صورة">📎<input type="file" id="waPic" accept="image/*" hidden></label><textarea id="waIn" dir="rtl" lang="ar" rows="1" maxlength="300" placeholder="اكتب رسالة…"></textarea><button id="waSend" aria-label="${CHT.editId?"حفظ":"أرسل"}">${CHT.editId?"✓":"➤"}</button></div></div>`;
+  const body=$("waBody");if(body&&body.scrollHeight!=null){body.scrollTop=body.scrollHeight;body.querySelectorAll("img.mimg").forEach(im=>{if(!im.complete)im.onload=()=>{body.scrollTop=body.scrollHeight;};});}
   const ta=$("waIn");
   const send=()=>{const t=(CHT.draft||"").trim();if(!t)return;
     if(CHT.editId){editChat(CHT.editId,t);CHT.editId=null;CHT.draft=CHT.saved||"";CHT.saved="";beep();drawChat();render();return;}
     sendChat(t);CHT.draft="";addStars(1);beep();markSeen();drawChat();render();const t2=$("waIn");if(t2&&t2.focus)t2.focus();};
   if(ta){ta.value=CHT.draft;ta.oninput=()=>{CHT.draft=ta.value;};ta.onkeydown=e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send();}};}
   const s=$("waSend");if(s)s.onclick=send;
+  const pic=$("waPic");if(pic)pic.onchange=()=>{const f=pic.files&&pic.files[0];pic.value="";if(f)sendPic(f);};
   const c=$("cClose");if(c)c.onclick=closeChat;
   o.querySelectorAll("[data-edit]").forEach(x=>x.onclick=()=>{const m=CHAT.find(y=>y.id===x.dataset.edit);if(!m)return;if(!CHT.editId)CHT.saved=CHT.draft;CHT.editId=m.id;CHT.draft=m.text;drawChat();const t2=$("waIn");if(t2&&t2.focus){t2.focus();t2.setSelectionRange&&t2.setSelectionRange(t2.value.length,t2.value.length);}});
   const ex=$("waEditX");if(ex)ex.onclick=()=>{CHT.editId=null;CHT.draft=CHT.saved||"";CHT.saved="";drawChat();};
@@ -854,7 +912,7 @@ function drawChat(){
 /* ---------- free conversation during a visit: same thread as the chat ---------- */
 const PGEN={ib:"m",by:"f"};
 const online=()=>otherHere();
-function liveLog(){const L=S.live;if(!L)return [];return CHAT.filter(m=>m.ts>=L.start&&pair(m));}
+function liveLog(){const L=S.live;if(!L)return [];return CHAT.filter(m=>m.ts>=L.start&&pair(m)&&!isCtl(m));}
 function liveView(){
   const L=S.live, host=other(), on=online(), who=on?CUR:(L.turn==="host"?host:CUR), I=PL_INFO[who];
   const log=liveLog();
@@ -1461,6 +1519,20 @@ function renderPanel(){
       } else if(r.home){
         banner=`<div class="win">🏠 ${P("هذه شقّتك أنت! 😄","hadhihi shaqqatuka anta!")}</div>`;
         lines.push(ln(k+"home",K,v.e,`هذه شقّتي! أنا أبحث عن ${t.ar}.`,`hadhihi shaqqati! ana abhathu ʿan ${t.tr}.`,`This is my apartment! I'm looking for ${t.en}.`,1));
+      } else if(right&&r===RES_OF[other()]&&SB&&!S.live&&(!S.knockReq||S.knockReq.st!=="ok")){
+        if(!S.knockReq){const m=sendChat(REQ_TAG);S.knockReq={id:m.id,st:"wait"};}
+        const kr=S.knockReq,hn=PL_INFO[other()],she=other()==="by";
+        if(kr.st==="wait"){
+          banner=`<div class="win">🚪 ${P(`طرقتَ باب ${hn.name}. أرسلنا ${she?"لها":"له"} طلب الدخول.`,`taraqta baba ${hn.tr}.`)}</div>`;
+          after=`<div class="waitbox"><div class="spin">⏳</div>
+            <div class="ar big">في انتظار الردّ…</div><div class="tr">fi intiẓāri al-radd…</div><div class="en">Waiting for response…</div>
+            <div class="hint center">${otherHere()?P(`${hn.name} ${she?"ستقرّر":"سيقرّر"} الآن: هل ${she?"تسمح":"يسمح"} لك بالدخول؟`,`hal ${she?"tasmahu":"yasmahu"} laka bil-dukhul?`):P(`${hn.name} ${she?"ليست متّصلة":"ليس متّصلاً"} الآن. سيصل${she?"ها":"ه"} الطلب عندما ${she?"تفتح":"يفتح"} اللعبة.`,`laysa muttasilan al-an.`)}</div>
+            <div class="tog center"><button class="small" id="kCancel">✕ ${P("إلغاء الزيارة","ilgha' al-ziyara")}</button></div></div>`;
+        }else{
+          banner=`<div class="alert">🙏 ${P(`${hn.name} لا ${she?"تستطيع":"يستطيع"} استقبالك الآن.`,`${hn.tr} la ${she?"tastatiʿu":"yastatiʿu"} istiqbalaka al-an.`)}</div>`;
+          after=`<div class="finish"><div class="bigstar">🚪</div><h2>${P("لا بأس! زُره في وقت آخر.","la ba's! zurhu fi waqtin akhar.")}</h2>
+            <div class="tog center"><button class="big huge" id="next">🚀 ${P("مهمة جديدة","mahamma jadida")}</button></div></div>`;
+        }
       } else if(right&&r===RES_OF[other()]){
         if(!S.live)S.live={log:[],turn:"host",draft:"",done:false,start:Date.now()-1000};
         banner=`<div class="win">🚪 ${P(`فتح${G(r,"","ت")} ${r.ar} الباب!`,`fataha${G(r,"","t")} ${r.tr} al-bab!`)}</div>`;
@@ -1605,6 +1677,7 @@ function renderPanel(){
   on("alarmB",()=>{alarm();setTimeout(()=>{S.stuck=false;S.phase="ride";render();continueRide();},900);});
   on("bonus",()=>{if(!S.said.bonus){S.said.bonus=1;addStars(2);yay();render();}});
   on("next",()=>{S.rounds++;newRound(false);});
+  on("kCancel",()=>{if(S.knockReq&&S.knockReq.st==="wait")sendChat(CAN_TAG+S.knockReq.id);S.rounds++;newRound(false);});
   on("brk2",brainBreak);
   on("placeB",openHome);
   on("enterHome",openHome);
