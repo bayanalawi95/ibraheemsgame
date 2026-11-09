@@ -331,6 +331,9 @@ button.tile:hover{border-color:var(--bld)}
 
 /* WhatsApp-style chat */
 .wa{background:#efeae2;border-radius:20px;overflow:hidden;display:flex;flex-direction:column;max-width:480px;width:100%;height:min(640px,calc(100vh - 32px))}
+.wahead{position:relative}.wamenub{font-size:1.4rem;line-height:1;padding:2px 10px}
+.wamenu{position:absolute;top:100%;left:12px;z-index:5;background:#fff;color:#222;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,.25);padding:8px;display:grid;gap:4px;min-width:200px}
+.wahead .wamenu button{background:#fff;color:#c62828;border:1px solid #f1c4c4;border-radius:10px;padding:8px 10px;font-weight:700;cursor:pointer;text-align:start}.wahead .wamenu button.armed{background:#c62828;color:#fff}.wamenu .hint{font-size:.75rem}
 .wahead{display:flex;align-items:center;gap:10px;background:#075e54;color:#fff;padding:10px 12px}
 .wahead div{flex:1;display:grid}
 .wahead small{font-size:.75rem;opacity:.9}
@@ -739,7 +742,8 @@ let CHAT=[];try{const c=JSON.parse(localStorage.getItem("tower-chat-v1")||"[]");
 CHAT.forEach(m=>{if(!m.id)m.id=m.ts+"-"+m.from;if(!m.from&&m.by)m.from=m.by;});
 function saveChat(){try{localStorage.setItem("tower-chat-v1",JSON.stringify(CHAT.slice(-400)));}catch(e){}}
 const REQ_TAG="§REQ§",ACC_TAG="§ACC§",DEN_TAG="§DEN§",CAN_TAG="§CAN§",IMG_TAG="§IMG§";
-const isCtl=m=>typeof m.text==="string"&&/^§(REQ|ACC|DEN|CAN)§/.test(m.text);
+const CLR_TAG="§CLR§";
+const isCtl=m=>typeof m.text==="string"&&/^§(REQ|ACC|DEN|CAN|CLR)§/.test(m.text);
 const DEL_TAG="§DEL§",isDel=m=>m.text===DEL_TAG;
 const isImg=m=>typeof m.text==="string"&&m.text.startsWith(IMG_TAG);
 const esc=t=>String(t).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -884,7 +888,19 @@ async function sendPic(file){
 }
 const KNOCK_TTL=15*60*1000;let KNOCK=null;
 function answered(id){return CHAT.some(m=>typeof m.text==="string"&&(m.text===ACC_TAG+id||m.text===DEN_TAG+id||m.text===CAN_TAG+id));}
+function applyClear(){
+  const c=CHAT.filter(m=>m.text===CLR_TAG).reduce((a,m)=>Math.max(a,m.ts),0);
+  if(!c)return false;const n=CHAT.length;CHAT=CHAT.filter(m=>m.ts>=c);
+  if(CHAT.length!==n){saveChat();return true;}return false;
+}
+function clearChat(){
+  const m=sendChat(CLR_TAG);applyClear();
+  if(SB)SB.from("tower_messages").delete().lt("ts",m.ts).then(()=>{});
+  CHT.menu=false;CHT.clrArm=false;CHT.editId=null;CHT.draft="";drawChat();render();
+  pop("🧹","تمّ مسح المحادثة عند الاثنين.");
+}
 function handleCtl(){
+  if(applyClear()&&CHT.open)drawChat();
   // replies to my request
   const kr=S.knockReq;
   if(kr&&kr.st==="wait"){
@@ -909,7 +925,7 @@ function drawKnock(){
   $("kYes").onclick=()=>ans(ACC_TAG);$("kNo").onclick=()=>ans(DEN_TAG);
 }
 setInterval(()=>{if(KNOCK&&Date.now()-KNOCK.ts>KNOCK_TTL)handleCtl();},30000);
-function closeChat(){CHT.open=false;if(CHT.editId){CHT.editId=null;CHT.draft=CHT.saved||"";CHT.saved="";}$("chat").hidden=true;render();}
+function closeChat(){CHT.open=false;CHT.menu=false;CHT.clrArm=false;if(CHT.editId){CHT.editId=null;CHT.draft=CHT.saved||"";CHT.saved="";}$("chat").hidden=true;render();}
 function chatStatus(){
   const o=PL_INFO[other()];
   if(otherHere())return "🟢 "+P(`${o.name} ${other()==="by"?"متّصلة":"متّصل"} الآن`,"online");
@@ -922,7 +938,8 @@ function drawChat(){
   const oth=PL_INFO[other()];
   const msgs=CHAT.filter(m=>pair(m)&&!isCtl(m));
   o.innerHTML=`<div class="wa">
-    <div class="wahead"><span class="wav">${oth.e}</span><div><b>${oth.name}</b><small id="waStatus">${typingNow()?typingHtml():chatStatus()}</small></div><button id="cClose">✕</button></div>
+    <div class="wahead"><span class="wav">${oth.e}</span><div><b>${oth.name}</b><small id="waStatus">${typingNow()?typingHtml():chatStatus()}</small></div><button id="waMenuB" class="wamenub" aria-label="المزيد">⋮</button><button id="cClose">✕</button>
+      ${CHT.menu?`<div class="wamenu"><button id="waClear" class="${CHT.clrArm?"armed":""}">🧹 ${CHT.clrArm?P("اضغط مرّة أخرى للتأكيد","idghat marratan ukhra lil-ta'kid"):P("مسح المحادثة","mash al-muhadatha")}</button><div class="hint">${P("تُمسح عند بيان وإبراهيم","tumsahu ʿinda bayan wa ibrahim")}</div></div>`:""}</div>
     <div class="wabody" id="waBody">${msgs.map(bubble).join("")}${CHT.uploading?`<div class="msg mine"><div class="mtext">⏳ ${P("جارٍ إرسال الصورة…","jarin irsal al-sura…")}</div></div>`:""}${msgs.length||CHT.uploading?"":`<div class="hint center">${P(`لا توجد رسائل بعد. اكتب أوّل رسالة إلى ${oth.name}!`,`uktub awwala risala!`)}</div>`}</div>
     ${(PL[CUR].opts||[]).length?`<div class="opts wa-opts">${PL[CUR].opts.map((t,i)=>`<button class="small" data-wo="${i}">${esc(t)}</button>`).join("")}</div>`:""}
     ${CHT.editId?`<div class="waedit">✏️ ${P("تعديل الرسالة","taʿdil al-risala")}<button id="waEditX" aria-label="إلغاء">✕</button></div>`:""}
@@ -936,6 +953,8 @@ function drawChat(){
   const s=$("waSend");if(s)s.onclick=send;
   const pic=$("waPic");if(pic)pic.onchange=()=>{const f=pic.files&&pic.files[0];pic.value="";if(f)sendPic(f);};
   const c=$("cClose");if(c)c.onclick=closeChat;
+  const mb=$("waMenuB");if(mb)mb.onclick=()=>{CHT.menu=!CHT.menu;CHT.clrArm=false;CHT.keepScroll=true;drawChat();};
+  const wc=$("waClear");if(wc)wc.onclick=()=>{if(!CHT.clrArm){CHT.clrArm=true;CHT.keepScroll=true;drawChat();clearTimeout(CHT.clrT);CHT.clrT=setTimeout(()=>{if(CHT.clrArm){CHT.clrArm=false;CHT.keepScroll=true;if(CHT.open)drawChat();}},4000);return;}clearChat();};
   o.querySelectorAll("[data-edit]").forEach(x=>x.onclick=()=>{const m=CHAT.find(y=>y.id===x.dataset.edit);if(!m)return;if(!CHT.editId)CHT.saved=CHT.draft;CHT.editId=m.id;CHT.draft=m.text;drawChat();const t2=$("waIn");if(t2&&t2.focus){t2.focus();t2.setSelectionRange&&t2.setSelectionRange(t2.value.length,t2.value.length);}});
   o.querySelectorAll("[data-del]").forEach(x=>x.onclick=()=>{const id=x.dataset.del;CHT.keepScroll=true;
     if(CHT.delArm!==id){CHT.delArm=id;drawChat();clearTimeout(CHT.delT);CHT.delT=setTimeout(()=>{if(CHT.delArm===id){CHT.delArm=null;CHT.keepScroll=true;if(CHT.open)drawChat();}},3500);return;}
