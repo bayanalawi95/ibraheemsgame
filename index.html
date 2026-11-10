@@ -308,7 +308,7 @@ button.tile:hover{border-color:var(--bld)}
 .msg.mine{align-self:flex-start;background:#e8e3ff;border-bottom-right-radius:4px}
 .msg.theirs{align-self:flex-end;background:#dff5ea;border-bottom-left-radius:4px}
 .mhead{font-size:.75rem;color:var(--soft);font-weight:800}
-.mtext{font-size:1.2rem;font-weight:600;white-space:pre-wrap;overflow-wrap:anywhere}
+.mtext{font-size:1.2rem;font-weight:600;white-space:pre-wrap;overflow-wrap:anywhere;max-height:60vh;overflow-y:auto}
 #chatIn{width:100%;font-family:var(--body);font-size:1.3rem;border:2px solid var(--line);border-radius:14px;padding:10px;resize:vertical;background:#fff;color:var(--ink)}
 #chatIn:focus{outline:3px solid var(--bld);outline-offset:1px}
 #chatB.ping{background:var(--gold);border-color:var(--gold);animation:bump 1s 3}
@@ -747,6 +747,10 @@ const CLR_TAG="§CLR§";
 const isCtl=m=>typeof m.text==="string"&&/^§(REQ|ACC|DEN|CAN|CLR)§/.test(m.text);
 const DEL_TAG="§DEL§",isDel=m=>m.text===DEL_TAG;
 const isImg=m=>typeof m.text==="string"&&m.text.startsWith(IMG_TAG);
+// chat limit: up to 4387 lines per message (plus a large safety cap on characters)
+const MSG_LINES=4387,MSG_CHARS=200000;
+function fitMsg(t){t=String(t);const L=t.split("\n");if(L.length>MSG_LINES)t=L.slice(0,MSG_LINES).join("\n");return t.slice(0,MSG_CHARS);}
+const tooLong=t=>String(t).split("\n").length>MSG_LINES;
 const esc=t=>String(t).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const newId=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
 const lastSeen=()=>{try{return +localStorage.getItem("tower-seen-"+CUR)||0;}catch(e){return 0;}};
@@ -760,11 +764,11 @@ function ingest(m){
   if(!m||typeof m.text!=="string"||typeof m.ts!=="number"||typeof m.id!=="string")return false;
   if(!PL_INFO[m.from]||!PL_INFO[m.to]||m.from===m.to)return false;
   if(CHAT.some(x=>x.id===m.id))return false;
-  CHAT.push({id:m.id.slice(0,40),from:m.from,to:m.to,text:m.text.slice(0,300),ts:m.ts,edited:!!m.edited});
+  CHAT.push({id:m.id.slice(0,40),from:m.from,to:m.to,text:m.text.slice(0,MSG_CHARS),ts:m.ts,edited:!!m.edited});
   return true;
 }
 function sendChat(text,from=CUR){
-  const msg={id:newId(),from,to:from==="ib"?"by":"ib",text:String(text).slice(0,300),ts:Date.now()};
+  const msg={id:newId(),from,to:from==="ib"?"by":"ib",text:fitMsg(String(text)),ts:Date.now()};
   CHAT.push(msg);saveChat();
   if(SB)SB.from("tower_messages").insert({id:msg.id,from_pl:msg.from,to_pl:msg.to,body:msg.text,ts:msg.ts}).then(()=>{});
   return msg;
@@ -790,7 +794,7 @@ function sendTyping(on){
 const TAB=Math.random().toString(36).slice(2,10);
 const otherHere=()=>onlineNow.has(other());
 const rowToMsg=r=>({id:r.id,from:r.from_pl,to:r.to_pl,text:r.body,ts:Number(r.ts),edited:!!r.edited});
-function applyEdit(m){const x=CHAT.find(y=>y.id===m.id);if(!x||typeof m.text!=="string"||(x.text===m.text&&!!x.edited===!!m.edited))return false;x.text=m.text.slice(0,300);x.edited=!!m.edited;return true;}
+function applyEdit(m){const x=CHAT.find(y=>y.id===m.id);if(!x||typeof m.text!=="string"||(x.text===m.text&&!!x.edited===!!m.edited))return false;x.text=m.text.slice(0,MSG_CHARS);x.edited=!!m.edited;return true;}
 function deleteChat(id){
   const x=CHAT.find(y=>y.id===id);if(!x||x.from!==CUR||isDel(x))return;
   x.text=DEL_TAG;x.edited=false;saveChat();
@@ -798,7 +802,7 @@ function deleteChat(id){
 }
 function editChat(id,text){
   const x=CHAT.find(y=>y.id===id);if(!x||x.from!==CUR||isEndMsg(x)||isCtl(x)||isImg(x)||isDel(x))return;
-  text=String(text).trim().slice(0,300);if(!text||text===x.text)return;
+  text=fitMsg(String(text).trim());if(!text||text===x.text)return;
   x.text=text;x.edited=true;saveChat();
   if(SB)SB.from("tower_messages").update({body:text,edited:true}).eq("id",id).eq("from_pl",CUR).then(()=>{});
 }
@@ -944,10 +948,11 @@ function drawChat(){
     <div class="wabody" id="waBody">${msgs.map(bubble).join("")}${CHT.uploading?`<div class="msg mine"><div class="mtext">⏳ ${P("جارٍ إرسال الصورة…","jarin irsal al-sura…")}</div></div>`:""}${msgs.length||CHT.uploading?"":`<div class="hint center">${P(`لا توجد رسائل بعد. اكتب أوّل رسالة إلى ${oth.name}!`,`uktub awwala risala!`)}</div>`}</div>
     ${(PL[CUR].opts||[]).length?`<div class="opts wa-opts">${PL[CUR].opts.map((t,i)=>`<button class="small" data-wo="${i}">${esc(t)}</button>`).join("")}</div>`:""}
     ${CHT.editId?`<div class="waedit">✏️ ${P("تعديل الرسالة","taʿdil al-risala")}<button id="waEditX" aria-label="إلغاء">✕</button></div>`:""}
-    <div class="wafoot"><label class="waattach" title="أرفق صورة" aria-label="أرفق صورة">📎<input type="file" id="waPic" accept="image/*" hidden></label><textarea id="waIn" dir="rtl" lang="ar" rows="1" maxlength="300" placeholder="اكتب رسالة…"></textarea><button id="waSend" aria-label="${CHT.editId?"حفظ":"أرسل"}">${CHT.editId?"✓":"➤"}</button></div></div>`;
+    <div class="wafoot"><label class="waattach" title="أرفق صورة" aria-label="أرفق صورة">📎<input type="file" id="waPic" accept="image/*" hidden></label><textarea id="waIn" dir="rtl" lang="ar" rows="1"  placeholder="اكتب رسالة…"></textarea><button id="waSend" aria-label="${CHT.editId?"حفظ":"أرسل"}">${CHT.editId?"✓":"➤"}</button></div></div>`;
   const body=$("waBody");if(body&&keep){body.scrollTop=prevTop;}else if(body&&body.scrollHeight!=null){body.scrollTop=body.scrollHeight;body.querySelectorAll("img.mimg").forEach(im=>{if(!im.complete)im.onload=()=>{body.scrollTop=body.scrollHeight;};});}
   const ta=$("waIn");
   const send=()=>{const t=(CHT.draft||"").trim();if(!t)return;
+    if(tooLong(t)){pop("⚠️",`الحدّ الأقصى ${ar(MSG_LINES)} سطراً في الرسالة الواحدة.`);return;}
     if(CHT.editId){editChat(CHT.editId,t);CHT.editId=null;CHT.draft=CHT.saved||"";CHT.saved="";beep();drawChat();render();return;}
     sendChat(t);sendTyping(false);CHT.draft="";addStars(1);beep();markSeen();drawChat();render();const t2=$("waIn");if(t2&&t2.focus)t2.focus();};
   if(ta){ta.value=CHT.draft;ta.oninput=()=>{CHT.draft=ta.value;sendTyping(!!ta.value.trim());};ta.onkeydown=e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send();}};}
@@ -978,7 +983,7 @@ function liveView(){
     <div class="turn"><b>${I.e}</b> ${on?P(`اكتب، و${PL_INFO[host].name} ${host==="by"?"تردّ":"يردّ"} من جهاز${host==="by"?"ها":"ه"}:`,`uktub…`):P(`دور ${I.name} ${who==="by"?"لتكتب":"ليكتب"}:`,`dawru ${I.tr} li-yaktub:`)}</div>
     <div class="opts">${(PL[who].opts||[]).map((t,i)=>`<span class="optchip"><button class="small" data-ls="${i}">${esc(t)}</button><button class="x" data-lx="${i}" aria-label="احذف هذا الخيار">×</button></span>`).join("")||`<span class="hint">${P(`لا توجد خيارات لـ${I.name} بعد. اكتب خياراتك!`,"la tujadu khiyarat baʿd.")}</span>`}</div>
     <div class="addopt"><input id="optIn" dir="rtl" lang="ar" maxlength="80" placeholder="خيار جديد لـ${I.name}…"><button class="small" id="optAdd">➕ ${P("أضف خياراً","adif khiyaran")}</button></div>
-    <textarea id="liveIn" dir="rtl" lang="ar" rows="2" maxlength="300" placeholder="اكتب هنا بالعربية…"></textarea>
+    <textarea id="liveIn" dir="rtl" lang="ar" rows="2"  placeholder="اكتب هنا بالعربية…"></textarea>
     <div class="tog center"><button class="big huge" id="liveSend">${P("أرسِل","arsil")} ➜</button>
       ${on?"":`<button class="small" id="liveSkip">${P("بدّل الدور","baddil al-dawr")}</button>`}
       ${log.length>=4?`<button class="big" id="liveEnd">👋 ${P("إنهاء الزيارة","inha' al-ziyara")}</button>`:""}</div></div>`;
@@ -996,6 +1001,7 @@ function bindLive(){
   const on=(id,f)=>{const e=$(id);if(e)e.onclick=f;};
   on("liveSend",()=>{
     const text=(L.draft||"").trim();if(!text){const t=$("liveIn");if(t&&t.focus)t.focus();return;}
+    if(tooLong(text)){pop("⚠️",`الحدّ الأقصى ${ar(MSG_LINES)} سطراً في الرسالة الواحدة.`);return;}
     if(online()){sendChat(text);sendTyping(false);addStars(1);}
     else{
       const by=L.turn==="host"?other():CUR;
