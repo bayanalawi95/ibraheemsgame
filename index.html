@@ -350,6 +350,10 @@ button.tile:hover{border-color:var(--bld)}
 .medited{font-style:italic;margin-inline-end:4px}
 .msg.editing{outline:2px dashed #25a35a}
 .waedit{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 12px;background:#e7f7ec;color:#1e7a45;font-weight:700;border-top:1px solid #cfe9d8}.waedit button{background:none;border:0;font-size:1rem;cursor:pointer}
+.wamic{font-size:1.3rem;background:#fff;border:1px solid #ddd;border-radius:50%;width:44px;height:44px;padding:0;flex:none}
+.recbar{flex:1;display:flex;align-items:center;gap:8px;background:#fff;border-radius:22px;padding:10px 14px;color:#c62828;font-weight:700}.recdot{width:12px;height:12px;border-radius:50%;background:#e53935;animation:recp 1s infinite}@keyframes recp{50%{opacity:.25}}
+.recx{background:#fff;border:1px solid #ddd;border-radius:50%;width:44px;height:44px;padding:0;flex:none}
+.maud{display:flex;align-items:center;gap:6px}.maud audio{height:38px;max-width:240px}
 .waattach{font-size:1.5rem;cursor:pointer;padding:6px 4px;align-self:center}
 .mimg{display:block;max-width:240px;max-height:300px;width:100%;border-radius:10px;margin:2px 0}
 .waitbox{text-align:center;padding:14px;border:2px dashed var(--line);border-radius:16px;background:#fffdf3}.waitbox .spin{font-size:2.6rem;animation:wb 1.6s ease-in-out infinite}@keyframes wb{50%{transform:rotate(180deg)}}
@@ -746,6 +750,7 @@ const REQ_TAG="§REQ§",ACC_TAG="§ACC§",DEN_TAG="§DEN§",CAN_TAG="§CAN§",IM
 const CLR_TAG="§CLR§";
 const isCtl=m=>typeof m.text==="string"&&/^§(REQ|ACC|DEN|CAN|CLR)§/.test(m.text);
 const DEL_TAG="§DEL§",isDel=m=>m.text===DEL_TAG;
+const AUD_TAG="§AUD§",isAud=m=>typeof m.text==="string"&&m.text.startsWith(AUD_TAG);
 const isImg=m=>typeof m.text==="string"&&m.text.startsWith(IMG_TAG);
 // chat limit: up to 4387 lines per message (plus a large safety cap on characters)
 const MSG_LINES=4387,MSG_CHARS=200000;
@@ -759,7 +764,7 @@ const pair=m=>(m.from===CUR&&m.to===other())||(m.from===other()&&m.to===CUR);
 const unread=()=>{const t=lastSeen();return CHAT.filter(m=>m.to===CUR&&m.from===other()&&m.ts>t&&!isCtl(m)&&!isEndMsg(m)&&!isDel(m)).length;};
 const hhmm=ts=>{const d=new Date(ts);return ar(String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"));};
 const bubble=m=>{if(typeof m.text==="string"&&m.text.startsWith("§END§"))return `<div class="msg endmsg">👋 ${P("انتهت الزيارة. هديّة لشقّة كلّ واحد منكما! 🎁","intahat al-ziyara.")}<div class="mtime">${hhmm(m.ts)}</div></div>`;const p=PL_INFO[m.from]||PL_INFO.ib;if(isDel(m)){const p0=PL_INFO[m.from]||PL_INFO.ib;return `<div class="msg ${m.from===CUR?"mine":"theirs"} deleted"><div class="mhead">${p0.e} ${p0.name}</div><div class="mtext">🚫 ${P("حُذِفت هذه الرسالة","hudhifat hadhihi al-risala")}</div><div class="mtime">${hhmm(m.ts)}</div></div>`;}
-  const mine=m.from===CUR,img=isImg(m),url=img?m.text.slice(IMG_TAG.length):"";const okUrl=/^https:\/\/[a-z0-9.-]+\.supabase\.co\//i.test(url);return `<div class="msg ${mine?"mine":"theirs"} ${CHT.editId===m.id?"editing":""}"><div class="mhead">${p.e} ${p.name}${mine&&!img?`<button class="medit" data-edit="${esc(m.id)}" title="تعديل">✏️</button>`:""}${mine?`<button class="medit mdel ${CHT.delArm===m.id?"armed":""}" data-del="${esc(m.id)}" title="حذف">${CHT.delArm===m.id?`🗑️ ${P("احذف؟","ihdhif?")}`:"🗑️"}</button>`:""}</div>${img?(okUrl?`<a href="${esc(url)}" target="_blank" rel="noopener"><img class="mimg" src="${esc(url)}" alt="صورة" loading="lazy"></a>`:`<div class="mtext">🖼️</div>`):`<div class="mtext">${esc(m.text)}</div>`}<div class="mtime">${m.edited?`<span class="medited">${P("معدّلة","muʿaddala")}</span> `:""}${hhmm(m.ts)}</div></div>`;};
+  const mine=m.from===CUR,aud=isAud(m),img=isImg(m)||aud,url=aud?m.text.slice(AUD_TAG.length):img?m.text.slice(IMG_TAG.length):"";const okUrl=/^https:\/\/[a-z0-9.-]+\.supabase\.co\//i.test(url);return `<div class="msg ${mine?"mine":"theirs"} ${CHT.editId===m.id?"editing":""}"><div class="mhead">${p.e} ${p.name}${mine&&!img?`<button class="medit" data-edit="${esc(m.id)}" title="تعديل">✏️</button>`:""}${mine?`<button class="medit mdel ${CHT.delArm===m.id?"armed":""}" data-del="${esc(m.id)}" title="حذف">${CHT.delArm===m.id?`🗑️ ${P("احذف؟","ihdhif?")}`:"🗑️"}</button>`:""}</div>${aud?(okUrl?`<div class="maud">🎤 <audio controls preload="metadata" src="${esc(url)}"></audio></div>`:`<div class="mtext">🎤</div>`):img?(okUrl?`<a href="${esc(url)}" target="_blank" rel="noopener"><img class="mimg" src="${esc(url)}" alt="صورة" loading="lazy"></a>`:`<div class="mtext">🖼️</div>`):`<div class="mtext">${esc(m.text)}</div>`}<div class="mtime">${m.edited?`<span class="medited">${P("معدّلة","muʿaddala")}</span> `:""}${hhmm(m.ts)}</div></div>`;};
 function ingest(m){
   if(!m||typeof m.text!=="string"||typeof m.ts!=="number"||typeof m.id!=="string")return false;
   if(!PL_INFO[m.from]||!PL_INFO[m.to]||m.from===m.to)return false;
@@ -801,7 +806,7 @@ function deleteChat(id){
   if(SB)SB.from("tower_messages").update({body:DEL_TAG,edited:false}).eq("id",id).eq("from_pl",CUR).then(()=>{});
 }
 function editChat(id,text){
-  const x=CHAT.find(y=>y.id===id);if(!x||x.from!==CUR||isEndMsg(x)||isCtl(x)||isImg(x)||isDel(x))return;
+  const x=CHAT.find(y=>y.id===id);if(!x||x.from!==CUR||isEndMsg(x)||isCtl(x)||isImg(x)||isAud(x)||isDel(x))return;
   text=fitMsg(String(text).trim());if(!text||text===x.text)return;
   x.text=text;x.edited=true;saveChat();
   if(SB)SB.from("tower_messages").update({body:text,edited:true}).eq("id",id).eq("from_pl",CUR).then(()=>{});
@@ -877,6 +882,37 @@ async function shrinkPic(file){
     return await new Promise(ok=>c.toBlob(ok,"image/jpeg",.82));
   }finally{URL.revokeObjectURL(url);}
 }
+const REC_MAX=120;
+function tickRec(){const r=CHT.rec;if(!r)return;const sec=Math.floor((Date.now()-r.start)/1000),el=$("recT");if(el)el.textContent=ar(Math.floor(sec/60))+":"+ar(String(sec%60).padStart(2,"0"));if(sec>=REC_MAX)stopRec(true);}
+async function startRec(){
+  if(!SB){pop("⚠️","الرسائل الصوتية تحتاج إلى اتصال بالإنترنت.");return;}
+  if(!navigator.mediaDevices||!window.MediaRecorder){pop("⚠️","هذا المتصفّح لا يدعم التسجيل.");return;}
+  let stream;try{stream=await navigator.mediaDevices.getUserMedia({audio:true});}catch(e){pop("🎤","اسمح للعبة باستخدام الميكروفون لتسجّل رسالة.");return;}
+  const type=["audio/webm;codecs=opus","audio/webm","audio/mp4","audio/ogg"].find(t=>MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(t))||"";
+  const mr=new MediaRecorder(stream,type?{mimeType:type}:undefined),chunks=[];
+  mr.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data);};
+  CHT.rec={mr,chunks,stream,start:Date.now(),timer:setInterval(tickRec,250)};
+  mr.start();sendTyping(true);beep();drawChat();
+}
+function stopRec(send){
+  const r=CHT.rec;if(!r)return;CHT.rec=null;clearInterval(r.timer);
+  r.mr.onstop=()=>{r.stream.getTracks().forEach(t=>t.stop());
+    if(send&&r.chunks.length){const base=(r.mr.mimeType||r.chunks[0].type||"audio/webm").split(";")[0];sendAudio(new Blob(r.chunks,{type:base}),base);}
+    else drawChat();};
+  try{r.mr.stop();}catch(e){r.mr.onstop();}
+  sendTyping(false);drawChat();
+}
+async function sendAudio(blob,type){
+  CHT.uploading="aud";drawChat();
+  try{
+    const ext=type.includes("mp4")?"m4a":type.includes("ogg")?"ogg":type.includes("mpeg")?"mp3":"webm";
+    const path=`${CUR}/voice-${Date.now().toString(36)}-${Math.random().toString(36).slice(2,8)}.${ext}`;
+    const up=await SB.storage.from("tower-pics").upload(path,blob,{contentType:type,upsert:false});
+    if(up.error)throw up.error;
+    sendChat(AUD_TAG+SB.storage.from("tower-pics").getPublicUrl(path).data.publicUrl);addStars(1);beep();markSeen();
+  }catch(e){pop("⚠️","تعذّر إرسال الرسالة الصوتية، حاول مرّة أخرى.");}
+  CHT.uploading=false;drawChat();render();
+}
 async function sendPic(file){
   if(!/^image\//.test(file.type)){pop("⚠️","هذا ليس ملفّ صورة.");return;}
   if(!SB){pop("⚠️","إرسال الصور يحتاج إلى اتصال بالإنترنت.");return;}
@@ -930,7 +966,7 @@ function drawKnock(){
   $("kYes").onclick=()=>ans(ACC_TAG);$("kNo").onclick=()=>ans(DEN_TAG);
 }
 setInterval(()=>{if(KNOCK&&Date.now()-KNOCK.ts>KNOCK_TTL)handleCtl();},30000);
-function closeChat(){CHT.open=false;CHT.menu=false;CHT.clrArm=false;if(CHT.editId){CHT.editId=null;CHT.draft=CHT.saved||"";CHT.saved="";}$("chat").hidden=true;render();}
+function closeChat(){if(CHT.rec)stopRec(false);CHT.open=false;CHT.menu=false;CHT.clrArm=false;if(CHT.editId){CHT.editId=null;CHT.draft=CHT.saved||"";CHT.saved="";}$("chat").hidden=true;render();}
 function chatStatus(){
   const o=PL_INFO[other()];
   if(otherHere())return "🟢 "+P(`${o.name} ${other()==="by"?"متّصلة":"متّصل"} الآن`,"online");
@@ -945,10 +981,11 @@ function drawChat(){
   o.innerHTML=`<div class="wa">
     <div class="wahead"><span class="wav">${oth.e}</span><div><b>${oth.name}</b><small id="waStatus">${typingNow()?typingHtml():chatStatus()}</small></div><button id="waMenuB" class="wamenub" aria-label="المزيد">⋮</button><button id="cClose">✕</button>
       ${CHT.menu?`<div class="wamenu"><button id="waClear" class="${CHT.clrArm?"armed":""}">🧹 ${CHT.clrArm?P("اضغط مرّة أخرى للتأكيد","idghat marratan ukhra lil-ta'kid"):P("مسح المحادثة","mash al-muhadatha")}</button><div class="hint">${P("تُمسح عند بيان وإبراهيم","tumsahu ʿinda bayan wa ibrahim")}</div></div>`:""}</div>
-    <div class="wabody" id="waBody">${msgs.map(bubble).join("")}${CHT.uploading?`<div class="msg mine"><div class="mtext">⏳ ${P("جارٍ إرسال الصورة…","jarin irsal al-sura…")}</div></div>`:""}${msgs.length||CHT.uploading?"":`<div class="hint center">${P(`لا توجد رسائل بعد. اكتب أوّل رسالة إلى ${oth.name}!`,`uktub awwala risala!`)}</div>`}</div>
+    <div class="wabody" id="waBody">${msgs.map(bubble).join("")}${CHT.uploading?`<div class="msg mine"><div class="mtext">⏳ ${CHT.uploading==="aud"?P("جارٍ إرسال الرسالة الصوتية…","jarin irsal al-risala al-sawtiyya…"):P("جارٍ إرسال الصورة…","jarin irsal al-sura…")}</div></div>`:""}${msgs.length||CHT.uploading?"":`<div class="hint center">${P(`لا توجد رسائل بعد. اكتب أوّل رسالة إلى ${oth.name}!`,`uktub awwala risala!`)}</div>`}</div>
     ${(PL[CUR].opts||[]).length?`<div class="opts wa-opts">${PL[CUR].opts.map((t,i)=>`<button class="small" data-wo="${i}">${esc(t)}</button>`).join("")}</div>`:""}
     ${CHT.editId?`<div class="waedit">✏️ ${P("تعديل الرسالة","taʿdil al-risala")}<button id="waEditX" aria-label="إلغاء">✕</button></div>`:""}
-    <div class="wafoot"><label class="waattach" title="أرفق صورة" aria-label="أرفق صورة">📎<input type="file" id="waPic" accept="image/*" hidden></label><textarea id="waIn" dir="rtl" lang="ar" rows="1"  placeholder="اكتب رسالة…"></textarea><button id="waSend" aria-label="${CHT.editId?"حفظ":"أرسل"}">${CHT.editId?"✓":"➤"}</button></div></div>`;
+    <div class="wafoot">${CHT.rec?`<div class="recbar"><span class="recdot"></span> ${P("جارٍ التسجيل…","jarin al-tasjil…")} <b id="recT">٠:٠٠</b></div><button id="recX" class="recx" aria-label="إلغاء">✕</button><button id="recSend" aria-label="أرسل">➤</button>`
+      :`<label class="waattach" title="أرفق صورة" aria-label="أرفق صورة">📎<input type="file" id="waPic" accept="image/*" hidden></label><textarea id="waIn" dir="rtl" lang="ar" rows="1"  placeholder="اكتب رسالة…"></textarea>${CHT.editId?"":`<button id="waMic" class="wamic" aria-label="سجّل رسالة صوتية">🎤</button>`}<button id="waSend" aria-label="${CHT.editId?"حفظ":"أرسل"}">${CHT.editId?"✓":"➤"}</button>`}</div></div>`;
   const body=$("waBody");if(body&&keep){body.scrollTop=prevTop;}else if(body&&body.scrollHeight!=null){body.scrollTop=body.scrollHeight;body.querySelectorAll("img.mimg").forEach(im=>{if(!im.complete)im.onload=()=>{body.scrollTop=body.scrollHeight;};});}
   const ta=$("waIn");
   const send=()=>{const t=(CHT.draft||"").trim();if(!t)return;
@@ -957,6 +994,10 @@ function drawChat(){
     sendChat(t);sendTyping(false);CHT.draft="";addStars(1);beep();markSeen();drawChat();render();const t2=$("waIn");if(t2&&t2.focus)t2.focus();};
   if(ta){ta.value=CHT.draft;ta.oninput=()=>{CHT.draft=ta.value;sendTyping(!!ta.value.trim());};ta.onkeydown=e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send();}};}
   const s=$("waSend");if(s)s.onclick=send;
+  const mic=$("waMic");if(mic)mic.onclick=startRec;
+  const rx=$("recX");if(rx)rx.onclick=()=>stopRec(false);
+  const rs=$("recSend");if(rs)rs.onclick=()=>stopRec(true);
+  if(CHT.rec)tickRec();
   const pic=$("waPic");if(pic)pic.onchange=()=>{const f=pic.files&&pic.files[0];pic.value="";if(f)sendPic(f);};
   const c=$("cClose");if(c)c.onclick=closeChat;
   const mb=$("waMenuB");if(mb)mb.onclick=()=>{CHT.menu=!CHT.menu;CHT.clrArm=false;CHT.keepScroll=true;drawChat();};
