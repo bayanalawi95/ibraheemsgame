@@ -402,7 +402,8 @@ img.emoji{height:1em;width:1em;margin:0 .05em;vertical-align:-0.12em;display:inl
 .mpcard{max-width:640px;width:100%;max-height:86vh;overflow:auto}
 .mpgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px;margin-top:10px}
 .mpp{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 6px;border:2px solid #e3dcf5;border-radius:14px;background:#fff;cursor:pointer;font:inherit}
-.mpp:hover{border-color:var(--good);background:#f0fbf5}.mpp small{font-size:.75rem;color:#666}
+.mpp:hover{border-color:var(--good);background:#f0fbf5}.mpp.locked{opacity:.45;cursor:not-allowed}.mpp .price{color:#b07800;font-weight:700}.rentb{background:#fff4d6;border-color:#f2c94c}
+.mpp small{font-size:.75rem;color:#666}
 .mpp .mpe{font-size:2rem;line-height:1}.mpp .mpn{font-weight:700;font-size:.92rem;text-align:center}
 .mprand{background:#fff7d6;border-color:#f2c94c}
 </style><script src="config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.js"></script><script src="https://cdn.jsdelivr.net/npm/@twemoji/api@15.1.0/dist/twemoji.min.js"></script></head><body>
@@ -580,7 +581,7 @@ function newRound(keepVisitor){
   do{S.t=1+Math.floor(Math.random()*TOP);S.side=Math.floor(Math.random()*4);}while(S.res[S.t][S.side].home);S.why=rnd(WHY);
   S.lifts.forEach(l=>{l.out=false;l.open=false;l.dir="";});
   if(Math.random()<.65)S.lifts[Math.floor(Math.random()*3)].out=true;
-  Object.assign(S,{phase:"reception",lift:null,pos:0,said:{},msg:"",dir:false,stuck:false,knocked:null,hide:Math.random()<.3,talking:false,outTried:null,wrongAt:null,ready:false,entering:false,exiting:false,arrived:false,skipped:null,vary:{},closed:false,goHome:false,mosque:null,knockReq:null,dlChosen:false,dlItem:null,nb:null,nbUp:0,nbDown:0,nbMsg:"",final:null,live:null,hint:{},build:{},shuf:{},shown:{},lw:{},det:newDet(),reward:null,rewardTaken:false,rid:(S.rid||0)+1});
+  Object.assign(S,{phase:"reception",lift:null,pos:0,said:{},msg:"",dir:false,stuck:false,knocked:null,hide:Math.random()<.3,talking:false,outTried:null,wrongAt:null,ready:false,entering:false,exiting:false,arrived:false,skipped:null,vary:{},closed:false,goHome:false,mosque:null,knockReq:null,rent:null,dlChosen:false,dlItem:null,nb:null,nbUp:0,nbDown:0,nbMsg:"",final:null,live:null,hint:{},build:{},shuf:{},shown:{},lw:{},det:newDet(),reward:null,rewardTaken:false,rid:(S.rid||0)+1});
   render();
 }
 /* ---------- rewards ---------- */
@@ -1397,6 +1398,33 @@ function openDlPick(){
     Object.assign(S,{t:f,side:s,hide:false,dlChosen:true,dlItem:rnd(DLV)});beep();render();
   });
 }
+/* ---------- renting an apartment from the accountant (paid with stars) ---------- */
+const rentPrice=f=>5+f;
+const starsAr=n=>n<=10?`${ar(n)} نجوم`:`${ar(n)} نجمةً`, starsTr=n=>n<=10?`${n} nujum`:`${n} najmatan`;
+function openRentPick(){
+  const o=$("mosquePick"),oh=PL[other()].home,c=[];
+  for(let f=1;f<=TOP;f++)for(let s=0;s<4;s++){if(HOME.f===f&&HOME.s===s)continue;if(oh&&oh.f===f&&oh.s===s)continue;c.push([f,s]);}
+  o.innerHTML=`<div class="homecard mpcard">
+    <div class="homehead"><h2>🔑 ${P("أيّ شقّة تريد أن تستأجر؟","ayya shaqqa turidu an tasta'jir?")}</h2><button id="mpClose">✕</button></div>
+    <div class="hint">${P(`معك ⭐ ${ar(S.stars)}. الطوابق العالية أغلى!`,`maʿaka ${S.stars} nujum. al-tawabiq al-ʿaliya aghla!`)}${HOME.f?" "+P("أثاثك سينتقل معك.","athathuka sa-yantaqilu maʿak."):""}</div>
+    <div class="mpgrid">${c.map(([f,s])=>{const pr=rentPrice(f),ok=S.stars>=pr;return `<button class="mpp ${ok?"":"locked"}" data-rent="${f}-${s}" ${ok?"":"disabled"}><span class="mpe">🚪</span><span class="mpn">${P(`الشقّة ${aptNo(f,s)}`,`al-shaqqa ${(f-1)*4+s+1}`)}</span><small>${FL[f].ar}</small><small class="price">⭐ ${ar(pr)}</small></button>`;}).join("")}</div></div>`;
+  o.hidden=false;
+  $("mpClose").onclick=()=>{o.hidden=true;};
+  o.onclick=e=>{if(e.target===o)o.hidden=true;};
+  o.querySelectorAll("[data-rent]").forEach(b=>b.onclick=()=>{
+    const [f,s]=b.dataset.rent.split("-").map(Number);o.hidden=true;
+    newRound(true);Object.assign(S,{rent:{f,s,price:rentPrice(f)},t:f,side:s,hide:false});beep();render();
+  });
+}
+function finishRent(){
+  const r=S.rent;if(!r)return;
+  if(S.stars<r.price){pop("⭐","نجومك لا تكفي لهذه الشقّة.");return;}
+  S.stars-=r.price;PL[CUR].stars=S.stars;
+  const first=!HOME.f;HOME.f=r.f;HOME.s=r.s;saveHome();applyHome();
+  yay();confetti(first?40:25);pop("🔑",`استأجرتَ الشقّة ${aptNo(r.f,r.s)}! هيّا إليها.`);
+  newRound(true);Object.assign(S,{goHome:true,t:HOME.f,side:HOME.s,hide:false});
+  ["h0","h1","h2","h3","h4","h5","h6"].forEach(k=>S.said[k]=1);render();
+}
 function mosqueCands(){const c=[];for(let f=1;f<=TOP;f++)S.res[f].forEach((r,s)=>{if(r&&r.m===1&&!r.home)c.push([f,s]);});return c;}
 function startMosque(){openMosquePick();}
 function openMosquePick(){
@@ -1497,6 +1525,19 @@ function renderPanel(){
     h+=`<div class="tog"><button id="dirB" class="small">📋 دليل العمارة (للمعلّم)</button></div>`;
     if(S.dir)h+=`<div class="dir"><div class="target">🎯 ${t.e} ${t.ar}: ${FL[S.t].ar}، رقم ${aptNo(S.t,S.side)}</div></div>`;
   }
+  else if(S.phase==="reception"&&S.rent){
+    const r=S.rent,AH=accHello();
+    h+=`<div class="win">🔑 ${P(`تريد أن تستأجر الشقّة ${aptNo(r.f,r.s)} في ${FL[r.f].ar} · ⭐ ${ar(r.price)}`,`turidu an tasta'jira al-shaqqa ${(r.f-1)*4+r.s+1}`)}</div>`+focus([
+      ln("rn0",Tc,"💁‍♂️",...AH[0]),
+      ln("rn1",K,v.e,...AH[1],1),
+      ln("rn2",Tc,"💁‍♂️",`${AH[2]}أيّ طابقٍ ${GV("تريد أن تستأجر","تريدين أن تستأجري")}؟`,`${AH[3]}ayya tabiqin ${GV("turidu an tasta'jir","turidina an tasta'jiri")}?`,`${AH[4]}Which floor do you want to rent?`),
+      ln("rn3",K,v.e,...fillB([`أريد أن أستأجر شقّةً في ${B}، رقمها ${B}.`,`uridu an asta'jira shaqqatan fi ___ , raqmuha ___ .`,"I want to rent an apartment on the ___ floor, number ___."],[fFloor(r.f),fApt(r.f,r.s)]),1),
+      ln("rn4",Tc,"💁‍♂️",`${GV("اختيارٌ ممتاز","اختيارٌ ممتاز")}! الإيجار ${starsAr(r.price)}. ${GV("هل توافق؟","هل توافقين؟")}`,`ikhtiyarun mumtaz! al-ijar ${starsTr(r.price)}. ${GV("hal tuwafiq?","hal tuwafiqin?")}`,`Great choice! The rent is ${r.price} stars. Do you agree?`),
+      ln("rn5",K,v.e,"نعم، أوافق. تفضّل الإيجار!","naʿam, uwafiq. tafaddal al-ijar!","Yes, I agree. Here's the rent!",1),
+      ln("rn6",Tc,"💁‍♂️",`${GV("تفضّل","تفضّلي")} المفتاح! مبارك عليك البيت الجديد.`,`${GV("tafaddal","tafaddali")} al-miftah! mubarakun ʿalayka al-baytu al-jadid.`,"Here's the key! Congratulations on your new home."),
+    ],`<div class="win">🔑 ${P("معك المفتاح!","maʿaka al-miftah!")}</div><div class="tog center"><button class="big huge" id="rentDone">🔑 ${P(`ادفع ⭐ ${ar(r.price)} وخذ المفتاح`,`idfaʿ wa khudh al-miftah`)}</button><button class="small" id="rentX">✕ ${P("إلغاء","ilgha'")}</button></div>`);
+    if(S.stars<r.price)h+=`<div class="alert">⭐ ${P(`تحتاج ${ar(r.price)} نجمة، ومعك ${ar(S.stars)}.`,`tahtaju ${r.price} najma.`)}</div>`;
+  }
   else if(S.phase==="reception"&&S.goHome){
     const GO=`<div class="win">👍 ${P("هيّا إلى المصاعد!","hayya ila al-masaʿid!")}</div><div class="tog"><button class="big huge" id="go">🛗 ${P("اذهب إلى المصاعد","idhhab ila al-masaʿid")}</button></div>`;
     let waiting=S.closed&&S.lift===null?CLOSED():"";
@@ -1516,11 +1557,11 @@ function renderPanel(){
   else if(S.phase==="reception"&&v.id==="dl"&&!S.dlChosen){
     h+=`<div class="win center">🛵 ${P("أنت عامل التوصيل! معك طلبٌ جديد.","anta ʿamilu al-tawsil! maʿaka talabun jadid.")}</div>
       <div class="tog center"><button class="big huge" id="dlPick">📦 ${P("اختر الشقّة التي ستوصل إليها","ikhtar al-shaqqa allati satuwassilu ilayha")}</button></div>
-      <div class="tog center"><button class="big mosqueb" id="mosqueTrip">🕌 ${P("خذ أحداً إلى المسجد","khudh ahadan ila al-masjid")}</button>${HOME.f?`<button class="big" id="homeTrip">🏠 ${P("أريد أن أذهب إلى شقّتي","uridu an adhhaba ila shaqqati")}</button>`:""}</div>`;
+      <div class="tog center"><button class="big mosqueb" id="mosqueTrip">🕌 ${P("خذ أحداً إلى المسجد","khudh ahadan ila al-masjid")}</button><button class="big rentb" id="rentTrip">🔑 ${P("أريد أن أستأجر شقّة","uridu an asta'jira shaqqa")}</button>${HOME.f?`<button class="big" id="homeTrip">🏠 ${P("أريد أن أذهب إلى شقّتي","uridu an adhhaba ila shaqqati")}</button>`:""}</div>`;
   }
   else if(S.phase==="reception"){
     if(!Object.keys(S.said).length){
-      h+=`<div class="tog center"><button class="big mosqueb" id="mosqueTrip">🕌 ${P("خذ أحداً إلى المسجد","khudh ahadan ila al-masjid")}</button>${HOME.f?`<button class="big" id="homeTrip">🏠 ${P("أريد أن أذهب إلى شقّتي","uridu an adhhaba ila shaqqati")}</button>`:""}
+      h+=`<div class="tog center"><button class="big mosqueb" id="mosqueTrip">🕌 ${P("خذ أحداً إلى المسجد","khudh ahadan ila al-masjid")}</button><button class="big rentb" id="rentTrip">🔑 ${P("أريد أن أستأجر شقّة","uridu an asta'jira shaqqa")}</button>${HOME.f?`<button class="big" id="homeTrip">🏠 ${P("أريد أن أذهب إلى شقّتي","uridu an adhhaba ila shaqqati")}</button>`:""}
         ${isIb()?(PL.by.home.f?`<button class="big" id="visitBy">👩‍🏫 ${P("أريد أن أزور جارتي المعلّمة بيان","uridu an azura jarati al-muʿallima bayan")}</button>`:"")
                 :PL.ib.home.f?`<button class="big" id="visitIb">👦 ${P("أريد أن أزور جاري إبراهيم","uridu an azura jari ibrahim")}</button>`:""}</div>`;
     }
@@ -1829,6 +1870,9 @@ function renderPanel(){
   on("homeTrip",startHomeTrip);
   on("mosqueTrip",startMosque);
   on("dlPick",openDlPick);
+  on("rentTrip",openRentPick);
+  on("rentDone",finishRent);
+  on("rentX",()=>{newRound(true);render();});
   on("mosqueGo",mosqueBoard);
   on("adhanReplay",playAdhan);
   on("adhanStopP",stopAdhan);
