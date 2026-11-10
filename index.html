@@ -581,7 +581,7 @@ function newRound(keepVisitor){
   do{S.t=1+Math.floor(Math.random()*TOP);S.side=Math.floor(Math.random()*4);}while(S.res[S.t][S.side].home);S.why=rnd(WHY);
   S.lifts.forEach(l=>{l.out=false;l.open=false;l.dir="";});
   if(Math.random()<.65)S.lifts[Math.floor(Math.random()*3)].out=true;
-  Object.assign(S,{phase:"reception",lift:null,pos:0,said:{},msg:"",dir:false,stuck:false,knocked:null,hide:Math.random()<.3,talking:false,outTried:null,wrongAt:null,ready:false,entering:false,exiting:false,arrived:false,skipped:null,vary:{},closed:false,goHome:false,mosque:null,knockReq:null,rent:null,dlChosen:false,dlItem:null,nb:null,nbUp:0,nbDown:0,nbMsg:"",final:null,live:null,hint:{},build:{},shuf:{},shown:{},lw:{},det:newDet(),reward:null,rewardTaken:false,rid:(S.rid||0)+1});
+  Object.assign(S,{phase:"reception",lift:null,pos:0,said:{},msg:"",dir:false,stuck:false,knocked:null,hide:Math.random()<.3,talking:false,outTried:null,wrongAt:null,ready:false,entering:false,exiting:false,arrived:false,skipped:null,vary:{},closed:false,goHome:false,mosque:null,knockReq:null,rent:null,keyTrip:false,dlChosen:false,dlItem:null,nb:null,nbUp:0,nbDown:0,nbMsg:"",final:null,live:null,hint:{},build:{},shuf:{},shown:{},lw:{},det:newDet(),reward:null,rewardTaken:false,rid:(S.rid||0)+1});
   render();
 }
 /* ---------- rewards ---------- */
@@ -1400,30 +1400,33 @@ function openDlPick(){
 }
 /* ---------- renting an apartment from the accountant (paid with stars) ---------- */
 const rentPrice=f=>5+f;
+const liAr=n=>n.startsWith("ال")?"لل"+n.slice(2):"لـ"+n, liTr=n=>n.startsWith("al-")?"lil-"+n.slice(3):"li-"+n;
 const starsAr=n=>n<=10?`${ar(n)} نجوم`:`${ar(n)} نجمةً`, starsTr=n=>n<=10?`${n} nujum`:`${n} najmatan`;
 function openRentPick(){
   const o=$("mosquePick"),oh=PL[other()].home,c=[];
   for(let f=1;f<=TOP;f++)for(let s=0;s<4;s++){if(HOME.f===f&&HOME.s===s)continue;if(oh&&oh.f===f&&oh.s===s)continue;c.push([f,s]);}
   o.innerHTML=`<div class="homecard mpcard">
     <div class="homehead"><h2>🔑 ${P("أيّ شقّة تريد أن تستأجر؟","ayya shaqqa turidu an tasta'jir?")}</h2><button id="mpClose">✕</button></div>
-    <div class="hint">${P(`معك ⭐ ${ar(S.stars)}. الطوابق العالية أغلى!`,`maʿaka ${S.stars} nujum. al-tawabiq al-ʿaliya aghla!`)}${HOME.f?" "+P("أثاثك سينتقل معك.","athathuka sa-yantaqilu maʿak."):""}</div>
+    <div class="hint">${P(`معك ⭐ ${ar(S.stars)}. الطوابق العالية أغلى!`,`maʿaka ${S.stars} nujum. al-tawabiq al-ʿaliya aghla!`)}${" "+P("ستستأجر الشقّة لشخصٍ جديد سيسكن فيها.","satasta'jiru al-shaqqa li-shakhsin jadid.")}</div>
     <div class="mpgrid">${c.map(([f,s])=>{const pr=rentPrice(f),ok=S.stars>=pr;return `<button class="mpp ${ok?"":"locked"}" data-rent="${f}-${s}" ${ok?"":"disabled"}><span class="mpe">🚪</span><span class="mpn">${P(`الشقّة ${aptNo(f,s)}`,`al-shaqqa ${(f-1)*4+s+1}`)}</span><small>${FL[f].ar}</small><small class="price">⭐ ${ar(pr)}</small></button>`;}).join("")}</div></div>`;
   o.hidden=false;
   $("mpClose").onclick=()=>{o.hidden=true;};
   o.onclick=e=>{if(e.target===o)o.hidden=true;};
   o.querySelectorAll("[data-rent]").forEach(b=>b.onclick=()=>{
     const [f,s]=b.dataset.rent.split("-").map(Number);o.hidden=true;
-    newRound(true);Object.assign(S,{rent:{f,s,price:rentPrice(f)},t:f,side:s,hide:false});beep();render();
+    const g=Math.random()<.5?"m":"f",who=g==="m"?makeResident(rnd(MN),MT[rndI(MT.length)],"m"):makeResident(rnd(FN),FT[rndI(FT.length)],"f");
+    newRound(true);Object.assign(S,{rent:{f,s,price:rentPrice(f),who},t:f,side:s,hide:false});beep();render();
   });
 }
 function finishRent(){
   const r=S.rent;if(!r)return;
   if(S.stars<r.price){pop("⭐","نجومك لا تكفي لهذه الشقّة.");return;}
-  S.stars-=r.price;PL[CUR].stars=S.stars;
-  const first=!HOME.f;HOME.f=r.f;HOME.s=r.s;saveHome();applyHome();
-  yay();confetti(first?40:25);pop("🔑",`استأجرتَ الشقّة ${aptNo(r.f,r.s)}! هيّا إليها.`);
-  newRound(true);Object.assign(S,{goHome:true,t:HOME.f,side:HOME.s,hide:false});
-  ["h0","h1","h2","h3","h4","h5","h6"].forEach(k=>S.said[k]=1);render();
+  S.stars-=r.price;PL[CUR].stars=S.stars;saveHome();
+  S.base[r.f][r.s]=r.who;layout();
+  yay();confetti(30);pop("🔑",`استأجرتَ الشقّة ${aptNo(r.f,r.s)} ${liAr(r.who.ar)}! خذ ${r.who.g==="f"?"لها":"له"} المفتاح.`);
+  newRound(true);
+  Object.assign(S,{t:r.f,side:r.s,hide:false,keyTrip:true,why:{ar:"لأعطيك مفتاح شقّتك الجديدة",tr:r.who.g==="f"?"li-uʿtiyaki miftaha shaqqatiki al-jadida":"li-uʿtiyaka miftaha shaqqatika al-jadida",en:"to give you the key to your new apartment"}});
+  render();
 }
 function mosqueCands(){const c=[];for(let f=1;f<=TOP;f++)S.res[f].forEach((r,s)=>{if(r&&r.m===1&&!r.home)c.push([f,s]);});return c;}
 function startMosque(){openMosquePick();}
@@ -1527,16 +1530,21 @@ function renderPanel(){
   }
   else if(S.phase==="reception"&&S.rent){
     const r=S.rent,AH=accHello();
-    h+=`<div class="win">🔑 ${P(`تريد أن تستأجر الشقّة ${aptNo(r.f,r.s)} في ${FL[r.f].ar} · ⭐ ${ar(r.price)}`,`turidu an tasta'jira al-shaqqa ${(r.f-1)*4+r.s+1}`)}</div>`+focus([
+    h+=`<div class="win">🔑 ${P(`تستأجر الشقّة ${aptNo(r.f,r.s)} في ${FL[r.f].ar} ${liAr(r.who.ar)} ${r.who.e} · ⭐ ${ar(r.price)}`,`tasta'jiru al-shaqqa ${(r.f-1)*4+r.s+1} ${liTr(r.who.tr)}`)}</div>`+focus([
       ln("rn0",Tc,"💁‍♂️",...AH[0]),
       ln("rn1",K,v.e,...AH[1],1),
       ln("rn2",Tc,"💁‍♂️",`${AH[2]}أيّ طابقٍ ${GV("تريد أن تستأجر","تريدين أن تستأجري")}؟`,`${AH[3]}ayya tabiqin ${GV("turidu an tasta'jir","turidina an tasta'jiri")}?`,`${AH[4]}Which floor do you want to rent?`),
-      ln("rn3",K,v.e,...fillB([`أريد أن أستأجر شقّةً في ${B}، رقمها ${B}.`,`uridu an asta'jira shaqqatan fi ___ , raqmuha ___ .`,"I want to rent an apartment on the ___ floor, number ___."],[fFloor(r.f),fApt(r.f,r.s)]),1),
+      ln("rn3",K,v.e,...fillB([`أريد أن أستأجر شقّةً ${liAr(r.who.ar)} في ${B}، رقمها ${B}.`,`uridu an asta'jira shaqqatan ${liTr(r.who.tr)} fi ___ , raqmuha ___ .`,`I want to rent an apartment for ${r.who.en} on the ___ floor, number ___.`],[fFloor(r.f),fApt(r.f,r.s)]),1),
       ln("rn4",Tc,"💁‍♂️",`${GV("اختيارٌ ممتاز","اختيارٌ ممتاز")}! الإيجار ${starsAr(r.price)}. ${GV("هل توافق؟","هل توافقين؟")}`,`ikhtiyarun mumtaz! al-ijar ${starsTr(r.price)}. ${GV("hal tuwafiq?","hal tuwafiqin?")}`,`Great choice! The rent is ${r.price} stars. Do you agree?`),
       ln("rn5",K,v.e,"نعم، أوافق. تفضّل الإيجار!","naʿam, uwafiq. tafaddal al-ijar!","Yes, I agree. Here's the rent!",1),
-      ln("rn6",Tc,"💁‍♂️",`${GV("تفضّل","تفضّلي")} المفتاح! مبارك عليك البيت الجديد.`,`${GV("tafaddal","tafaddali")} al-miftah! mubarakun ʿalayka al-baytu al-jadid.`,"Here's the key! Congratulations on your new home."),
+      ln("rn6",Tc,"💁‍♂️",`${GV("تفضّل","تفضّلي")} المفتاح! ${GV("أعطِه","أعطيه")} ${liAr(r.who.ar)}. مبارك ${G(r.who,"عليه","عليها")} البيت الجديد!`,`${GV("tafaddal","tafaddali")} al-miftah! ${GV("aʿtihi","aʿtihi")} ${liTr(r.who.tr)}. mubarakun ${G(r.who,"ʿalayhi","ʿalayha")} al-baytu al-jadid!`,`Here's the key! Give it to ${r.who.en}. Congratulations on the new home!`),
     ],`<div class="win">🔑 ${P("معك المفتاح!","maʿaka al-miftah!")}</div><div class="tog center"><button class="big huge" id="rentDone">🔑 ${P(`ادفع ⭐ ${ar(r.price)} وخذ المفتاح`,`idfaʿ wa khudh al-miftah`)}</button><button class="small" id="rentX">✕ ${P("إلغاء","ilgha'")}</button></div>`);
     if(S.stars<r.price)h+=`<div class="alert">⭐ ${P(`تحتاج ${ar(r.price)} نجمة، ومعك ${ar(S.stars)}.`,`tahtaju ${r.price} najma.`)}</div>`;
+  }
+  else if(S.phase==="reception"&&S.keyTrip){
+    S.ready=true;
+    h+=`<div class="win">🔑 ${P(`معك مفتاح ${t.ar}. ${G(t,"شقّته","شقّتها")} في ${FL[S.t].ar}، رقمها ${aptNo(S.t,S.side)}.`,`maʿaka miftahu ${t.tr}. ${G(t,"shaqqatuhu","shaqqatuha")} fi ${FL[S.t].tr}, raqmuha ${(S.t-1)*4+S.side+1}.`)}</div>
+      <div class="tog"><button class="big huge" id="go">🛗 ${P("اذهب إلى المصاعد","idhhab ila al-masaʿid")}</button></div>`;
   }
   else if(S.phase==="reception"&&S.goHome){
     const GO=`<div class="win">👍 ${P("هيّا إلى المصاعد!","hayya ila al-masaʿid!")}</div><div class="tog"><button class="big huge" id="go">🛗 ${P("اذهب إلى المصاعد","idhhab ila al-masaʿid")}</button></div>`;
