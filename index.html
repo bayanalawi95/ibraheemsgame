@@ -834,7 +834,22 @@ function renderScene(){
 
 /* ===================== new learning features ===================== */
 /* --- my apartment (saved in this browser) --- */
-const FURN=[["🛏️","السرير","al-sarir"],["🛋️","الكنبة","al-kanaba"],["🪑","الكرسي","al-kursi"],["💻","الحاسوب","al-hasub"],["📺","التلفاز","al-tilfaz"],["💡","المصباح","al-misbah"],["🪴","النبتة","al-nabta"],["📚","المكتبة","al-maktaba"],["🕰️","الساعة","al-saʿa"],["🎮","جهاز الألعاب","jihaz al-alʿab"],["🐠","حوض السمك","hawd al-samak"],["🖼️","اللوحة","al-lawha"],["🧸","الدبدوب","al-dabdub"],["🚲","الدرّاجة","al-darraja"],["🤖","الروبوت","al-robot"],["🗄️","الخزانة","al-khizana"],["⚽","الكرة","al-kura"],["🧺","السلّة","al-salla"]];
+const FURN=[["🛏️","السرير","al-sarir"],["🛋️","الكنبة","al-kanaba"],["🪑","الكرسي","al-kursi"],["💻","الحاسوب","al-hasub"],["📺","التلفاز","al-tilfaz"],["💡","المصباح","al-misbah"],["🪴","النبتة","al-nabta"],["📚","المكتبة","al-maktaba"],["🕰️","الساعة","al-saʿa"],["🎮","جهاز الألعاب","jihaz al-alʿab"],["🐠","حوض السمك","hawd al-samak"],["🖼️","اللوحة","al-lawha"],["🧸","الدبدوب","al-dabdub"],["🚲","الدرّاجة","al-darraja"],["🤖","الروبوت","al-robot"],["🗄️","الخزانة","al-khizana"],["⚽","الكرة","al-kura"],["🧺","السلّة","al-salla"],
+ // new furniture and things (always added at the end so saved apartments keep working)
+ ["🪞","المرآة","al-mir'a"],["📻","المذياع","al-midhyaʿ"],["🌍","مجسّم الكرة الأرضية","mujassam al-kura al-ardiyya"],["🔭","المنظار","al-minzar"],["🔬","المجهر","al-mijhar"],
+ ["🧩","الأحجية","al-uhjiya"],["🪁","الطائرة الورقية","al-ta'ira al-waraqiyya"],["🏀","كرة السلّة","kurat al-salla"],["🛹","لوح التزلّج","lawh al-tazalluj"],["🎒","الحقيبة المدرسية","al-haqiba al-madrasiyya"],
+ ["🗺️","الخريطة","al-kharita"],["🧳","حقيبة السفر","haqibat al-safar"],["🌵","الصبّار","al-subbar"],["🖥️","الشاشة","al-shasha"],["⌚","ساعة اليد","saʿat al-yad"],
+ ["📷","الكاميرا","al-kamira"],["🔦","المصباح اليدوي","al-misbah al-yadawi"],["🧭","البوصلة","al-bawsala"],["🧹","المكنسة","al-miknasa"],["🛎️","الجرس","al-jaras"],
+ ["🪑","كرسيّ المكتب","kursiyy al-maktab"],["🗑️","سلّة المهملات","sallat al-muhmalat"],["🧯","طفّاية الحريق","taffayat al-hariq"],["🖍️","أقلام التلوين","aqlam al-talwin"],["📖","القصّة","al-qissa"],
+ ["🪀","اليويو","al-yoyo"],["🎈","البالون","al-balun"],["🛼","حذاء التزلّج","hidha' al-tazalluj"],["🚗","السيارة اللعبة","al-sayyara al-luʿba"],["✈️","الطائرة اللعبة","al-ta'ira al-luʿba"],
+ // food
+ ["🍎","التفّاحة","al-tuffaha"],["🍌","الموز","al-mawz"],["🍇","العنب","al-ʿinab"],["🍉","البطّيخ","al-battikh"],["🍊","البرتقال","al-burtuqal"],
+ ["🍓","الفراولة","al-farawla"],["🥭","المانجو","al-manju"],["🍞","الخبز","al-khubz"],["🧀","الجبن","al-jubn"],["🥛","الحليب","al-halib"],
+ ["🍯","العسل","al-ʿasal"],["🍪","البسكويت","al-baskawit"],["🍰","الكعكة","al-kaʿka"],["🥗","السلطة","al-salata"],["🍲","الشوربة","al-shurba"],
+ ["🥙","الشاورما","al-shawarma"],["🥚","البيض","al-bayd"],["🫖","إبريق الشاي","ibriq al-shay"],["☕","القهوة","al-qahwa"],["🧃","العصير","al-ʿasir"],
+ ["🍦","الآيس كريم","al-ays krim"],["🍚","الأرز","al-aruzz"],["🥕","الجزر","al-jazar"],["🍋","الليمون","al-laymun"],["🍑","الخوخ","al-khukh"]];
+const BONUS=["🌟","خمس نجوم إضافية","khams nujum idafiyya"];
+const rwItem=()=>FURN[S.reward]||BONUS;
 const SPOTS=[["بجانب النافذة","bi-janib al-nafidha"],["تحت النافذة","tahta al-nafidha"],["في الزاوية","fi al-zawiya"],["بجانب الباب","bi-janib al-bab"],["في الوسط","fi al-wasat"],["على اليمين","ʿala al-yamin"]];
 /* ---------- two players: Ibraheem and Bayan, each with own stars, apartment and settings ---------- */
 const PL_INFO={ib:{name:"إبراهيم",tr:"ibrahim",e:"👦",vis:"ib"},by:{name:"بيان",tr:"bayan",e:"👩‍🏫",vis:"by"}};
@@ -1198,16 +1213,16 @@ function applyHome(){layout();}
 /* ---- end-of-visit gift: both the visitor and the host get a piece of furniture ---- */
 const END_TAG="§END§";
 const isEndMsg=m=>typeof m.text==="string"&&m.text.startsWith(END_TAG);
-function pickFurnFor(k){const owned=new Set(((PL[k].home||{}).items||[]).map(i=>i.i).concat(PL[k].pend||[]));const free=FURN.map((_,i)=>i).filter(i=>!owned.has(i));const pool=free.length?free:FURN.map((_,i)=>i);return pool[Math.floor(Math.random()*pool.length)];}
+function pickFurnFor(k){const owned=new Set(((PL[k].home||{}).items||[]).map(i=>i.i).concat(PL[k].pend||[]));if(k===CUR&&S.reward!=null&&!S.rewardTaken)owned.add(S.reward);const free=FURN.map((_,i)=>i).filter(i=>!owned.has(i));return free.length?free[Math.floor(Math.random()*free.length)]:-1;}
 function syncPlayerKey(k){if(!SB)return;const data=JSON.parse(JSON.stringify(PL[k]));SB.from("tower_players").upsert({id:k,data,updated_at:new Date().toISOString()}).then(()=>{});}
-function giveGift(k){(PL[k].pend=PL[k].pend||[]).push(pickFurnFor(k));return PL[k].pend[PL[k].pend.length-1];}
+function giveGift(k){const g=pickFurnFor(k);if(g<0){PL[k].stars=(PL[k].stars||0)+5;if(k===CUR)S.stars=PL[k].stars;return null;}(PL[k].pend=PL[k].pend||[]).push(g);return g;}
 // a gift message reached this player from another device: claim it once
 function claimGifts(){
   const me=PL[CUR];me.claimed=me.claimed||[];let got=null;
   CHAT.forEach(m=>{if(m.to===CUR&&isEndMsg(m)&&!m.text.endsWith("L")&&!me.claimed.includes(m.id)){me.claimed.push(m.id);got=giveGift(CUR);}});
   if(got!=null){me.claimed=me.claimed.slice(-60);saveHome();yay();pop(FURN[got][0],`انتهت الزيارة! حصلتَ على ${FURN[got][1]} لشقّتك 🎁`);render();}
 }
-function pickFurn(){const owned=new Set(HOME.items.map(i=>i.i));const free=FURN.map((_,i)=>i).filter(i=>!owned.has(i));const pool=free.length?free:FURN.map((_,i)=>i);return pool[Math.floor(Math.random()*pool.length)];}
+function pickFurn(){const owned=new Set(HOME.items.map(i=>i.i).concat(PL[CUR].pend||[]));const free=FURN.map((_,i)=>i).filter(i=>!owned.has(i));return free.length?free[Math.floor(Math.random()*free.length)]:-1;}
 
 let H={open:false,step:"room",fx:10,sx:0,spot:null};
 function openHome(){H.open=true;H.spot=null;H.step=HOME.f?"room":"rent";drawHome();}
@@ -1220,7 +1235,7 @@ function startHomeTrip(){
 function closeHome(){H.open=false;$("home").hidden=true;render();}
 function drawHome(){
   const o=$("home");if(!H.open){o.hidden=true;return;}o.hidden=false;
-  const src=S.reward!=null&&!S.rewardTaken?{i:S.reward,from:"round"}:((PL[CUR].pend||[]).length?{i:PL[CUR].pend[0],from:"pend"}:null);
+  const src=S.reward!=null&&S.reward>=0&&!S.rewardTaken?{i:S.reward,from:"round"}:((PL[CUR].pend||[]).length?{i:PL[CUR].pend[0],from:"pend"}:null);
   const it=src?FURN[src.i]:null;
   let b=`<div class="homecard"><div class="homehead"><h2>🏠 ${P("شقّتي","shaqqati")}</h2><button id="hClose">✕</button></div>`;
   if(H.step==="rent"){
@@ -1809,7 +1824,7 @@ function renderPanel(){
     const bch=outKind()==="beach",ACTS=actsOf(outKind()),O=OK();
     const pk=S.park||(S.park={done:{},said:{},cur:null});
     if(S.reward==null)S.reward=pickFurn();
-    const RW=FURN[S.reward],n=Object.keys(pk.done).length;
+    const RW=rwItem(),n=Object.keys(pk.done).length;
     const PL1={
       swing:[`أنا أتأرجح عالياً! ${G(t,"ادفعني","ادفعيني")} من فضلك!`,`ana ata'arjahu ʿaliyan! ${G(t,"idfaʿni","idfaʿini")} min fadlik!`,"I'm swinging high! Push me, please!"],
       slide:["سأتزحلق! واحد، اثنان، ثلاثة… هيّا!","sa'atazahlaq! wahid, ithnan, thalatha… hayya!","I'll slide! One, two, three… go!"],
@@ -1833,26 +1848,26 @@ function renderPanel(){
         ${pk.cur==="swim"?`<div class="hint center">👕 ${P("نسبح بملابس سباحة محتشمة","nasbahu bi-malabisi sibahatin muhtashima")}</div>`:""}${pk.said[pk.cur]?`<div class="past"><div class="pb"><b>${t.e}</b> ${PL2[pk.cur][0]}</div></div>`:`<button class="say" id="pkSay">🗣️ ${P("قالها","qalaha")} ⭐</button>`}</div>`:""}
       ${n>=3&&Object.keys(pk.said).length>=1?`<div class="finish"><div class="bigstar">${O.e}</div><h2>${P("لعبتما بكلّ الألعاب! أنجزتَ المهمة!","laʿibtuma bi-kulli al-alʿab!")}</h2>
         <div class="win center">🎁 ${P(`حصلتَ على: ${RW[1]}`,`hasalta ʿala: ${RW[2]}`)}</div>
-        ${S.rewardTaken?`<div class="hint center">✓ ${P("وضعتَه في شقّتك","wadaʿtahu fi shaqqatik")}</div>`:`<div class="tog center"><button class="big huge" id="placeB">🏠 ${P(HOME.f?"ضعه في شقّتي":"استأجر شقّتك وضعه فيها","daʿhu fi shaqqati")}</button></div>`}
+        ${S.rewardTaken?`<div class="hint center">✓ ${P("وضعتَه في شقّتك","wadaʿtahu fi shaqqatik")}</div>`:`<div class="tog center"><button class="big huge" id="placeB">🏠 ${P(S.reward===-1?"خذ النجوم ⭐":HOME.f?"ضعه في شقّتي":"استأجر شقّتك وضعه فيها",S.reward===-1?"khudh al-nujum":"daʿhu fi shaqqati")}</button></div>`}
         <div class="tog center"><button class="big huge" id="next">🏢 ${P("ارجع إلى العمارة","irjiʿ ila al-ʿimara")}</button></div></div>`:n<3?`<div class="hint center">${P(`جرّبتما ${ar(n)} من ٣ ألعاب`,`${n} / 3`)}</div>`:""}`);
   }
   else if(S.phase==="mosque"&&outKind()!=="mosque"){
     const O=OK(),bch=outKind()==="beach";
     if(S.reward==null)S.reward=pickFurn();
-    const RW=FURN[S.reward];
+    const RW=rwItem();
     h+=`<div class="win">${O.e} ${P(`وصلتما إلى ${O.ar}!`,`wasaltuma ila ${O.tr}!`)}</div>`+focus([
       ln("o1",K,v.e,`وصلنا إلى ${O.ar}! ${G(t,"انظر","انظري")} إلى ${bch?"البحر":"الأشجار"}!`,`wasalna ila ${O.tr}! ${G(t,"unzur","unzuri")} ila ${bch?"al-bahr":"al-ashjar"}!`,`We're at ${O.en}! Look at the ${bch?"sea":"trees"}!`,1),
       ln("o2",Tc,t.e,`ما أجمل ${bch?"البحر":"الحديقة"}! سبحان الله! ${GV("شكراً لكَ لأنّكَ أخذتَني","شكراً لكِ لأنّكِ أخذتِني")}.`,`ma ajmala ${bch?"al-bahr":"al-hadiqa"}! subhana allah! ${GV("shukran laka li'annaka akhadhtani","shukran laki li'annaki akhadhtini")}.`,`How beautiful! Subhan Allah! Thank you for taking me.`),
       ln("o3",K,v.e,bch?"هيّا نبني قلعةً من الرمل!":"هيّا نلعب بالكرة!",bch?"hayya nabni qalʿatan min al-raml!":"hayya nalʿabu bil-kura!",bch?"Let's build a sandcastle!":"Let's play ball!",1),
     ],`<div class="finish"><div class="bigstar">${O.e}</div><h2>${P("أنجزتَ المهمة!","anjazta al-mahamma!")}</h2>
       <div class="win center">🎁 ${P(`حصلتَ على: ${RW[1]}`,`hasalta ʿala: ${RW[2]}`)}</div>
-      ${S.rewardTaken?`<div class="hint center">✓ ${P("وضعتَه في شقّتك","wadaʿtahu fi shaqqatik")}</div>`:`<div class="tog center"><button class="big huge" id="placeB">🏠 ${P(HOME.f?"ضعه في شقّتي":"استأجر شقّتك وضعه فيها","daʿhu fi shaqqati")}</button></div>`}
+      ${S.rewardTaken?`<div class="hint center">✓ ${P("وضعتَه في شقّتك","wadaʿtahu fi shaqqatik")}</div>`:`<div class="tog center"><button class="big huge" id="placeB">🏠 ${P(S.reward===-1?"خذ النجوم ⭐":HOME.f?"ضعه في شقّتي":"استأجر شقّتك وضعه فيها",S.reward===-1?"khudh al-nujum":"daʿhu fi shaqqati")}</button></div>`}
       <div class="tog center"><button class="big huge" id="next">🚀 ${P("مهمة جديدة","mahamma jadida")}</button></div></div>`);
   }
   else if(S.phase==="mosque"){
     const pr=S.mosque.p;
     if(S.reward==null)S.reward=pickFurn();
-    const RW=FURN[S.reward];
+    const RW=rwItem();
     h+=`<div class="win">🕌 ${P("وصلتما إلى المسجد!","wasaltuma ila al-masjid!")}</div>`+focus([
       ln("m1",K,v.e,"وصلنا إلى المسجد في الوقت!","wasalna ila al-masjidi fi al-waqt!","We got to the mosque on time!",1),
       ln("m2",Tc,t.e,`الحمد لله! ${GV("شكراً لكَ لأنّكَ أخذتَني","شكراً لكِ لأنّكِ أخذتِني")}.`,`al-hamdu lillah! ${GV("shukran laka li'annaka akhadhtani","shukran laki li'annaki akhadhtini")}.`,"Praise be to Allah! Thank you for taking me."),
@@ -1860,7 +1875,7 @@ function renderPanel(){
     ],`<div class="finish"><div class="bigstar">🕌</div><h2>${P("أنجزتَ المهمة!","anjazta al-mahamma!")}</h2>
       <div class="tog center"><button class="big" id="adhanReplay">🔊 ${P("استمع إلى الأذان","istamiʿ ila al-adhan")}</button><button id="adhanStopP">⏹ ${P("أوقف الأذان","awqif al-adhan")}</button></div>
       <div class="win center">🎁 ${P(`حصلتَ على: ${RW[1]}`,`hasalta ʿala: ${RW[2]}`)}</div>
-      ${S.rewardTaken?`<div class="hint center">✓ ${P("وضعتَه في شقّتك","wadaʿtahu fi shaqqatik")}</div>`:`<div class="tog center"><button class="big huge" id="placeB">🏠 ${P(HOME.f?"ضعه في شقّتي":"استأجر شقّتك وضعه فيها","daʿhu fi shaqqati")}</button></div>`}
+      ${S.rewardTaken?`<div class="hint center">✓ ${P("وضعتَه في شقّتك","wadaʿtahu fi shaqqatik")}</div>`:`<div class="tog center"><button class="big huge" id="placeB">🏠 ${P(S.reward===-1?"خذ النجوم ⭐":HOME.f?"ضعه في شقّتي":"استأجر شقّتك وضعه فيها",S.reward===-1?"khudh al-nujum":"daʿhu fi shaqqati")}</button></div>`}
       <div class="tog center"><button class="big huge" id="next">🚀 ${P("مهمة جديدة","mahamma jadida")}</button></div></div>`);
   }
   else if(S.phase==="door"){
@@ -1910,12 +1925,12 @@ function renderPanel(){
         if(!S.live.done)after=liveView();
         else{
           if(S.reward==null)S.reward=pickFurn();
-          const RW=FURN[S.reward];
+          const RW=rwItem();
           after=`<div class="finish"><div class="bigstar">${RW[0]}</div><h2>${P("زيارة رائعة!","ziyara ra'iʿa!")}</h2>
             <div class="msgs wabody">${liveLog().map(bubble).join("")}</div>
             <div class="win center">🎁 ${P(`حصلتَ على: ${RW[1]}`,`hasalta ʿala: ${RW[2]}`)}</div>
             <div class="hint center">🎁 ${P(`و${PL_INFO[other()].name} ${other()==="by"?"حصلت":"حصل"} على قطعة أثاث لشقّت${other()==="by"?"ها":"ه"} أيضاً!`,"the host got a gift too!")}</div>
-            ${S.rewardTaken?`<div class="hint center">✓ ${P("وضعتَه في شقّتك","wadaʿtahu fi shaqqatik")}</div>`:`<div class="tog center"><button class="big huge" id="placeB">🏠 ${P("ضعه في شقّتي","daʿhu fi shaqqati")}</button></div>`}
+            ${S.rewardTaken?`<div class="hint center">✓ ${P("وضعتَه في شقّتك","wadaʿtahu fi shaqqatik")}</div>`:`<div class="tog center"><button class="big huge" id="placeB">🏠 ${P(S.reward===-1?"خذ النجوم ⭐":"ضعه في شقّتي",S.reward===-1?"khudh al-nujum":"daʿhu fi shaqqati")}</button></div>`}
             <div class="tog center"><button class="big huge" id="next">🚀 ${P("مهمة جديدة","mahamma jadida")}</button></div></div>`;
         }
       } else if(right&&S.hide){
@@ -2029,10 +2044,10 @@ function renderPanel(){
                      ln(k+"j",Tc,r.e,...bye));
           banner=`<div class="win">🎉 ${t.e} ${P(`وجدتَ ${t.ar}!`,`wajadta ${t.tr}!`)}</div>`;
           if(S.reward==null)S.reward=pickFurn();
-          const RW=FURN[S.reward];
+          const RW=rwItem();
           after=`<div class="finish"><div class="bigstar">${RW[0]}</div><h2>${P("أنجزتَ المهمة!","anjazta al-mahamma!")}</h2>
             <div class="win center">🎁 ${P(`حصلتَ على: ${RW[1]}`,`hasalta ʿala: ${RW[2]}`)}</div>
-            ${S.rewardTaken?`<div class="hint center">✓ ${P("وضعتَه في شقّتك","wadaʿtahu fi shaqqatik")}</div>`:`<div class="tog center"><button class="big huge" id="placeB">🏠 ${P(HOME.f?"ضعه في شقّتي":"استأجر شقّتك وضعه فيها","daʿhu fi shaqqati")}</button></div>`}
+            ${S.rewardTaken?`<div class="hint center">✓ ${P("وضعتَه في شقّتك","wadaʿtahu fi shaqqatik")}</div>`:`<div class="tog center"><button class="big huge" id="placeB">🏠 ${P(S.reward===-1?"خذ النجوم ⭐":HOME.f?"ضعه في شقّتي":"استأجر شقّتك وضعه فيها",S.reward===-1?"khudh al-nujum":"daʿhu fi shaqqati")}</button></div>`}
             <div class="tog center"><button class="big" id="bonus" ${S.said.bonus?"disabled":""}>${S.said.bonus?"⭐⭐ ممتاز!":`🎤 ${P(`سؤال إضافي: من أين ${you}؟`,`su'al idafi: min ayna ${G(r,"anta","anti")}?`)} +⭐⭐`}</button></div>
             <div class="tog center"><button class="big huge" id="next">🚀 ${P("مهمة جديدة","mahamma jadida")}</button><button id="brk2">⚡ اشحن المصعد</button></div></div>`;
         }
@@ -2060,7 +2075,7 @@ function renderPanel(){
   on("kAgain",()=>{knock();S.knockReq=null;render();});
   on("kCancel",()=>{if(S.knockReq&&S.knockReq.st==="wait")sendChat(CAN_TAG+S.knockReq.id);S.rounds++;newRound(false);});
   on("brk2",brainBreak);
-  on("placeB",openHome);
+  on("placeB",()=>{if(S.reward===-1){if(!S.rewardTaken){S.rewardTaken=true;addStars(5);yay();render();}return;}openHome();});
   on("enterHome",openHome);
   bindLive();
   on("homeTrip",startHomeTrip);
