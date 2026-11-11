@@ -375,6 +375,71 @@ button.tile:hover{border-color:var(--bld)}
 .mosque .mlbl{font-weight:800;color:var(--good);font-size:.9rem}
 .mosque.focus .dome{filter:drop-shadow(0 0 12px rgba(46,157,106,.8))}
 .mfigs{display:flex;gap:2px;position:absolute;bottom:22px}
+.park{position:relative;width:100%;height:440px;border-radius:16px;overflow:hidden;background:linear-gradient(#bfe6ff 0,#e9f7ff 52%,#8fd16a 52%,#5fae3e 100%);direction:ltr}
+.park .sun{position:absolute;top:12px;right:28px;font-size:3.2rem}
+.park .cloud{position:absolute;top:26px;font-size:2.6rem;animation:cloud 40s linear infinite}
+@keyframes cloud{from{transform:translateX(-30vw)}to{transform:translateX(60vw)}}
+.park .tree{position:absolute;bottom:190px;font-size:5.5rem;line-height:1}.park .tree.small{font-size:3.6rem;bottom:205px}
+.park .flowers{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-size:1.4rem;letter-spacing:6px}
+.park .pk,.beach .pk{position:absolute;background:none;border:0;padding:0;cursor:pointer}
+.park .plbl,.beach .plbl{position:absolute;bottom:-34px;left:50%;transform:translateX(-50%);background:#fff;border-radius:10px;padding:2px 8px;font-size:.85rem;font-weight:700;white-space:nowrap;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.park .pk:hover .plbl,.park .pk.on .plbl,.beach .pk:hover .plbl,.beach .pk.on .plbl{background:#ffe08a}
+.swingset{left:5%;bottom:70px;width:170px;height:220px}
+.swingset .bar{position:absolute;top:0;left:0;right:0;height:12px;background:#8d5a2b;border-radius:6px}
+.swingset .pole{position:absolute;top:0;bottom:0;width:11px;background:#8d5a2b;border-radius:4px}.swingset .pole.l{left:8px;transform:rotate(9deg);transform-origin:top}.swingset .pole.r{right:8px;transform:rotate(-9deg);transform-origin:top}
+.swingset .ropes{position:absolute;top:12px;left:50%;width:76px;margin-left:-38px;height:160px;transform-origin:top center}
+.swingset .ropes::before,.swingset .ropes::after{content:"";position:absolute;top:0;bottom:10px;width:3px;background:#555}.swingset .ropes::before{left:8px}.swingset .ropes::after{right:8px}
+.swingset .seat{position:absolute;bottom:0;left:0;right:0;height:12px;background:#e53935;border-radius:4px}
+.swingset .rider{position:absolute;bottom:6px;left:50%;transform:translateX(-50%)}
+.swingset.on .ropes{animation:swg 1.7s ease-in-out infinite}
+@keyframes swg{0%,100%{transform:rotate(30deg)}50%{transform:rotate(-30deg)}}
+.park .pusher{position:absolute;left:calc(5% + 175px);bottom:70px}
+.slide{left:38%;bottom:70px;width:240px;height:200px}
+.slide .ladder{position:absolute;left:0;bottom:0;width:30px;height:190px;background:repeating-linear-gradient(transparent 0 16px,#9e9e9e 16px 21px);border-left:6px solid #757575;border-right:6px solid #757575;box-sizing:border-box}
+.slide .ramp{position:absolute;left:24px;bottom:0;width:216px;height:190px;background:#ffb300;clip-path:polygon(0 0,16% 0,100% 86%,100% 100%,84% 100%,0 14%)}
+.slide .slider{position:absolute;animation:sld 2.4s ease-in infinite}
+@keyframes sld{0%{left:-6px;bottom:175px;transform:rotate(0)}18%{left:-6px;bottom:175px;transform:rotate(-10deg)}80%{left:170px;bottom:0;transform:rotate(-10deg)}100%{left:170px;bottom:0;transform:rotate(0)}}
+.park .watcher{position:absolute;left:calc(38% + 250px);bottom:70px}
+.ballfield{right:4%;bottom:70px;width:280px;height:150px}
+.ballfield .p1{position:absolute;left:0;bottom:0}.ballfield .p2{position:absolute;right:0;bottom:0}
+.ballfield .ball{position:absolute;bottom:4px;left:118px;font-size:2.2rem}
+.ballfield.on .ball{animation:pass 1.8s ease-in-out infinite}
+@keyframes pass{0%,100%{left:46px;bottom:4px}25%{bottom:80px}50%{left:200px;bottom:4px;transform:rotate(360deg)}75%{bottom:80px}}
+.park .idle{position:absolute;left:50%;bottom:60px;transform:translateX(-50%);display:flex;gap:10px}
+@media (max-width:820px){.park{height:520px}.swingset{left:2%;bottom:250px;transform:scale(.8);transform-origin:bottom left}.park .pusher{left:150px;bottom:250px}.slide{left:auto;right:2%;bottom:250px;transform:scale(.75);transform-origin:bottom right}.park .watcher{right:4%;left:auto;bottom:60px}.ballfield{right:auto;left:50%;margin-left:-140px;bottom:50px}.park .tree{bottom:300px}.park .idle{bottom:60px}}
+.beach{position:relative;width:100%;height:440px;border-radius:16px;overflow:hidden;background:linear-gradient(#aee3ff 0,#e6f7ff 30%,#ffe6a8 30%);direction:ltr}
+.beach .sun{position:absolute;top:12px;right:28px;font-size:3.2rem;z-index:1}
+.beach .cloud{position:absolute;top:22px;font-size:2.4rem;animation:cloud 45s linear infinite}
+.beach .sea{position:absolute;left:0;right:0;top:30%;height:34%;background:linear-gradient(#3fa9e8,#1976d2);overflow:hidden}
+.beach .wave{position:absolute;left:-50%;bottom:-6px;width:200%;height:26px;background:radial-gradient(circle at 15px -4px,transparent 16px,#ffe6a8 17px) repeat-x;background-size:30px 26px;animation:wave 4s linear infinite}
+.beach .wave.w2{bottom:6px;opacity:.35;background:radial-gradient(circle at 15px -4px,transparent 16px,#fff 17px) repeat-x;background-size:30px 26px;animation-duration:6s}
+@keyframes wave{from{transform:translateX(0)}to{transform:translateX(30px)}}
+.beach .boat{position:absolute;top:14px;font-size:2rem;animation:boat 26s linear infinite}
+@keyframes boat{from{left:-10%}to{left:110%}}
+.beach .palm{position:absolute;bottom:120px;font-size:6rem;line-height:1}
+.beach .umbrella{position:absolute;left:24%;bottom:150px;font-size:3.6rem}
+.beach .shells{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-size:1.3rem}
+.sandpit{left:6%;bottom:60px;width:220px;height:130px}
+.sandpit .castle{position:absolute;left:96px;bottom:4px;font-size:2rem;transform-origin:bottom center;transition:transform .5s}
+.sandpit.on .castle{animation:grow 2.4s ease-in-out infinite}
+@keyframes grow{0%{transform:scale(.6)}60%,100%{transform:scale(1.6)}}
+.sandpit .bucket{position:absolute;left:160px;bottom:4px;font-size:1.6rem}
+.sandpit .kids{position:absolute;left:0;bottom:0;display:flex;gap:90px;zoom:.85}
+.bfield{right:auto;left:40%;bottom:60px}
+.swimzone{right:3%;top:30%;width:260px;height:150px}
+.swimzone .ring{position:absolute;left:110px;top:60px;font-size:2rem;animation:bob 2s ease-in-out infinite}
+.swimzone .swimfig{position:absolute;top:30px;animation:bob 1.6s ease-in-out infinite}
+.swimzone .swimfig.s1{left:40px}.swimzone .swimfig.s2{left:150px;animation-delay:-.6s}
+.swimzone .swimfig .legs{visibility:hidden}
+.swimzone .swimfig::after{content:"";position:absolute;left:-14px;right:-14px;top:52px;height:60px;background:linear-gradient(rgba(25,118,210,.85),#1976d2);border-radius:40% 40% 0 0}
+.swimzone .swimfig .torso::before,.swimzone .swimfig .torso::after{animation:stroke .8s infinite alternate}
+@keyframes stroke{from{transform:rotate(150deg)}to{transform:rotate(20deg)}}
+.swimzone .splash{position:absolute;left:115px;top:20px;font-size:1.6rem;animation:bob 1s ease-in-out infinite}
+.swimzone .plbl{bottom:-26px}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.beach .idle{position:absolute;left:50%;bottom:50px;transform:translateX(-50%);display:flex;gap:10px}
+@media (max-width:820px){.beach{height:520px}.sandpit{left:2%;bottom:40px;zoom:.85}.bfield{left:auto;right:2%;bottom:190px;zoom:.8}.swimzone{right:auto;left:50%;margin-left:-130px;top:28%}.beach .umbrella{left:60%;bottom:300px}}
+.park .pk:focus,.beach .pk:focus{outline:none}
 .beachb{background:#e3f4fd;border-color:#4fb3e8}.parkb{background:#e7f6df;border-color:#6dbb4a}
 .mosqueb{background:#dff5ea;border-color:var(--good)}
 .prayer{background:#dff5ea;color:#1b6b47;border-radius:999px;padding:2px 12px;font-weight:800;font-size:.9rem}
@@ -584,7 +649,7 @@ function newRound(keepVisitor){
   do{S.t=1+Math.floor(Math.random()*TOP);S.side=Math.floor(Math.random()*4);}while(S.res[S.t][S.side].home);S.why=rnd(WHY);
   S.lifts.forEach(l=>{l.out=false;l.open=false;l.dir="";});
   if(Math.random()<.65)S.lifts[Math.floor(Math.random()*3)].out=true;
-  Object.assign(S,{phase:"reception",lift:null,pos:0,said:{},msg:"",dir:false,stuck:false,knocked:null,hide:Math.random()<.3,talking:false,outTried:null,wrongAt:null,ready:false,entering:false,exiting:false,arrived:false,skipped:null,vary:{},closed:false,goHome:false,mosque:null,knockReq:null,rent:null,keyTrip:false,cancelFl:null,dlChosen:false,dlItem:null,nb:null,nbUp:0,nbDown:0,nbMsg:"",final:null,live:null,hint:{},build:{},shuf:{},shown:{},lw:{},det:newDet(),reward:null,rewardTaken:false,rid:(S.rid||0)+1});
+  Object.assign(S,{phase:"reception",lift:null,pos:0,said:{},msg:"",dir:false,stuck:false,knocked:null,hide:Math.random()<.3,talking:false,outTried:null,wrongAt:null,ready:false,entering:false,exiting:false,arrived:false,skipped:null,vary:{},closed:false,goHome:false,mosque:null,park:null,knockReq:null,rent:null,keyTrip:false,cancelFl:null,dlChosen:false,dlItem:null,nb:null,nbUp:0,nbDown:0,nbMsg:"",final:null,live:null,hint:{},build:{},shuf:{},shown:{},lw:{},det:newDet(),reward:null,rewardTaken:false,rid:(S.rid||0)+1});
   render();
 }
 /* ---------- rewards ---------- */
@@ -665,8 +730,70 @@ function brainBreak(){
 }
 
 /* ---------- scene ---------- */
+const PARK_ACTS={
+ swing:{e:"🎠",ar:"المراجيح",tr:"al-marajih"},
+ slide:{e:"🛝",ar:"الزحليقة",tr:"al-zuhliqa"},
+ ball:{e:"⚽",ar:"الكرة",tr:"al-kura"}};
+const BEACH_ACTS={
+ sand:{e:"🏰",ar:"الرمل",tr:"al-raml"},
+ bball:{e:"🏐",ar:"الكرة",tr:"al-kura"},
+ swim:{e:"🏊",ar:"السباحة",tr:"al-sibaha"}};
+const actsOf=k=>k==="beach"?BEACH_ACTS:PARK_ACTS;
+// modest swimwear: long sleeves and long trousers for everyone, and a burkini hood for women
+const swimHead=r=>r.g==="f"?"🧕":r.e;
+function beachScene(){
+  const v=V(),t=T(),cur=(S.park||{}).cur;
+  const me=fig(v.e),you=fig(t.e);
+  const swimmer=(r,cls)=>`<span class="fig swimfig ${cls}" style="--shirt:#1e88e5"><span class="head">${swimHead(r)}</span><span class="torso"></span><span class="legs"><i></i><i></i></span></span>`;
+  return `<div class="beach">
+    <div class="sun">☀️</div><div class="cloud" style="left:12%">☁️</div><div class="cloud" style="left:60%;animation-delay:-18s">☁️</div>
+    <div class="sea"><div class="wave"></div><div class="wave w2"></div><span class="boat">⛵</span></div>
+    <div class="palm" style="left:-6px">🌴</div><div class="umbrella">⛱️</div><div class="shells">🐚 ⭐ 🐚</div>
+    <button class="pk sandpit ${cur==="sand"?"on":""}" data-pk="sand" aria-label="الرمل">
+      <span class="castle">🏰</span><span class="bucket">🪣</span>${cur==="sand"?`<span class="kids">${me}${you}</span>`:""}
+      <span class="plbl">${P("الرمل","al-raml")}</span></button>
+    <button class="pk ballfield bfield ${cur==="bball"?"on":""}" data-pk="bball" aria-label="الكرة">
+      ${cur==="bball"?`<span class="p1">${me}</span><span class="p2">${you}</span>`:""}<span class="ball">🏐</span>
+      <span class="plbl">${P("الكرة","al-kura")}</span></button>
+    <button class="pk swimzone ${cur==="swim"?"on":""}" data-pk="swim" aria-label="السباحة">
+      ${cur==="swim"?`${swimmer(v,"s1")}${swimmer(t,"s2")}<span class="splash">💦</span>`:"<span class='ring'>🛟</span>"}
+      <span class="plbl">${P("السباحة","al-sibaha")}</span></button>
+    ${!cur?`<div class="idle">${me}${you}</div>`:""}
+  </div>`;
+}
+function parkScene(){
+  const v=V(),t=T(),cur=(S.park||{}).cur;
+  const me=fig(v.e),you=fig(t.e);
+  return `<div class="park">
+    <div class="sun">☀️</div><div class="cloud" style="left:10%">☁️</div><div class="cloud" style="left:55%;animation-delay:-12s">☁️</div>
+    <div class="tree" style="left:-10px">🌳</div><div class="tree" style="right:-6px">🌲</div><div class="tree small" style="left:30%">🌳</div>
+    <div class="flowers">🌷🌼🌷🌼🌷</div>
+    <button class="pk swingset ${cur==="swing"?"on":""}" data-pk="swing" aria-label="المراجيح">
+      <span class="bar"></span><span class="pole l"></span><span class="pole r"></span>
+      <span class="ropes"><span class="seat"></span>${cur==="swing"?`<span class="rider">${me}</span>`:""}</span>
+      <span class="plbl">${P("المراجيح","al-marajih")}</span></button>
+    ${cur==="swing"?`<div class="pusher">${you}</div>`:""}
+    <button class="pk slide ${cur==="slide"?"on":""}" data-pk="slide" aria-label="الزحليقة">
+      <span class="ladder"></span><span class="ramp"></span>${cur==="slide"?`<span class="slider">${me}</span>`:""}
+      <span class="plbl">${P("الزحليقة","al-zuhliqa")}</span></button>
+    ${cur==="slide"?`<div class="watcher">${you}</div>`:""}
+    <button class="pk ballfield ${cur==="ball"?"on":""}" data-pk="ball" aria-label="الكرة">
+      ${cur==="ball"?`<span class="p1">${me}</span><span class="p2">${you}</span>`:""}<span class="ball">⚽</span>
+      <span class="plbl">${P("الكرة","al-kura")}</span></button>
+    ${!cur?`<div class="idle">${me}${you}</div>`:""}
+  </div>`;
+}
+function playPark(k){
+  if(!actsOf(outKind())[k])return;const pk=S.park||(S.park={done:{},said:{},cur:null});
+  pk.cur=k;pk.done[k]=1;beep();render();
+}
 function renderScene(){
   const v=V();
+  if(S.phase==="mosque"&&(outKind()==="park"||outKind()==="beach")){
+    $("scene").innerHTML=outKind()==="beach"?beachScene():parkScene();
+    $("scene").querySelectorAll("[data-pk]").forEach(b=>b.onclick=()=>playPark(b.dataset.pk));
+    return;
+  }
   let rows="";
   for(let f=TOP;f>=1;f--){
     const atFloor=S.phase==="door"&&S.pos===f;
@@ -1678,6 +1805,37 @@ function renderPanel(){
       ln("s4",Tc,"💁‍♂️",GV("اضغط الزرّ الأحمر!","اضغطي الزرّ الأحمر!"),GV("idghat al-zirra al-ahmar!","idghati al-zirra al-ahmar!"),"Press the red button!"),
     ],`<div class="keypad one"><button class="alarm pulse" id="alarmB">🔔</button></div>`);
   }
+  else if(S.phase==="mosque"&&(outKind()==="park"||outKind()==="beach")){
+    const bch=outKind()==="beach",ACTS=actsOf(outKind()),O=OK();
+    const pk=S.park||(S.park={done:{},said:{},cur:null});
+    if(S.reward==null)S.reward=pickFurn();
+    const RW=FURN[S.reward],n=Object.keys(pk.done).length;
+    const PL1={
+      swing:[`أنا أتأرجح عالياً! ${G(t,"ادفعني","ادفعيني")} من فضلك!`,`ana ata'arjahu ʿaliyan! ${G(t,"idfaʿni","idfaʿini")} min fadlik!`,"I'm swinging high! Push me, please!"],
+      slide:["سأتزحلق! واحد، اثنان، ثلاثة… هيّا!","sa'atazahlaq! wahid, ithnan, thalatha… hayya!","I'll slide! One, two, three… go!"],
+      ball:[`${G(t,"مرِّر","مرِّري")} الكرة إليّ! هدف!`,`${G(t,"marrir","marriri")} al-kura ilayya! hadaf!`,"Pass me the ball! Goal!"],
+      sand:["هيّا نبني قلعةً كبيرةً من الرمل!","hayya nabni qalʿatan kabiratan min al-raml!","Let's build a big sandcastle!"],
+      bball:[`${G(t,"ارمِ","ارمي")} الكرة عالياً! ${G(t,"أمسكها","أمسكيها")}!`,`${G(t,"irmi","irmi")} al-kura ʿaliyan! ${G(t,"amsikha","amsikiha")}!`,"Throw the ball high! Catch it!"],
+      swim:["هيّا نسبح! الماء باردٌ ولطيف!","hayya nasbah! al-ma'u baridun wa latif!","Let's swim! The water is cool and nice!"]};
+    const PL2={
+      swing:[`حسناً! ${GV("تمسّك","تمسّكي")} جيّداً!`,`hasanan! ${GV("tamassak","tamassaki")} jayyidan!`,"OK! Hold on tight!"],
+      slide:["ما أسرعك! أريد أن أتزحلق أنا أيضاً!","ma asraʿak! uridu an atazahlaqa ana aydan!","You're so fast! I want to slide too!"],
+      ball:[`${GV("أحسنت","أحسنتِ")}! ما شاء الله!`,`${GV("ahsanta","ahsanti")}! ma sha'a allah!`,"Well done! Masha'Allah!"],
+      sand:["ما أجمل القلعة! سأضع عليها صدفة.","ma ajmala al-qalʿa! sa'adaʿu ʿalayha sadafa.","What a beautiful castle! I'll put a seashell on it."],
+      bball:[`${GV("أمسكتُها","أمسكتُها")}! ${GV("دورك","دورك")} الآن!`,"amsaktuha! dawruka al-an!","I caught it! Your turn now!"],
+      swim:["حسناً، لكن لا نبتعد عن الشاطئ، ونبقى معاً!","hasanan, lakin la nabtaʿidu ʿan al-shati', wa nabqa maʿan!","OK, but we won't go far from the shore, and we'll stay together!"]};
+    h+=`<div class="win">${O.e} ${P(`وصلتما إلى ${O.ar}!`,`wasaltuma ila ${O.tr}!`)}</div>`+focus([
+      ln("o1",K,v.e,`وصلنا إلى ${O.ar}! ${G(t,"انظر","انظري")} إلى ${bch?"البحر":"الأشجار"}!`,`wasalna ila ${O.tr}! ${G(t,"unzur","unzuri")} ila ${bch?"al-bahr":"al-ashjar"}!`,`We're at ${O.en}! Look at the ${bch?"sea":"trees"}!`,1),
+      ln("o2",Tc,t.e,`ما أجمل ${bch?"البحر":"الحديقة"}! سبحان الله! ماذا ${GV("تريد","تريدين")} أن نلعب؟`,`ma ajmala ${bch?"al-bahr":"al-hadiqa"}! subhana allah! madha ${GV("turidu","turidina")} an nalʿab?`,"How beautiful! Subhan Allah! What do you want to play?"),
+    ],`<div class="hint center">👆 ${P("اختر لعبة (أو اضغط عليها في الحديقة):","ikhtar luʿba:")}</div>
+      <div class="tog center">${Object.entries(ACTS).map(([k,a])=>`<button class="big ${pk.cur===k?"on":""}" data-pkb="${k}">${a.e} ${P(a.ar,a.tr)} ${pk.done[k]?"✓":""}</button>`).join("")}</div>
+      ${pk.cur?`<div class="now me"><div class="nowwho"><b>${v.e}</b><span>${P("قُل:","qul:")}</span></div><div class="ar big">${PL1[pk.cur][0]}</div>${S.tr?`<div class="tr">${PL1[pk.cur][1]}</div>`:""}${S.en?`<div class="en">${PL1[pk.cur][2]}</div>`:""}
+        ${pk.cur==="swim"?`<div class="hint center">👕 ${P("نسبح بملابس سباحة محتشمة","nasbahu bi-malabisi sibahatin muhtashima")}</div>`:""}${pk.said[pk.cur]?`<div class="past"><div class="pb"><b>${t.e}</b> ${PL2[pk.cur][0]}</div></div>`:`<button class="say" id="pkSay">🗣️ ${P("قالها","qalaha")} ⭐</button>`}</div>`:""}
+      ${n>=3&&Object.keys(pk.said).length>=1?`<div class="finish"><div class="bigstar">${O.e}</div><h2>${P("لعبتما بكلّ الألعاب! أنجزتَ المهمة!","laʿibtuma bi-kulli al-alʿab!")}</h2>
+        <div class="win center">🎁 ${P(`حصلتَ على: ${RW[1]}`,`hasalta ʿala: ${RW[2]}`)}</div>
+        ${S.rewardTaken?`<div class="hint center">✓ ${P("وضعتَه في شقّتك","wadaʿtahu fi shaqqatik")}</div>`:`<div class="tog center"><button class="big huge" id="placeB">🏠 ${P(HOME.f?"ضعه في شقّتي":"استأجر شقّتك وضعه فيها","daʿhu fi shaqqati")}</button></div>`}
+        <div class="tog center"><button class="big huge" id="next">🏢 ${P("ارجع إلى العمارة","irjiʿ ila al-ʿimara")}</button></div></div>`:n<3?`<div class="hint center">${P(`جرّبتما ${ar(n)} من ٣ ألعاب`,`${n} / 3`)}</div>`:""}`);
+  }
   else if(S.phase==="mosque"&&outKind()!=="mosque"){
     const O=OK(),bch=outKind()==="beach";
     if(S.reward==null)S.reward=pickFurn();
@@ -1908,6 +2066,8 @@ function renderPanel(){
   on("homeTrip",startHomeTrip);
   on("mosqueTrip",startMosque);
   on("beachTrip",startBeach);
+  document.querySelectorAll("[data-pkb]").forEach(b=>b.onclick=()=>playPark(b.dataset.pkb));
+  on("pkSay",()=>{const pk=S.park;if(!pk||!pk.cur||pk.said[pk.cur])return;pk.said[pk.cur]=1;addStars(1);yay();render();});
   on("parkTrip",startPark);
   on("dlPick",openDlPick);
   on("cancelFl",cancelRide);
