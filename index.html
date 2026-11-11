@@ -349,6 +349,9 @@ button.tile:hover{border-color:var(--bld)}
 .medit{display:none;background:none;border:0;cursor:pointer;font-size:.85rem;padding:0 4px;opacity:.6}.wabody .msg.mine .medit{display:inline}.medit:hover{opacity:1}
 .mdel.armed{display:inline;opacity:1;color:#c62828;font-weight:700;background:#fde7e7;border-radius:8px}
 .msg.deleted .mtext{font-style:italic;color:#8a8a8a;font-size:.95rem}
+.mreact{display:none;background:none;border:0;cursor:pointer;font-size:.75rem;opacity:.55;padding:0 4px;margin-inline-start:6px}#waBody .mreact{display:inline}.mreact:hover{opacity:1}
+.rbar{display:flex;gap:4px;background:#fff;border-radius:20px;padding:4px 6px;box-shadow:0 2px 8px rgba(0,0,0,.2);width:max-content;margin-top:4px}.rbar button{background:none;border:0;font-size:1.35rem;cursor:pointer;border-radius:50%;padding:2px 4px}.rbar button:hover,.rbar button.on{background:#e8f5e9}
+.mreacts{display:flex;gap:4px;margin-top:2px}.mreacts span{background:#fff;border-radius:12px;padding:0 6px;font-size:1rem;box-shadow:0 1px 2px rgba(0,0,0,.15)}.mreacts small{font-size:.65rem;margin-inline-start:2px}
 .medited{font-style:italic;margin-inline-end:4px}
 .msg.editing{outline:2px dashed #25a35a}
 .waedit{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 12px;background:#e7f7ec;color:#1e7a45;font-weight:700;border-top:1px solid #cfe9d8}.waedit button{background:none;border:0;font-size:1rem;cursor:pointer}
@@ -910,12 +913,12 @@ const pair=m=>(m.from===CUR&&m.to===other())||(m.from===other()&&m.to===CUR);
 const unread=()=>{const t=lastSeen();return CHAT.filter(m=>m.to===CUR&&m.from===other()&&m.ts>t&&!isCtl(m)&&!isEndMsg(m)&&!isDel(m)).length;};
 const hhmm=ts=>{const d=new Date(ts);return ar(String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"));};
 const bubble=m=>{if(typeof m.text==="string"&&m.text.startsWith("§END§"))return `<div class="msg endmsg">👋 ${P("انتهت الزيارة. هديّة لشقّة كلّ واحد منكما! 🎁","intahat al-ziyara.")}<div class="mtime">${hhmm(m.ts)}</div></div>`;const p=PL_INFO[m.from]||PL_INFO.ib;if(isDel(m)){const p0=PL_INFO[m.from]||PL_INFO.ib;return `<div class="msg ${m.from===CUR?"mine":"theirs"} deleted"><div class="mhead">${p0.e} ${p0.name}</div><div class="mtext">🚫 ${P("حُذِفت هذه الرسالة","hudhifat hadhihi al-risala")}</div><div class="mtime">${hhmm(m.ts)}</div></div>`;}
-  const mine=m.from===CUR,aud=isAud(m),img=isImg(m)||aud,url=aud?m.text.slice(AUD_TAG.length):img?m.text.slice(IMG_TAG.length):"";const okUrl=/^https:\/\/[a-z0-9.-]+\.supabase\.co\//i.test(url);return `<div class="msg ${mine?"mine":"theirs"} ${CHT.editId===m.id?"editing":""}"><div class="mhead">${p.e} ${p.name}${mine&&!img?`<button class="medit" data-edit="${esc(m.id)}" title="تعديل">✏️</button>`:""}${mine?`<button class="medit mdel ${CHT.delArm===m.id?"armed":""}" data-del="${esc(m.id)}" title="حذف">${CHT.delArm===m.id?`🗑️ ${P("احذف؟","ihdhif?")}`:"🗑️"}</button>`:""}</div>${aud?(okUrl?`<div class="maud">🎤 <audio controls preload="metadata" src="${esc(url)}"></audio></div>`:`<div class="mtext">🎤</div>`):img?(okUrl?`<a href="${esc(url)}" target="_blank" rel="noopener"><img class="mimg" src="${esc(url)}" alt="صورة" loading="lazy"></a>`:`<div class="mtext">🖼️</div>`):`<div class="mtext">${esc(m.text)}</div>`}<div class="mtime">${m.edited?`<span class="medited">${P("معدّلة","muʿaddala")}</span> `:""}${hhmm(m.ts)}</div></div>`;};
+  const mine=m.from===CUR,aud=isAud(m),img=isImg(m)||aud,url=aud?m.text.slice(AUD_TAG.length):img?m.text.slice(IMG_TAG.length):"";const okUrl=/^https:\/\/[a-z0-9.-]+\.supabase\.co\//i.test(url);return `<div class="msg ${mine?"mine":"theirs"} ${CHT.editId===m.id?"editing":""}"><div class="mhead">${p.e} ${p.name}${mine&&!img?`<button class="medit" data-edit="${esc(m.id)}" title="تعديل">✏️</button>`:""}${mine?`<button class="medit mdel ${CHT.delArm===m.id?"armed":""}" data-del="${esc(m.id)}" title="حذف">${CHT.delArm===m.id?`🗑️ ${P("احذف؟","ihdhif?")}`:"🗑️"}</button>`:""}</div>${aud?(okUrl?`<div class="maud">🎤 <audio controls preload="metadata" src="${esc(url)}"></audio></div>`:`<div class="mtext">🎤</div>`):img?(okUrl?`<a href="${esc(url)}" target="_blank" rel="noopener"><img class="mimg" src="${esc(url)}" alt="صورة" loading="lazy"></a>`:`<div class="mtext">🖼️</div>`):`<div class="mtext">${esc(m.text)}</div>`}<div class="mtime">${m.edited?`<span class="medited">${P("معدّلة","muʿaddala")}</span> `:""}${hhmm(m.ts)}<button class="mreact" data-rbtn="${esc(m.id)}" title="تفاعل">😊+</button></div>${CHT.reactFor===m.id?`<div class="rbar">${REACTS.map(e=>`<button data-react="${esc(m.id)}|${e}" class="${cleanReacts(m.reacts)[CUR]===e?"on":""}">${e}</button>`).join("")}</div>`:""}${(()=>{const r=cleanReacts(m.reacts),ks=Object.keys(r);return ks.length?`<div class="mreacts">${ks.map(k=>`<span title="${PL_INFO[k].name}">${r[k]}<small>${PL_INFO[k].e}</small></span>`).join("")}</div>`:"";})()}</div>`;};
 function ingest(m){
   if(!m||typeof m.text!=="string"||typeof m.ts!=="number"||typeof m.id!=="string")return false;
   if(!PL_INFO[m.from]||!PL_INFO[m.to]||m.from===m.to)return false;
   if(CHAT.some(x=>x.id===m.id))return false;
-  CHAT.push({id:m.id.slice(0,40),from:m.from,to:m.to,text:m.text.slice(0,MSG_CHARS),ts:m.ts,edited:!!m.edited});
+  CHAT.push({id:m.id.slice(0,40),from:m.from,to:m.to,text:m.text.slice(0,MSG_CHARS),ts:m.ts,edited:!!m.edited,reacts:cleanReacts(m.reacts)});
   return true;
 }
 function sendChat(text,from=CUR){
@@ -944,8 +947,17 @@ function sendTyping(on){
 }
 const TAB=Math.random().toString(36).slice(2,10);
 const otherHere=()=>onlineNow.has(other());
-const rowToMsg=r=>({id:r.id,from:r.from_pl,to:r.to_pl,text:r.body,ts:Number(r.ts),edited:!!r.edited});
-function applyEdit(m){const x=CHAT.find(y=>y.id===m.id);if(!x||typeof m.text!=="string"||(x.text===m.text&&!!x.edited===!!m.edited))return false;x.text=m.text.slice(0,MSG_CHARS);x.edited=!!m.edited;return true;}
+const rowToMsg=r=>({id:r.id,from:r.from_pl,to:r.to_pl,text:r.body,ts:Number(r.ts),edited:!!r.edited,reacts:r.reacts});
+const REACTS=["❤️","👍","😂","😮","😢","🤲","⭐"];
+function cleanReacts(r){const o={};if(r&&typeof r==="object")for(const k of ["ib","by"])if(REACTS.includes(r[k]))o[k]=r[k];return o;}
+function applyEdit(m){const x=CHAT.find(y=>y.id===m.id);if(!x||typeof m.text!=="string")return false;const rc=cleanReacts(m.reacts);
+  if(x.text===m.text&&!!x.edited===!!m.edited&&JSON.stringify(cleanReacts(x.reacts))===JSON.stringify(rc))return false;
+  x.text=m.text.slice(0,MSG_CHARS);x.edited=!!m.edited;x.reacts=rc;return true;}
+function reactTo(id,e){
+  const x=CHAT.find(y=>y.id===id);if(!x||isDel(x))return;
+  const r=cleanReacts(x.reacts);if(r[CUR]===e)delete r[CUR];else r[CUR]=e;x.reacts=r;saveChat();
+  if(SB)SB.from("tower_messages").update({reacts:r}).eq("id",id).then(()=>{});
+}
 function deleteChat(id){
   const x=CHAT.find(y=>y.id===id);if(!x||x.from!==CUR||isDel(x))return;
   x.text=DEL_TAG;x.edited=false;saveChat();
@@ -999,7 +1011,7 @@ function syncPlayer(){
       .on("postgres_changes",{event:"INSERT",schema:"public",table:"tower_messages"},p=>{
         const m=rowToMsg(p.new);if(ingest(m)){CHAT.sort((a,b)=>a.ts-b.ts);saveChat();if(isEndMsg(m))claimGifts();else if(isCtl(m))handleCtl();else notifyFresh([m]);if(CHT.open)drawChat();render();}})
       .on("postgres_changes",{event:"UPDATE",schema:"public",table:"tower_messages"},p=>{
-        const m=rowToMsg(p.new);if(applyEdit(m)){saveChat();if(CHT.open&&!CHT.editId)drawChat();render();}})
+        const m=rowToMsg(p.new);if(applyEdit(m)){saveChat();if(CHT.open&&!CHT.editId){CHT.keepScroll=true;drawChat();}render();}})
       .on("postgres_changes",{event:"*",schema:"public",table:"tower_players"},p=>{
         const row=p.new;if(!row||!PL[row.id]||row.id===CUR||!row.data||!row.data.home)return;
         PL[row.id]=Object.assign(PL[row.id],row.data);layout();render();})
@@ -1149,6 +1161,8 @@ function drawChat(){
   const mb=$("waMenuB");if(mb)mb.onclick=()=>{CHT.menu=!CHT.menu;CHT.clrArm=false;CHT.keepScroll=true;drawChat();};
   const wc=$("waClear");if(wc)wc.onclick=()=>{if(!CHT.clrArm){CHT.clrArm=true;CHT.keepScroll=true;drawChat();clearTimeout(CHT.clrT);CHT.clrT=setTimeout(()=>{if(CHT.clrArm){CHT.clrArm=false;CHT.keepScroll=true;if(CHT.open)drawChat();}},4000);return;}clearChat();};
   o.querySelectorAll("[data-edit]").forEach(x=>x.onclick=()=>{const m=CHAT.find(y=>y.id===x.dataset.edit);if(!m)return;if(!CHT.editId)CHT.saved=CHT.draft;CHT.editId=m.id;CHT.draft=m.text;drawChat();const t2=$("waIn");if(t2&&t2.focus){t2.focus();t2.setSelectionRange&&t2.setSelectionRange(t2.value.length,t2.value.length);}});
+  o.querySelectorAll("[data-rbtn]").forEach(x=>x.onclick=()=>{const id=x.dataset.rbtn;CHT.reactFor=CHT.reactFor===id?null:id;CHT.keepScroll=true;drawChat();});
+  o.querySelectorAll("[data-react]").forEach(x=>x.onclick=()=>{const [id,e]=x.dataset.react.split("|");reactTo(id,e);CHT.reactFor=null;CHT.keepScroll=true;beep();drawChat();});
   o.querySelectorAll("[data-del]").forEach(x=>x.onclick=()=>{const id=x.dataset.del;CHT.keepScroll=true;
     if(CHT.delArm!==id){CHT.delArm=id;drawChat();clearTimeout(CHT.delT);CHT.delT=setTimeout(()=>{if(CHT.delArm===id){CHT.delArm=null;CHT.keepScroll=true;if(CHT.open)drawChat();}},3500);return;}
     CHT.delArm=null;if(CHT.editId===id){CHT.editId=null;CHT.draft=CHT.saved||"";CHT.saved="";}deleteChat(id);tone(500,.08);drawChat();render();});
