@@ -462,6 +462,43 @@ button.tile:hover{border-color:var(--bld)}
 @keyframes fishj{0%,40%{opacity:0;transform:translate(0,20px) rotate(0)}55%{opacity:1;transform:translate(-14px,-24px) rotate(-30deg)}75%{opacity:1;transform:translate(-40px,6px) rotate(-80deg)}100%{opacity:0;transform:translate(-40px,6px)}}
 .fishspot .catch{position:absolute;left:46px;bottom:0;font-size:1.4rem}
 @media (max-width:820px){.bbq{left:4%;bottom:130px;zoom:.85}.fishspot{left:4%;bottom:300px;zoom:.8}}
+.house{position:relative;width:100%;height:440px;border-radius:16px;overflow:hidden;direction:ltr;background:#fdf3e1}
+.house .wall{position:absolute;left:0;right:0;top:0;height:58%;background:repeating-linear-gradient(90deg,#f7e3c4 0 40px,#f3dbb6 40px 80px)}
+.house .floor{position:absolute;left:0;right:0;bottom:0;height:42%;background:repeating-linear-gradient(90deg,#c8915a 0 60px,#bd8650 60px 120px)}
+.house .hwin{position:absolute;left:44%;top:30px;width:120px;height:90px;background:linear-gradient(#9fdcff,#d9f2ff);border:8px solid #fff;box-shadow:0 0 0 3px #b98a5a;display:flex;align-items:center;justify-content:center;font-size:1.6rem}
+.house .frame{position:absolute;left:12%;top:40px;font-size:2.6rem}.house .hlamp{position:absolute;right:30%;top:6px;font-size:1.8rem}.house .plant{position:absolute;right:2%;bottom:150px;font-size:3rem}
+.house .rug{position:absolute;left:18%;right:18%;bottom:20px;height:90px;border-radius:50%;background:radial-gradient(#c62828 0 30%,#8e1b1b 31% 45%,#e0a100 46% 52%,#8e1b1b 53%)}
+.house .pk{position:absolute;background:none;border:0;padding:0;cursor:pointer}.house .pk:focus{outline:none}
+.house .plbl{position:absolute;bottom:-28px;left:50%;transform:translateX(-50%);background:#fff;border-radius:10px;padding:2px 8px;font-size:.85rem;font-weight:700;white-space:nowrap;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.house .pk:hover .plbl,.house .pk.on .plbl{background:#ffe08a}
+.hcoffee{left:3%;bottom:150px;width:220px;height:130px}
+.hcoffee .sofa{position:absolute;left:0;bottom:30px;font-size:5rem;line-height:1}
+.hcoffee .table{position:absolute;left:120px;bottom:6px;width:90px;height:20px;background:#6d4c41;border-radius:6px;display:flex;justify-content:space-around;align-items:flex-end}
+.hcoffee .dallah,.hcoffee .dates{position:relative;top:-22px;font-size:1.5rem}
+.hcoffee .steam{position:absolute;left:138px;bottom:56px;font-size:1rem;opacity:0}.hcoffee.on .steam{animation:smoke 2s ease-out infinite}
+.hcoffee .sit{position:absolute;bottom:46px;zoom:.7}.hcoffee .sit.s1{left:4px}.hcoffee .sit.s2{left:70px}
+.hgames{left:40%;bottom:150px;width:200px;height:150px}
+.hgames .tv{position:absolute;left:40px;top:0;width:120px;height:76px;background:#212121;border-radius:6px;padding:6px;box-sizing:border-box}
+.hgames .scr{display:block;width:100%;height:100%;background:#263238;border-radius:3px}
+.hgames.on .scr{animation:scr 1.2s steps(4) infinite}
+@keyframes scr{0%{background:#1565c0}25%{background:#2e7d32}50%{background:#c62828}75%{background:#f9a825}}
+.hgames .stand{position:absolute;left:90px;top:76px;width:20px;height:16px;background:#424242}
+.hgames .pad{position:absolute;left:84px;bottom:0;font-size:1.8rem}
+.hgames .gamer{position:absolute;bottom:-150px;zoom:.8}.hgames .gamer b{position:absolute;bottom:52px;left:8px;font-size:1.2rem}.hgames .gamer.g1{left:0}.hgames .gamer.g2{left:140px}
+.hgames.on .gamer b{animation:bob .4s infinite}
+.hstory{right:4%;bottom:150px;width:160px;height:140px}
+.hstory .shelf{position:absolute;left:10px;top:0;font-size:2.6rem;background:#8d6e63;border-radius:6px;padding:4px 8px}
+.hstory .book{position:absolute;left:62px;bottom:4px;font-size:2rem}
+.hstory.on .book{animation:bob 1.2s infinite}
+.hstory .reader{position:absolute;bottom:-140px;zoom:.8}.hstory .reader.r1{left:0}.hstory .reader.r2{left:110px}
+.hpuzzle{left:26%;bottom:40px;width:300px;height:80px}
+.hpuzzle .pc{position:absolute;bottom:20px;font-size:1.8rem;transition:left .6s}
+.hpuzzle .pc.p1{left:90px}.hpuzzle .pc.p2{left:150px}.hpuzzle .pc.p3{left:210px}
+.hpuzzle.on .pc.p1{animation:pz1 2.4s infinite}.hpuzzle.on .pc.p3{animation:pz3 2.4s infinite}
+@keyframes pz1{0%,20%{left:90px}60%,100%{left:126px}}@keyframes pz3{0%,20%{left:210px}60%,100%{left:174px}}
+.hpuzzle .kid{position:absolute;bottom:4px;zoom:.75}.hpuzzle .kid.k1{left:0}.hpuzzle .kid.k2{right:0}
+.house .idle{position:absolute;left:50%;bottom:40px;transform:translateX(-50%);display:flex;gap:10px}
+@media (max-width:820px){.house{height:560px}.hcoffee{left:2%;bottom:330px;zoom:.8}.hgames{left:auto;right:2%;bottom:330px;zoom:.8}.hstory{right:4%;bottom:130px;zoom:.85}.hpuzzle{left:2%;bottom:40px;zoom:.85}.house .hwin{left:38%;width:90px;height:70px}}
 .park .pk:focus,.beach .pk:focus{outline:none}
 .beachb{background:#e3f4fd;border-color:#4fb3e8}.parkb{background:#e7f6df;border-color:#6dbb4a}
 .mosqueb{background:#dff5ea;border-color:var(--good)}
@@ -672,7 +709,7 @@ function newRound(keepVisitor){
   do{S.t=1+Math.floor(Math.random()*TOP);S.side=Math.floor(Math.random()*4);}while(S.res[S.t][S.side].home);S.why=rnd(WHY);
   S.lifts.forEach(l=>{l.out=false;l.open=false;l.dir="";});
   if(Math.random()<.65)S.lifts[Math.floor(Math.random()*3)].out=true;
-  Object.assign(S,{phase:"reception",lift:null,pos:0,said:{},msg:"",dir:false,stuck:false,knocked:null,hide:Math.random()<.3,talking:false,outTried:null,wrongAt:null,ready:false,entering:false,exiting:false,arrived:false,skipped:null,vary:{},closed:false,goHome:false,mosque:null,park:null,knockReq:null,rent:null,keyTrip:false,cancelFl:null,dlChosen:false,dlItem:null,nb:null,nbUp:0,nbDown:0,nbMsg:"",final:null,live:null,hint:{},build:{},shuf:{},shown:{},lw:{},det:newDet(),reward:null,rewardTaken:false,rid:(S.rid||0)+1});
+  Object.assign(S,{phase:"reception",lift:null,pos:0,said:{},msg:"",dir:false,stuck:false,knocked:null,hide:Math.random()<.3,talking:false,outTried:null,wrongAt:null,ready:false,entering:false,exiting:false,arrived:false,skipped:null,vary:{},closed:false,goHome:false,mosque:null,park:null,houseDone:false,knockReq:null,rent:null,keyTrip:false,cancelFl:null,dlChosen:false,dlItem:null,nb:null,nbUp:0,nbDown:0,nbMsg:"",final:null,live:null,hint:{},build:{},shuf:{},shown:{},lw:{},det:newDet(),reward:null,rewardTaken:false,rid:(S.rid||0)+1});
   render();
 }
 /* ---------- rewards ---------- */
@@ -763,7 +800,7 @@ const BEACH_ACTS={
  bball:{e:"🏐",ar:"الكرة",tr:"al-kura"},
  swim:{e:"🏊",ar:"السباحة",tr:"al-sibaha"},
  fish:{e:"🎣",ar:"الصيد",tr:"al-sayd"}};
-const actsOf=k=>k==="beach"?BEACH_ACTS:PARK_ACTS;
+const actsOf=k=>k==="beach"?BEACH_ACTS:k==="house"?HOUSE_ACTS:PARK_ACTS;
 // modest swimwear: long sleeves and long trousers for everyone, and a burkini hood for women
 const swimHead=r=>r.g==="f"?"🧕":r.e;
 function beachScene(){
@@ -822,12 +859,47 @@ function fishSpot(cur,me){
     ${cur==="fish"?`<span class="fisher">${me}</span><span class="rod">🎣</span><span class="line"></span><span class="jump">🐟</span><span class="catch">🪣</span>`:`<span class="rod idle">🎣</span><span class="jump slow">🐟</span>`}
     <span class="plbl">${P("الصيد","al-sayd")}</span></button>`;
 }
+const HOUSE_ACTS={
+ coffee:{e:"☕",ar:"القهوة والتمر",tr:"al-qahwa wal-tamr"},
+ games:{e:"🎮",ar:"جهاز الألعاب",tr:"jihaz al-alʿab"},
+ story:{e:"📖",ar:"القصّة",tr:"al-qissa"},
+ puzzle:{e:"🧩",ar:"الأحجية",tr:"al-uhjiya"}};
+function houseScene(){
+  const v=V(),t=T(),cur=(S.park||{}).cur,me=fig(v.e),you=fig(t.e);
+  return `<div class="house">
+    <div class="wall"></div><div class="floor"></div>
+    <div class="hwin"><span>☁️</span></div><div class="frame">🖼️</div><div class="hlamp">💡</div><div class="plant">🪴</div>
+    <div class="rug"></div>
+    <button class="pk hcoffee ${cur==="coffee"?"on":""}" data-pk="coffee" aria-label="القهوة">
+      <span class="sofa">🛋️</span><span class="table"><span class="dallah">☕</span><span class="dates">🍯</span></span><span class="steam">♨️</span>
+      ${cur==="coffee"?`<span class="sit s1">${me}</span><span class="sit s2">${you}</span>`:""}
+      <span class="plbl">${P("القهوة والتمر","al-qahwa wal-tamr")}</span></button>
+    <button class="pk hgames ${cur==="games"?"on":""}" data-pk="games" aria-label="جهاز الألعاب">
+      <span class="tv"><span class="scr"></span></span><span class="stand"></span>
+      ${cur==="games"?`<span class="gamer g1">${me}<b>🎮</b></span><span class="gamer g2">${you}<b>🎮</b></span>`:"<span class='pad'>🎮</span>"}
+      <span class="plbl">${P("جهاز الألعاب","jihaz al-alʿab")}</span></button>
+    <button class="pk hstory ${cur==="story"?"on":""}" data-pk="story" aria-label="القصّة">
+      <span class="shelf">📚📚</span><span class="book">${cur==="story"?"📖":"📕"}</span>
+      ${cur==="story"?`<span class="reader r1">${me}</span><span class="reader r2">${you}</span>`:""}
+      <span class="plbl">${P("القصّة","al-qissa")}</span></button>
+    <button class="pk hpuzzle ${cur==="puzzle"?"on":""}" data-pk="puzzle" aria-label="الأحجية">
+      <span class="pc p1">🧩</span><span class="pc p2">🧩</span><span class="pc p3">🧩</span>
+      ${cur==="puzzle"?`<span class="kid k1">${me}</span><span class="kid k2">${you}</span>`:""}
+      <span class="plbl">${P("الأحجية","al-uhjiya")}</span></button>
+    ${!cur?`<div class="idle">${me}${you}</div>`:""}
+  </div>`;
+}
 function playPark(k){
-  if(!actsOf(outKind())[k])return;const pk=S.park||(S.park={done:{},said:{},cur:null});
+  if(!actsOf(S.phase==="house"?"house":outKind())[k])return;const pk=S.park||(S.park={done:{},said:{},cur:null});
   pk.cur=k;pk.done[k]=1;beep();render();
 }
 function renderScene(){
   const v=V();
+  if(S.phase==="house"){
+    $("scene").innerHTML=houseScene();
+    $("scene").querySelectorAll("[data-pk]").forEach(b=>b.onclick=()=>playPark(b.dataset.pk));
+    return;
+  }
   if(S.phase==="mosque"&&(outKind()==="park"||outKind()==="beach")){
     $("scene").innerHTML=outKind()==="beach"?beachScene():parkScene();
     $("scene").querySelectorAll("[data-pk]").forEach(b=>b.onclick=()=>playPark(b.dataset.pk));
@@ -1701,7 +1773,7 @@ function focus(lines,afterHtml){
   return h;
 }
 function steps(){const names=["المحاسب","المصعد","الأزرار","الشقة"],ntr=["al-muhasib","al-misʿad","al-azrar","al-shaqqa"];
-  const cur={reception:0,lift:1,inside:2,ride:2,stuck:2,door:3,mosque:3}[S.phase];
+  const cur={reception:0,lift:1,inside:2,ride:2,stuck:2,door:3,mosque:3,house:3}[S.phase];
   return `<div class="steps">${names.map((n,i)=>`<span class="${i<cur?"done":""} ${i===cur?"on":""}">${i<cur?"✓":ar(i+1)} ${P(n,ntr[i])}</span>`).join("")}</div>`;}
 
 /* pick one wording per round, so the dialogue changes every mission but stays stable while playing */
@@ -1869,6 +1941,27 @@ function renderPanel(){
       ln("s3",K,v.e,...fillB([`أنا في ${B}.`,`ana fi ___ .`,`I'm in the ___ elevator.`],[fLift(S.lift??0)]),1),
       ln("s4",Tc,"💁‍♂️",GV("اضغط الزرّ الأحمر!","اضغطي الزرّ الأحمر!"),GV("idghat al-zirra al-ahmar!","idghati al-zirra al-ahmar!"),"Press the red button!"),
     ],`<div class="keypad one"><button class="alarm pulse" id="alarmB">🔔</button></div>`);
+  }
+  else if(S.phase==="house"){
+    const pk=S.park||(S.park={done:{},said:{},cur:null}),n=Object.keys(pk.done).length,NT=4;
+    const L1={
+      coffee:["ما ألذّ القهوة والتمر! شكراً على الضيافة.","ma aladhdha al-qahwa wal-tamr! shukran ʿala al-diyafa.","The coffee and dates are delicious! Thank you for your hospitality."],
+      games:["هيّا نلعب بجهاز الألعاب! أنا الأحمر.","hayya nalʿab bi-jihazi al-alʿab! ana al-ahmar.","Let's play the games console! I'm red."],
+      story:["هل يمكن أن نقرأ هذه القصّة معاً؟","hal yumkinu an naqra'a hadhihi al-qissa maʿan?","Can we read this story together?"],
+      puzzle:["هذه القطعة هنا! أكملنا الأحجية!","hadhihi al-qitʿa huna! akmalna al-uhjiya!","This piece goes here! We finished the puzzle!"]};
+    const L2={
+      coffee:[`أهلاً وسهلاً! البيت ${GV("بيتك","بيتكِ")}.`,`ahlan wa sahlan! al-baytu ${GV("baytuka","baytuki")}.`,"You're welcome! Make yourself at home."],
+      games:["حسناً! وأنا الأزرق. مَن سيفوز؟","hasanan! wa ana al-azraq. man sayafuz?","OK! And I'm blue. Who will win?"],
+      story:["طبعاً! كان يا ما كان…","tabʿan! kana ya ma kan…","Of course! Once upon a time…"],
+      puzzle:[`${GV("أحسنت","أحسنتِ")}! ما شاء الله!`,`${GV("ahsanta","ahsanti")}! ma sha'a allah!`,"Well done! Masha'Allah!"]};
+    h+=`<div class="win">🏠 ${P(`أنت في بيت ${t.ar}`,`anta fi bayti ${t.tr}`)}</div>`+focus([
+      ln("hs1",Tc,t.e,`${GV("تفضّل","تفضّلي")}! ${GV("اجلس","اجلسي")} هنا.`,`${GV("tafaddal","tafaddali")}! ${GV("ijlis","ijlisi")} huna.`,"Come in! Sit here."),
+      ln("hs2",K,v.e,"بيتٌ جميل! ما شاء الله.","baytun jamil! ma sha'a allah.","What a lovely home! Masha'Allah.",1),
+    ],`<div class="hint center">👆 ${P("ماذا ستفعلان؟ اختر (أو اضغط عليه في البيت):","madha tafʿalan? ikhtar:")}</div>
+      <div class="tog center">${Object.entries(HOUSE_ACTS).map(([k,a])=>`<button class="big ${pk.cur===k?"on":""}" data-pkb="${k}">${a.e} ${P(a.ar,a.tr)} ${pk.done[k]?"✓":""}</button>`).join("")}</div>
+      ${pk.cur?`<div class="now me"><div class="nowwho"><b>${v.e}</b><span>${P("قُل:","qul:")}</span></div><div class="ar big">${L1[pk.cur][0]}</div>${S.tr?`<div class="tr">${L1[pk.cur][1]}</div>`:""}${S.en?`<div class="en">${L1[pk.cur][2]}</div>`:""}
+        ${pk.said[pk.cur]?`<div class="past"><div class="pb"><b>${t.e}</b> ${L2[pk.cur][0]}</div></div>`:`<button class="say" id="pkSay">🗣️ ${P("قالها","qalaha")} ⭐</button>`}</div>`:""}
+      ${n>=NT&&Object.keys(pk.said).length>=1?`<div class="tog center"><button class="big huge" id="leaveHouse">👋 ${P("ودّع واخرج","waddiʿ wa-ukhruj")}</button></div>`:`<div class="hint center">${P(`جرّبتما ${ar(n)} من ${ar(NT)}`,`${n} / ${NT}`)}</div>`}`);
   }
   else if(S.phase==="mosque"&&(outKind()==="park"||outKind()==="beach")){
     const bch=outKind()==="beach",ACTS=actsOf(outKind()),O=OK();
@@ -2097,6 +2190,11 @@ function renderPanel(){
                      ln(k+"i",K,v.e,`${G(r,"أراكَ","أراكِ")} في المرّة القادمة، مع السلامة!`,`${G(r,"araka","araki")} fi al-marrati al-qadima, maʿa al-salama!`,`See you next time, goodbye!`,1),
                      ln(k+"j",Tc,r.e,...bye));
           banner=`<div class="win">🎉 ${t.e} ${P(`وجدتَ ${t.ar}!`,`wajadta ${t.tr}!`)}</div>`;
+          if(v.id!=="dl"&&!S.houseDone){
+            for(let i=lines.length-1;i>=0;i--)if(lines[i].id===k+"i"||lines[i].id===k+"j")lines.splice(i,1);
+            after=`<div class="win center">🏠 ${P(`${G(t,"يدعوك","تدعوك")} ${t.ar} إلى بيت${G(t,"ه","ها")}!`,`${G(t,"yadʿuka","tadʿuka")} ${t.tr} ila bayti${G(t,"hi","ha")}!`)}</div>
+              <div class="tog center"><button class="big huge" id="enterHouse">🚪 ${P("ادخل البيت","udkhul al-bayt")}</button></div>`;
+          } else {
           if(S.reward==null)S.reward=pickFurn();
           const RW=rwItem();
           after=`<div class="finish"><div class="bigstar">${RW[0]}</div><h2>${P("أنجزتَ المهمة!","anjazta al-mahamma!")}</h2>
@@ -2104,6 +2202,7 @@ function renderPanel(){
             ${S.rewardTaken?`<div class="hint center">✓ ${P("وضعتَه في شقّتك","wadaʿtahu fi shaqqatik")}</div>`:`<div class="tog center"><button class="big huge" id="placeB">🏠 ${P(S.reward===-1?"خذ النجوم ⭐":HOME.f?"ضعه في شقّتي":"استأجر شقّتك وضعه فيها",S.reward===-1?"khudh al-nujum":"daʿhu fi shaqqati")}</button></div>`}
             <div class="tog center"><button class="big" id="bonus" ${S.said.bonus?"disabled":""}>${S.said.bonus?"⭐⭐ ممتاز!":`🎤 ${P(`سؤال إضافي: من أين ${you}؟`,`su'al idafi: min ayna ${G(r,"anta","anti")}?`)} +⭐⭐`}</button></div>
             <div class="tog center"><button class="big huge" id="next">🚀 ${P("مهمة جديدة","mahamma jadida")}</button><button id="brk2">⚡ اشحن المصعد</button></div></div>`;
+          }
         }
       }
     }
@@ -2135,6 +2234,8 @@ function renderPanel(){
   on("homeTrip",startHomeTrip);
   on("mosqueTrip",startMosque);
   on("beachTrip",startBeach);
+  on("enterHouse",()=>{S.phase="house";S.park={done:{},said:{},cur:null};knock();render();});
+  on("leaveHouse",()=>{S.houseDone=true;S.park=null;S.phase="door";beep();render();});
   document.querySelectorAll("[data-pkb]").forEach(b=>b.onclick=()=>playPark(b.dataset.pkb));
   on("pkSay",()=>{const pk=S.park;if(!pk||!pk.cur||pk.said[pk.cur])return;pk.said[pk.cur]=1;addStars(1);yay();render();});
   on("parkTrip",startPark);
