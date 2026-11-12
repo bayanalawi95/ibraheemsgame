@@ -535,6 +535,53 @@ button.tile:hover{border-color:var(--bld)}
 .pl-dinner{background:linear-gradient(#fff3e0 0 58%,#d7b48a 58%)}.pl-dinner .kitchen{position:absolute;left:3%;top:30px;font-size:2.2rem;background:#fff;border-radius:12px;padding:6px 12px;box-shadow:0 2px 6px rgba(0,0,0,.1)}.pl-dinner .dtable{position:absolute;left:20%;right:20%;bottom:40px;height:24px;background:#8d6e63;border-radius:12px}
 .pl-boss{background:linear-gradient(#37474f 0 60%,#263238 60%);transition:filter .6s}.pl-boss.dark{filter:brightness(.45)}.pl-boss.lit{background:linear-gradient(#fffde7 0 60%,#cfd8dc 60%)}.pl-boss .pipes{position:absolute;left:0;right:0;top:40px;height:12px;background:#78909c}.pl-boss .bulb{position:absolute;left:50%;top:52px;font-size:2.2rem;filter:grayscale(1)}.pl-boss.lit .bulb{filter:drop-shadow(0 0 14px #ffeb3b)}
 @media (max-width:820px){.place{height:520px}.place .station{width:120px;zoom:.8}}
+.market{position:relative;width:100%;min-height:440px;border-radius:16px;overflow:hidden;direction:rtl;background:linear-gradient(#fafafa 0 70%,#e0e0e0 70%);padding:46px 12px 12px;box-sizing:border-box}
+.mksign{position:absolute;top:8px;left:50%;transform:translateX(-50%);background:#e53935;color:#fff;font-weight:800;padding:4px 18px;border-radius:12px;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+.shelves{display:grid;gap:14px;max-width:760px}
+.shelf{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;padding:6px 8px 10px;background:linear-gradient(transparent 82%,#8d6e63 82%);border-radius:6px}
+.prod{display:flex;flex-direction:column;align-items:center;gap:2px;background:#fff;border:2px solid #eee;border-radius:12px;padding:6px 2px;cursor:pointer;font:inherit;position:relative;transition:transform .15s}
+.prod:hover{transform:translateY(-3px);border-color:#ffb300}.prod .pe{font-size:2rem;line-height:1}.prod .pn{font-size:.8rem;font-weight:700}
+.prod .tag{font-size:.72rem;background:#fff59d;border-radius:6px;padding:0 6px;font-weight:800;color:#5d4037}
+.prod.need{border-color:#81c784}.prod.fly .pe{animation:pfly .7s ease-in}
+@keyframes pfly{0%{transform:none}60%{transform:translate(-60px,180px) scale(.6);opacity:.7}100%{transform:translate(-80px,240px) scale(.3);opacity:0}}
+.shopper{position:absolute;left:18px;bottom:14px;display:flex;align-items:flex-end;gap:4px;direction:ltr}
+.mkcart{position:relative;display:flex;flex-direction:column;align-items:center}.mkcart .cwheel{font-size:3.6rem;line-height:1}
+.mkcart .cbask{position:absolute;top:2px;left:50%;transform:translateX(-50%);font-size:1.1rem;white-space:nowrap;max-width:140px;overflow:hidden}
+.mkcart.bump{animation:bob .4s}
+.checkout{background:linear-gradient(#f5f5f5 0 60%,#bdbdbd 60%)}
+.register{position:absolute;right:16%;top:60px;background:#263238;border-radius:10px;padding:10px 16px}.register .rscr{font-family:monospace;color:#69f0ae;font-size:1.6rem;font-weight:800}
+.belt{position:absolute;left:20%;right:30%;top:170px;height:56px;background:repeating-linear-gradient(90deg,#424242 0 20px,#616161 20px 40px);border-radius:10px;display:flex;align-items:center;gap:6px;padding:0 10px;overflow:hidden;direction:ltr;animation:belt 1s linear infinite}
+@keyframes belt{to{background-position:40px 0}}
+.belt .bi{font-size:1.8rem;transition:opacity .3s}.belt .bi.done{opacity:.3}
+.cashier{position:absolute;right:6%;top:150px;display:flex;align-items:flex-end;gap:6px}.cashier b{font-size:1.8rem}
+.buyer{position:absolute;left:18px;bottom:14px;display:flex;align-items:flex-end;gap:4px;direction:ltr}
+.pos{position:absolute;right:36%;bottom:40px;background:#37474f;color:#fff;border-radius:12px;padding:8px 14px;font-size:1.6rem;display:flex;gap:8px;align-items:center}.pos span{font-family:monospace;font-size:1.1rem;color:#80deea}.pos.ok{background:#2e7d32}.pos.ok span{color:#fff}
+.tray{position:absolute;right:34%;bottom:40px;display:flex;gap:6px;flex-wrap:wrap;max-width:260px}.tray span{background:#fff;border-radius:8px;padding:2px 6px;font-size:1.3rem;box-shadow:0 1px 3px rgba(0,0,0,.2)}.tray small{font-size:.75rem;font-weight:800}
+.mkhead{display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:#fff3e0;border-radius:12px;padding:8px 12px;font-weight:700}
+.mklist{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0;background:#fffde7;border:2px dashed #fbc02d;border-radius:12px;padding:8px}.mklist .li{background:#fff;border-radius:10px;padding:4px 10px;font-weight:700}.mklist .li.ok{background:#e8f5e9;color:#2e7d32}
+.mkcartlist{margin:6px 0;display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-weight:700}.mkcartlist .ci{background:#f5f5f5;border-radius:10px;padding:2px 6px}.mkcartlist .ci button{border-radius:50%;width:22px;height:22px;padding:0;margin-inline-start:4px;background:#ffebee;border:1px solid #e57373}
+.paybtn{min-width:160px}
+.pinpad{display:grid;grid-template-columns:repeat(3,64px);gap:8px;justify-content:center;margin:10px auto;direction:ltr}.pinpad .pinscr{grid-column:1/-1;text-align:center;font-size:1.6rem;letter-spacing:8px;background:#263238;color:#80deea;border-radius:10px;padding:6px}.pinpad button{height:56px;font-size:1.4rem;font-weight:800;border-radius:12px}
+.wallet{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:8px 0}.wallet button{display:flex;flex-direction:column;align-items:center;min-width:72px;padding:8px;border-radius:14px;background:#e8f5e9;border:2px solid #81c784;font-size:1.6rem}.wallet button b{font-size:1.1rem}.wallet button small{font-size:.7rem}
+.receipt{max-width:320px;margin:10px auto;background:#fff;border:1px dashed #9e9e9e;border-radius:8px;padding:10px 14px;font-family:inherit;box-shadow:0 2px 8px rgba(0,0,0,.08)}.receipt div{display:flex;justify-content:space-between;padding:2px 0}.receipt .tot{border-top:1px dashed #9e9e9e;margin-top:4px;padding-top:4px;font-weight:800}
+@media (max-width:820px){.shelf{grid-template-columns:repeat(5,1fr);gap:4px}.prod .pe{font-size:1.5rem}.prod .pn{font-size:.65rem}.market{min-height:520px}.belt{left:4%;right:4%;top:130px}.register{right:4%;top:56px}.cashier{right:4%;top:200px}}
+.gcard{background:#fff;border-radius:20px;padding:14px;width:min(720px,100%);max-height:92vh;overflow:auto;box-shadow:0 10px 40px rgba(0,0,0,.35)}
+.ghead{display:flex;justify-content:space-between;align-items:center;font-size:1.2rem;margin-bottom:8px}
+.ginfo{display:flex;gap:14px;justify-content:center;font-weight:800;font-size:1.1rem;margin-bottom:6px}
+.gcmd{text-align:center;font-weight:700;margin:8px 0;padding:6px 10px;background:#fff8e1;border-radius:10px}.gcmd.big{font-size:1.3rem}
+.sky{position:relative;height:260px;border-radius:14px;overflow:hidden;background:linear-gradient(#4fc3f7,#b3e5fc);direction:ltr}
+.sky .ground{position:absolute;left:0;right:0;bottom:0;height:18px;background:repeating-linear-gradient(90deg,#66bb6a 0 30px,#4caf50 30px 60px);animation:belt .6s linear infinite}
+.sky .plane2{position:absolute;left:6%;font-size:2.6rem;transition:top .18s;transform:translateY(-50%)}.sky .plane2.shake{animation:pshake .35s}
+@keyframes pshake{25%{transform:translateY(-50%) rotate(-15deg)}75%{transform:translateY(-50%) rotate(15deg)}}
+.sky .ob{position:absolute;font-size:2rem;transform:translateY(-50%)}
+.sky.landing{background:linear-gradient(#ffcc80,#ffe0b2)}
+.wires{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:10px 0}.wcol{display:grid;gap:10px}
+.wl,.wr{font-size:1.4rem;padding:10px 14px;border-radius:12px;border:2px solid #ddd;background:#fff;min-width:120px}.wl.sel{border-color:#ff9800;background:#fff3e0}.wl.ok,.wr.ok{border-color:#43a047;background:#e8f5e9}.wr small{display:block;font-size:.7rem;color:#777}.wr.bad{animation:pshake .3s;border-color:#e53935}
+.wmid{font-size:3rem}
+.potzone{position:relative;height:120px;display:flex;align-items:center;justify-content:center}.pot{font-size:5rem}.pot.hot{filter:drop-shadow(0 6px 8px #ff7043)}.potin{position:absolute;top:22px;font-size:1.4rem}.steam2{position:absolute;top:0;font-size:1.6rem;animation:smoke 2s ease-out infinite}
+.ings{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:10px 0}.ings button{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:2rem;padding:8px 12px;border-radius:14px;background:#fff;border:2px solid #e0e0e0;min-width:90px}.ings button b{font-size:.9rem}.ings button small{font-size:.65rem;color:#777}
+.wudone{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;min-height:30px;margin:6px 0}.wudone span{background:#e3f2fd;border-radius:10px;padding:3px 8px;font-weight:700}
+.gamebtn{box-shadow:0 0 0 3px #ffca28 inset}
 .park .pk:focus,.beach .pk:focus{outline:none}
 .beachb{background:#e3f4fd;border-color:#4fb3e8}.parkb{background:#e7f6df;border-color:#6dbb4a}
 .mosqueb{background:#dff5ea;border-color:var(--good)}
@@ -603,6 +650,7 @@ img.emoji{height:1em;width:1em;margin:0 .05em;vertical-align:-0.12em;display:inl
 <div id="adhanSet" class="overlay" hidden></div>
 <div id="mosquePick" class="overlay" hidden></div>
 <div id="advBox" class="overlay" hidden></div>
+<div id="gameBox" class="overlay" hidden style="z-index:70"></div>
 <div id="login"><form class="lcard" id="loginF" autocomplete="on">
   <div style="font-size:44px">🏢</div><h2>تسجيل الدخول</h2><div class="sub">tasjil al-dukhul · Log in</div>
   <input id="lEmail" type="email" placeholder="Email" autocomplete="username" required>
@@ -748,7 +796,7 @@ function newRound(keepVisitor){
   do{S.t=1+Math.floor(Math.random()*TOP);S.side=Math.floor(Math.random()*4);}while(S.res[S.t][S.side].home);S.why=rnd(WHY);
   S.lifts.forEach(l=>{l.out=false;l.open=false;l.dir="";});
   if(Math.random()<.65)S.lifts[Math.floor(Math.random()*3)].out=true;
-  Object.assign(S,{phase:"reception",lift:null,pos:0,said:{},msg:"",dir:false,stuck:false,knocked:null,hide:Math.random()<.3,talking:false,outTried:null,wrongAt:null,ready:false,entering:false,exiting:false,arrived:false,skipped:null,vary:{},closed:false,goHome:false,mosque:null,park:null,houseDone:false,place:null,lost:null,secret:null,counted:{},knockReq:null,rent:null,keyTrip:false,cancelFl:null,dlChosen:false,dlItem:null,nb:null,nbUp:0,nbDown:0,nbMsg:"",final:null,live:null,hint:{},build:{},shuf:{},shown:{},lw:{},det:newDet(),reward:null,rewardTaken:false,rid:(S.rid||0)+1});
+  Object.assign(S,{phase:"reception",lift:null,pos:0,said:{},msg:"",dir:false,stuck:false,knocked:null,hide:Math.random()<.3,talking:false,outTried:null,wrongAt:null,ready:false,entering:false,exiting:false,arrived:false,skipped:null,vary:{},closed:false,goHome:false,mosque:null,park:null,houseDone:false,place:null,mk:null,lost:null,secret:null,counted:{},knockReq:null,rent:null,keyTrip:false,cancelFl:null,dlChosen:false,dlItem:null,nb:null,nbUp:0,nbDown:0,nbMsg:"",final:null,live:null,hint:{},build:{},shuf:{},shown:{},lw:{},det:newDet(),reward:null,rewardTaken:false,rid:(S.rid||0)+1});
   render();
 }
 /* ---------- rewards ---------- */
@@ -938,6 +986,11 @@ function renderScene(){
   const v=V();
   $("scene").classList.toggle("night",isNight()&&!["place","house"].includes(S.phase)&&!(S.phase==="mosque"&&outKind()!=="mosque"));
   $("scene").classList.toggle("rain",WEATHER==="rain"&&!["place","house"].includes(S.phase));
+  if(S.phase==="souq"){
+    $("scene").innerHTML=souqScene();
+    $("scene").querySelectorAll("[data-prod]").forEach(b=>b.onclick=()=>mkAdd(b.dataset.prod));
+    return;
+  }
   if(S.phase==="place"){
     $("scene").innerHTML=placeScene();
     $("scene").querySelectorAll("[data-pk]").forEach(b=>b.onclick=()=>playPlace(b.dataset.pk));
@@ -1828,7 +1881,7 @@ function focus(lines,afterHtml){
   return h;
 }
 function steps(){const names=["المحاسب","المصعد","الأزرار","الشقة"],ntr=["al-muhasib","al-misʿad","al-azrar","al-shaqqa"];
-  const cur={reception:0,lift:1,inside:2,ride:2,stuck:2,door:3,mosque:3,house:3,place:3}[S.phase];
+  const cur={reception:0,lift:1,inside:2,ride:2,stuck:2,door:3,mosque:3,house:3,place:3,souq:3}[S.phase];
   return `<div class="steps">${names.map((n,i)=>`<span class="${i<cur?"done":""} ${i===cur?"on":""}">${i<cur?"✓":ar(i+1)} ${P(n,ntr[i])}</span>`).join("")}</div>`;}
 
 /* pick one wording per round, so the dialogue changes every mission but stays stable while playing */
@@ -1841,7 +1894,7 @@ const CLOSED=()=>`<div class="alert">🚪 ${P("أُغلق باب المصعد، 
 function renderPanel(){
   const p=$("panel"),v=V(),t=T(),w=W(),K=kid(),Tc=teach();
   const he=G(t,"يسكن","تسكن"), heT=G(t,"yaskunu","taskunu");
-  let h=`<div class="top"><span class="avatar">${v.e}</span><div style="flex:1;min-width:180px"><div class="mission">${S.lost?`${S.lost.kind==="cat"?"🐱":"🔑"} ${P(`ابحث عن ${S.lost.kind==="cat"?"قطّة":"مفتاح"} ${S.lost.owner.ar}`,`ibhath ʿan ${S.lost.kind==="cat"?"qittat":"miftah"} ${S.lost.owner.tr}`)}`:S.secret?`🕵️ ${P(`أين ${other()==="by"?"تختبئ":"يختبئ"} ${PL_INFO[other()].name}؟`,`ayna ${other()==="by"?"takhtabi'":"yakhtabi'"} ${PL_INFO[other()].tr}?`)}`:S.phase==="place"?`${PLACES[S.place].e} ${P(PLACES[S.place].ar,PLACES[S.place].tr)}`:S.mosque?(outKind()==="mosque"?`🕌 ${P("خذ","khudh")} <b>${t.e} ${P(t.ar,t.tr)}</b> ${P(`إلى المسجد لصلاة ${S.mosque.p.ar}`,`ila al-masjid li-salat ${S.mosque.p.tr}`)}`:`${OK().e} ${P("خذ","khudh")} <b>${t.e} ${P(t.ar,t.tr)}</b> ${P(`إلى ${OK().ar}`,`ila ${OK().tr}`)}`):(v.id==="dl"&&!S.goHome?(S.dlChosen?`📦 ${P("وصّل الطلب إلى","wassil al-talab ila")} <b>${t.e} ${P(t.ar,t.tr)}</b> · ${P(`الشقّة ${aptNo(S.t,S.side)}`,`al-shaqqa ${(S.t-1)*4+S.side+1}`)}`:`🛵 ${P("اختر شقّة لتوصل إليها الطلب","ikhtar shaqqa")}`):`🎯 ${S.goHome?P("اذهب إلى","idhhab ila"):P("زُر","zur")} <b>${t.e} ${P(t.ar,t.tr)}</b>`)}</div>
+  let h=`<div class="top"><span class="avatar">${v.e}</span><div style="flex:1;min-width:180px"><div class="mission">${S.phase==="souq"?`🛒 ${P("السوق: اشترِ كلّ ما في القائمة!","al-suq: ishtari kulla ma fi al-qa'ima!")}`:S.lost?`${S.lost.kind==="cat"?"🐱":"🔑"} ${P(`ابحث عن ${S.lost.kind==="cat"?"قطّة":"مفتاح"} ${S.lost.owner.ar}`,`ibhath ʿan ${S.lost.kind==="cat"?"qittat":"miftah"} ${S.lost.owner.tr}`)}`:S.secret?`🕵️ ${P(`أين ${other()==="by"?"تختبئ":"يختبئ"} ${PL_INFO[other()].name}؟`,`ayna ${other()==="by"?"takhtabi'":"yakhtabi'"} ${PL_INFO[other()].tr}?`)}`:S.phase==="place"?`${PLACES[S.place].e} ${P(PLACES[S.place].ar,PLACES[S.place].tr)}`:S.mosque?(outKind()==="mosque"?`🕌 ${P("خذ","khudh")} <b>${t.e} ${P(t.ar,t.tr)}</b> ${P(`إلى المسجد لصلاة ${S.mosque.p.ar}`,`ila al-masjid li-salat ${S.mosque.p.tr}`)}`:`${OK().e} ${P("خذ","khudh")} <b>${t.e} ${P(t.ar,t.tr)}</b> ${P(`إلى ${OK().ar}`,`ila ${OK().tr}`)}`):(v.id==="dl"&&!S.goHome?(S.dlChosen?`📦 ${P("وصّل الطلب إلى","wassil al-talab ila")} <b>${t.e} ${P(t.ar,t.tr)}</b> · ${P(`الشقّة ${aptNo(S.t,S.side)}`,`al-shaqqa ${(S.t-1)*4+S.side+1}`)}`:`🛵 ${P("اختر شقّة لتوصل إليها الطلب","ikhtar shaqqa")}`):`🎯 ${S.goHome?P("اذهب إلى","idhhab ila"):P("زُر","zur")} <b>${t.e} ${P(t.ar,t.tr)}</b>`)}</div>
     ${S.en?`<div class="en">Visit ${t.en}.</div>`:""}</div>${steps()}</div>`;
 
   if(S.phase==="reception"&&S.mosque){
@@ -2009,6 +2062,9 @@ function renderPanel(){
   }
   else if(S.phase==="place"){
     h+=placePanel(v,K,Tc);
+  }
+  else if(S.phase==="souq"){
+    h+=souqPanel(v,K);
   }
   else if(S.phase==="house"){
     const pk=S.park||(S.park={done:{},said:{},cur:null}),n=Object.keys(pk.done).length,NT=4;
@@ -2331,6 +2387,7 @@ function renderPanel(){
   on("mosqueTrip",startMosque);
   on("beachTrip",startBeach);
   on("masjidIn",()=>startPlace("masjid",true));
+  if(S.phase==="souq")bindSouq();
   document.querySelectorAll("[data-plb]").forEach(b=>b.onclick=()=>playPlace(b.dataset.plb));
   on("plSay",()=>{const pk=S.park;if(!pk||!pk.cur||pk.said[pk.cur])return;pk.said[pk.cur]=1;addStars(1);yay();render();});
   on("recClip",()=>openRecClip());
@@ -2708,7 +2765,7 @@ function openAdv(){
   const card=(id,e,ar1,tr1,sub,dis)=>`<button class="advc" data-adv="${id}" ${dis?"disabled":""}><span class="ae">${e}</span><b>${P(ar1,tr1)}</b><small>${sub}</small></button>`;
   o.innerHTML=`<div class="homecard advcard"><div class="homehead"><h2>🎒 ${P("مغامرات جديدة","mughamarat jadida")}</h2><button id="advX">✕</button></div>
     <div class="advgrid">
-      ${card("souq","🛒","السوق","al-suq","اشترِ ما في القائمة")}
+      ${card("souq","🛒","السوبرماركت","al-subirmarkit","عربة، كاشير، بطاقة أو نقداً")}
       ${card("airport","✈️","المطار","al-matar","سافر إلى مدينة جديدة")}
       ${card("dinner","🍽️","عشاء في شقّتي","ʿasha' fi shaqqati","اطبخ وقدّم لضيفك")}
       ${card("boss","⚡","مهمّة الأسبوع","muhimmat al-usbuʿ",bossDone?"✓ أنجزتها هذا الأسبوع":"انقطعت الكهرباء!",bossDone)}
@@ -2722,7 +2779,8 @@ function openAdv(){
   o.hidden=false;$("advX").onclick=()=>{o.hidden=true;};o.onclick=e=>{if(e.target===o)o.hidden=true;};
   o.querySelectorAll("[data-adv]").forEach(b=>b.onclick=()=>{
     const k=b.dataset.adv;o.hidden=true;
-    if(["souq","airport","dinner","boss"].includes(k))startPlace(k);
+    if(k==="souq")startSouq();
+    else if(["airport","dinner","boss"].includes(k))startPlace(k);
     else if(k==="cat"||k==="key")startLost(k);
     else if(k==="secret")startSecret();
     else if(k==="myres")openMyRes();
@@ -2762,23 +2820,24 @@ var PLACES={
    intro:()=>{const c=S.placeData.city;return [[`مرحباً بك في المطار! إلى أين ${GV("ستسافر","ستسافرين")}؟`,`marhaban bika fi al-matar! ila ayna ${GV("satusafir","satusafirin")}?`,"Welcome to the airport! Where are you travelling to?"],[`سأسافر إلى ${c[0]}!`,`sa'usafiru ila ${c[1]}!`,`I'm travelling to ${c[2]}!`]];},
    note:()=>`🎫 ${P(`الرحلة إلى ${S.placeData.city[0]} · البوّابة ٥`,`al-rihla ila ${S.placeData.city[1]}`)}`,
    acts:{
-     checkin:{e:"🛄",ar:"تسجيل الحقائب",tr:"tasjil al-haqa'ib",x:8,say:()=>["هذا جواز سفري، وهذه حقيبتي.","hadha jawazu safari, wa hadhihi haqibati.","This is my passport, and this is my bag."],reply:()=>["شكراً. هذه بطاقة الصعود. رحلة سعيدة!","shukran. hadhihi bitaqatu al-suʿud. rihla saʿida!","Thank you. Here's your boarding pass. Have a nice trip!"]},
-     security:{e:"🛃",ar:"التفتيش",tr:"al-taftish",x:32,say:()=>["هل أضع حقيبتي هنا؟","hal adaʿu haqibati huna?","Do I put my bag here?"],reply:()=>[`نعم، من فضلك. ${GV("تفضّل","تفضّلي")}، كلّ شيءٍ جيّد.`,`naʿam, min fadlik. ${GV("tafaddal","tafaddali")}, kullu shay'in jayyid.`,"Yes, please. Go ahead, everything is fine."]},
-     gate:{e:"🚪",ar:"البوّابة",tr:"al-bawwaba",x:56,say:()=>["أين البوّابة رقم خمسة؟","ayna al-bawwabatu raqm khamsa?","Where is gate number five?"],reply:()=>["على اليمين، بجانب المقهى.","ʿala al-yamin, bi-janibi al-maqha.","On the right, next to the café."]},
-     land:{e:"🛬",ar:"الهبوط",tr:"al-hubut",x:80,say:()=>{const c=S.placeData.city;return [`الحمد لله! وصلنا إلى ${c[0]}!`,`al-hamdu lillah! wasalna ila ${c[1]}!`,`Praise be to Allah! We've arrived in ${c[2]}!`];},reply:()=>{const c=S.placeData.city;return [`أهلاً بكم في ${c[0]}! نتمنّى لكم وقتاً سعيداً.`,`ahlan bikum fi ${c[1]}! natamanna lakum waqtan saʿidan.`,`Welcome to ${c[2]}! We wish you a happy time.`];}}}},
+     checkin:{e:"🛄",ar:"تسجيل الحقائب",tr:"tasjil al-haqa'ib",x:4,say:()=>["هذا جواز سفري، وهذه حقيبتي.","hadha jawazu safari, wa hadhihi haqibati.","This is my passport, and this is my bag."],reply:()=>["شكراً. هذه بطاقة الصعود. رحلة سعيدة!","shukran. hadhihi bitaqatu al-suʿud. rihla saʿida!","Thank you. Here's your boarding pass. Have a nice trip!"]},
+     security:{e:"🛃",ar:"التفتيش",tr:"al-taftish",x:24,say:()=>["هل أضع حقيبتي هنا؟","hal adaʿu haqibati huna?","Do I put my bag here?"],reply:()=>[`نعم، من فضلك. ${GV("تفضّل","تفضّلي")}، كلّ شيءٍ جيّد.`,`naʿam, min fadlik. ${GV("tafaddal","tafaddali")}, kullu shay'in jayyid.`,"Yes, please. Go ahead, everything is fine."]},
+     gate:{e:"🚪",ar:"البوّابة",tr:"al-bawwaba",x:44,say:()=>["أين البوّابة رقم خمسة؟","ayna al-bawwabatu raqm khamsa?","Where is gate number five?"],reply:()=>["على اليمين، بجانب المقهى.","ʿala al-yamin, bi-janibi al-maqha.","On the right, next to the café."]},
+     pilot:{e:"🧑‍✈️",ar:"قيادة الطائرة",tr:"qiyadat al-ta'ira",x:63,game:"flight",say:()=>{const c=S.placeData.city;return [`أنا الطيّار! سأقود الطائرة إلى ${c[0]}.`,`ana al-tayyar! sa'aqudu al-ta'irata ila ${c[1]}.`,`I'm the pilot! I'll fly the plane to ${c[2]}.`];},reply:()=>["برج المراقبة: الطريق آمن، يمكنك الإقلاع! ✈️","burj al-muraqaba: al-tariqu amin, yumkinuka al-iqlaʿ!","Control tower: the way is clear, you can take off!"]},
+     land:{e:"🛬",ar:"الهبوط",tr:"al-hubut",x:82,say:()=>{const c=S.placeData.city;return [`الحمد لله! وصلنا إلى ${c[0]}!`,`al-hamdu lillah! wasalna ila ${c[1]}!`,`Praise be to Allah! We've arrived in ${c[2]}!`];},reply:()=>{const c=S.placeData.city;return [`أهلاً بكم في ${c[0]}! نتمنّى لكم وقتاً سعيداً.`,`ahlan bikum fi ${c[1]}! natamanna lakum waqtan saʿidan.`,`Welcome to ${c[2]}! We wish you a happy time.`];}}}},
  masjid:{e:"🕌",ar:"داخل المسجد",tr:"dakhil al-masjid",bg:"pl-masjid",npc:()=>({e:"👳‍♂️",ar:"الإمام",tr:"al-imam"}),
    decor:`<div class="mihrab"></div><div class="mlamps">💡 💡 💡</div><div class="mrows"></div>`,
    intro:()=>[["السلام عليكم، أهلاً بكم في بيت الله!","al-salamu ʿalaykum, ahlan bikum fi bayti allah!","Peace be upon you, welcome to the house of Allah!"],["وعليكم السلام! سنتوضّأ أوّلاً.","wa ʿalaykum al-salam! sanatawadda'u awwalan.","And peace be upon you! We'll make wudu first."]],
    acts:{
      shoes:{e:"👟",ar:"الأحذية",tr:"al-ahdhiya",x:8,say:()=>["أضع حذائي في المكان المخصّص.","adaʿu hidha'i fi al-makani al-mukhassas.","I put my shoes in their place."],reply:()=>[`${GV("جزاكَ","جزاكِ")} الله خيراً، هذا من الأدب.`,`${GV("jazaka","jazaki")} allahu khayran, hadha min al-adab.`,"May Allah reward you, that's good manners."]},
-     wudu:{e:"🚰",ar:"الوضوء",tr:"al-wudu'",x:32,say:()=>["أغسل يديّ، ثمّ وجهي، ثمّ ذراعيّ، وأمسح رأسي.","aghsilu yadayya, thumma wajhi, thumma dhiraʿayya, wa amsahu ra'si.","I wash my hands, then my face, then my arms, and wipe my head."],reply:()=>[`${GV("أحسنتَ","أحسنتِ")}! الوضوء نورٌ للمسلم.`,`${GV("ahsanta","ahsanti")}! al-wudu'u nurun lil-muslim.`,"Well done! Wudu is a light for the Muslim."]},
+     wudu:{e:"🚰",ar:"الوضوء",tr:"al-wudu'",x:32,game:"wudu",say:()=>["أغسل يديّ، ثمّ وجهي، ثمّ ذراعيّ، وأمسح رأسي.","aghsilu yadayya, thumma wajhi, thumma dhiraʿayya, wa amsahu ra'si.","I wash my hands, then my face, then my arms, and wipe my head."],reply:()=>[`${GV("أحسنتَ","أحسنتِ")}! الوضوء نورٌ للمسلم.`,`${GV("ahsanta","ahsanti")}! al-wudu'u nurun lil-muslim.`,"Well done! Wudu is a light for the Muslim."]},
      row:{e:"🧎",ar:"الصفّ",tr:"al-saff",x:56,say:()=>[`أقف في الصفّ مستقيماً، كتفي بجانب كتف ${GV("أخي","أختي")}.`,`aqifu fi al-saffi mustaqiman, katifi bi-janibi katifi ${GV("akhi","ukhti")}.`,"I stand straight in the row, shoulder to shoulder."],reply:()=>["استووا واعتدلوا، بارك الله فيكم.","istawu waʿtadilu, baraka allahu fikum.","Straighten the rows, may Allah bless you."]},
      dua:{e:"🤲",ar:"الدعاء",tr:"al-duʿa'",x:80,say:()=>["اللهمّ اغفر لي ولوالديّ.","allahumma ighfir li wa li-walidayya.","O Allah, forgive me and my parents."],reply:()=>["آمين! تقبّل الله منّا ومنكم.","amin! taqabbala allahu minna wa minkum.","Ameen! May Allah accept from us and you."]}}},
  dinner:{e:"🍽️",ar:"عشاء في شقّتي",tr:"ʿasha' fi shaqqati",bg:"pl-dinner",npcFirst:true,npc:()=>({e:T().e,ar:T().ar,tr:T().tr}),
    decor:`<div class="kitchen">🍳 🧂 🥄</div><div class="dtable"></div>`,
    intro:()=>{const t=T();return [["شكراً على الدعوة! ما شاء الله، رائحةٌ طيّبة.","shukran ʿala al-daʿwa! ma sha'a allah, ra'ihatun tayyiba.","Thanks for the invitation! Masha'Allah, it smells good."],[`أهلاً ${G(t,"بك","بكِ")}! ${G(t,"تفضّل","تفضّلي")}، ماذا ${G(t,"تريد","تريدين")} أن ${G(t,"تأكل","تأكلي")}؟`,`ahlan ${G(t,"bik","biki")}! ${G(t,"tafaddal","tafaddali")}, madha ${G(t,"turidu an ta'kul","turidina an ta'kuli")}?`,"Welcome! Please, what would you like to eat?"]];},
    acts:{
-     kabsa:{e:"🍛",ar:"الكبسة",tr:"al-kabsa",x:8,reply:()=>["أريد كبسةً من فضلك.","uridu kabsatan min fadlik.","I'd like kabsa please."],say:()=>{const t=T();return [`${G(t,"تفضّل","تفضّلي")}! كبسةٌ ساخنة. بالهناء والشفاء!`,`${G(t,"tafaddal","tafaddali")}! kabsatun sakhina. bil-hana'i wal-shifa'!`,"Here you go! Hot kabsa. Enjoy!"];}},
+     kabsa:{e:"🍛",ar:"الكبسة",tr:"al-kabsa",x:8,game:"cook",reply:()=>["أريد كبسةً من فضلك.","uridu kabsatan min fadlik.","I'd like kabsa please."],say:()=>{const t=T();return [`${G(t,"تفضّل","تفضّلي")}! كبسةٌ ساخنة. بالهناء والشفاء!`,`${G(t,"tafaddal","tafaddali")}! kabsatun sakhina. bil-hana'i wal-shifa'!`,"Here you go! Hot kabsa. Enjoy!"];}},
      salad:{e:"🥗",ar:"السلطة",tr:"al-salata",x:32,reply:()=>["وهل عندك سلطة؟","wa hal ʿindaka salata?","And do you have salad?"],say:()=>["نعم! سلطةٌ طازجة بالخيار والطماطم.","naʿam! salatatun tazaja bil-khiyari wal-tamatim.","Yes! Fresh salad with cucumber and tomato."]},
      soup:{e:"🍲",ar:"الشوربة",tr:"al-shurba",x:56,reply:()=>["أحبّ الشوربة كثيراً!","uhibbu al-shurbata kathiran!","I love soup!"],say:()=>{const t=T();return [`هذه شوربة عدس. ${G(t,"انتبه","انتبهي")}، إنّها ساخنة!`,`hadhihi shurbatu ʿadas. ${G(t,"intabih","intabihi")}, innaha sakhina!`,"This is lentil soup. Careful, it's hot!"];}},
      juice:{e:"🧃",ar:"العصير",tr:"al-ʿasir",x:80,reply:()=>["أريد عصيراً، من فضلك.","uridu ʿasiran, min fadlik.","I'd like juice, please."],say:()=>{const t=T();return [`${G(t,"تفضّل","تفضّلي")} عصير برتقالٍ بارد.`,`${G(t,"tafaddal","tafaddali")} ʿasira burtuqalin barid.`,"Here's cold orange juice."];}}}},
@@ -2788,7 +2847,7 @@ var PLACES={
    acts:{
      torch:{e:"🔦",ar:"المصباح",tr:"al-misbah",x:8,say:()=>["أين المصباح اليدوي؟… وجدتُه!","ayna al-misbahu al-yadawi?… wajadtuh!","Where's the torch?… Found it!"],reply:()=>["ممتاز! الآن نذهب إلى غرفة الكهرباء.","mumtaz! al-ana nadhhabu ila ghurfati al-kahraba'.","Great! Now we go to the electricity room."]},
      box:{e:"🗄️",ar:"صندوق الكهرباء",tr:"sunduq al-kahraba'",x:32,say:()=>["سأفتح صندوق الكهرباء بحذر.","sa'aftahu sunduqa al-kahraba'i bi-hadhar.","I'll open the fuse box carefully."],reply:()=>[`${GV("انتبه","انتبهي")}! لا ${GV("تلمس","تلمسي")} الأسلاك.`,`${GV("intabih","intabihi")}! la ${GV("talmas","talmasi")} al-aslak.`,"Careful! Don't touch the wires."]},
-     switch:{e:"🔌",ar:"المفتاح",tr:"al-miftah",x:56,say:()=>["سأرفع المفتاح… واحد، اثنان، ثلاثة!","sa'arfaʿu al-miftah… wahid, ithnan, thalatha!","I'll flip the switch… one, two, three!"],reply:()=>["رائع! رجعت الكهرباء! 💡","ra'iʿ! rajaʿat al-kahraba'!","Amazing! The power is back!"]},
+     switch:{e:"🔌",ar:"المفتاح",tr:"al-miftah",x:56,game:"wires",say:()=>["سأرفع المفتاح… واحد، اثنان، ثلاثة!","sa'arfaʿu al-miftah… wahid, ithnan, thalatha!","I'll flip the switch… one, two, three!"],reply:()=>["رائع! رجعت الكهرباء! 💡","ra'iʿ! rajaʿat al-kahraba'!","Amazing! The power is back!"]},
      lift:{e:"🛗",ar:"المصاعد",tr:"al-masaʿid",x:80,say:()=>["المصاعد تعمل الآن! الحمد لله.","al-masaʿidu taʿmalu al-an! al-hamdu lillah.","The lifts work now! Praise be to Allah."],reply:()=>[`شكراً يا ${GV("بطل","بطلة")} العمارة!`,`shukran ya ${GV("batal","batalat")} al-ʿimara!`,"Thank you, hero of the building!"]}}},
 };
 function startPlace(k,keep){
@@ -2800,7 +2859,9 @@ function startPlace(k,keep){
   try{stopAdhan();}catch(e){}
   beep();render();
 }
-function playPlace(k){const d=PLACES[S.place];if(!d||!d.acts[k])return;const pk=S.park||(S.park={done:{},said:{},cur:null});pk.cur=k;pk.done[k]=1;beep();render();}
+function playPlace(k){const d=PLACES[S.place];if(!d||!d.acts[k])return;const pk=S.park||(S.park={done:{},said:{},cur:null});const a=d.acts[k];
+  if(a.game&&!(pk.won&&pk.won[k])){beep();openGame(a.game,()=>{(pk.won=pk.won||{})[k]=1;pk.cur=k;pk.done[k]=1;render();});return;}
+  pk.cur=k;pk.done[k]=1;beep();render();}
 function placeScene(){
   const d=PLACES[S.place],v=V(),cur=(S.park||{}).cur,npc=d.npc(),me=fig(v.e),them=fig(npc.e);
   const lit=S.place!=="boss"||(S.park&&S.park.done.switch);
@@ -2814,7 +2875,7 @@ function placePanel(v,K,Tc){
   const it=d.intro(),a=pk.cur?d.acts[pk.cur]:null;
   const lines=d.npcFirst?[ln("pi0",K,v.e,...it[1],1),ln("pi1",Tc,npc.e,...it[0])]:[ln("pi0",Tc,npc.e,...it[0]),ln("pi1",K,v.e,...it[1],1)];
   let after=`${d.note?`<div class="win center">${d.note()}</div>`:""}<div class="hint center">👆 ${P("اختر (أو اضغط عليه في المشهد):","ikhtar:")}</div>
-    <div class="tog center">${Object.entries(d.acts).map(([k,x])=>`<button class="big ${pk.cur===k?"on":""}" data-plb="${k}">${x.e} ${P(x.ar,x.tr)} ${pk.done[k]?"✓":""}</button>`).join("")}</div>`;
+    <div class="tog center">${Object.entries(d.acts).map(([k,x])=>`<button class="big ${pk.cur===k?"on":""} ${x.game?"gamebtn":""}" data-plb="${k}">${x.e} ${P(x.ar,x.tr)} ${x.game&&!pk.done[k]?"🎮":""} ${pk.done[k]?"✓":""}</button>`).join("")}</div>`;
   if(a){const sy=a.say(),rp=a.reply();
     after+=`${d.npcFirst?`<div class="past"><div class="pb"><b>${npc.e}</b> ${rp[0]}</div></div>`:""}<div class="now me"><div class="nowwho"><b>${v.e}</b><span>${P("قُل:","qul:")}</span></div><div class="ar big">${sy[0]}</div>${S.tr?`<div class="tr">${sy[1]}</div>`:""}${S.en?`<div class="en">${sy[2]}</div>`:""}
       ${pk.said[pk.cur]?(d.npcFirst?`<div class="hint center">✓</div>`:`<div class="past"><div class="pb"><b>${npc.e}</b> ${rp[0]}</div></div>`):`<button class="say" id="plSay">🗣️ ${P("قالها","qalaha")} ⭐</button>`}</div>`;}
@@ -2902,6 +2963,233 @@ function openAlbum(){
     ${al.length?`<div class="album">${al.map(c=>`<div class="clip"><b>${esc(c.label||"")}</b> <small>${new Date(c.ts).toLocaleDateString("ar")}</small>${okU(c.url)?`<audio controls preload="none" src="${esc(c.url)}"></audio>`:""}</div>`).join("")}</div>`
       :`<div class="hint center">${P("لا توجد تسجيلات بعد. بعد كلّ مهمّة اضغط «🎙️ سجّل صوتك».","la tujadu tasjilat baʿd.")}</div>`}</div>`;
   o.hidden=false;$("advX").onclick=()=>{o.hidden=true;};o.onclick=e=>{if(e.target===o)o.hidden=true;};
+}
+
+/* ================= supermarket game ================= */
+var PRODS={
+ apple:{e:"🍎",ar:"تفّاح",tr:"tuffah",p:2},banana:{e:"🍌",ar:"موز",tr:"mawz",p:3},tomato:{e:"🍅",ar:"طماطم",tr:"tamatim",p:2},carrot:{e:"🥕",ar:"جزر",tr:"jazar",p:1},
+ bread:{e:"🍞",ar:"خبز",tr:"khubz",p:4},milk:{e:"🥛",ar:"حليب",tr:"halib",p:5},egg:{e:"🥚",ar:"بيض",tr:"bayd",p:6},cheese:{e:"🧀",ar:"جبن",tr:"jubn",p:7},
+ juice:{e:"🧃",ar:"عصير",tr:"ʿasir",p:3},rice:{e:"🍚",ar:"أرز",tr:"aruzz",p:8},honey:{e:"🍯",ar:"عسل",tr:"ʿasal",p:9},cookie:{e:"🍪",ar:"بسكويت",tr:"baskawit",p:4},
+ icecream:{e:"🍦",ar:"آيس كريم",tr:"ays krim",p:5},water:{e:"💧",ar:"ماء",tr:"ma'",p:1},chicken:{e:"🍗",ar:"دجاج",tr:"dajaj",p:12}};
+var SHELVES=[["apple","banana","tomato","carrot","water"],["bread","milk","egg","cheese","juice"],["rice","honey","cookie","icecream","chicken"]];
+var MONEY=[50,20,10,5,1];
+function riyalAr(n){return n===1?"ريالٌ واحد":n===2?"ريالان":n<=10?`${ar(n)} ريالات`:`${ar(n)} ريالاً`;}
+function riyalTr(n){return n===1?"riyalun wahid":n===2?"riyalan":n<=10?`${n} riyalat`:`${n} riyalan`;}
+function startSouq(){
+  newRound(true);
+  const ids=shuffle(Object.keys(PRODS)).slice(0,3+Math.floor(Math.random()*2));
+  S.phase="souq";S.mk={step:"shop",list:ids.map(id=>({id,q:1+Math.floor(Math.random()*3)})),cart:{},last:null,said:{},t0:Date.now(),given:[],pin:"",method:null,scan:0,lines:{}};
+  S.reward=null;S.rewardTaken=false;try{stopAdhan();}catch(e){}
+  beep();render();
+}
+const mkTotal=()=>Object.entries(S.mk.cart).reduce((a,[id,q])=>a+PRODS[id].p*q,0);
+const mkListOk=()=>S.mk.list.every(x=>(S.mk.cart[x.id]||0)>=x.q);
+const mkGiven=()=>S.mk.given.reduce((a,b)=>a+b,0);
+function mkAdd(id){const m=S.mk;if(m.step!=="shop")return;m.cart[id]=(m.cart[id]||0)+1;m.last=id;tone(660,.06);tone(990,.08,.07);m.fly=id;render();setTimeout(()=>{m.fly=null;},700);}
+function mkRemove(id){const m=S.mk;if(!m.cart[id])return;m.cart[id]--;if(!m.cart[id])delete m.cart[id];tone(300,.08);render();}
+function souqScene(){
+  const m=S.mk,v=V(),me=fig(v.e),cart=Object.entries(m.cart);
+  const cartHtml=`<div class="mkcart ${m.fly?"bump":""}"><span class="cbask">${cart.map(([id,q])=>PRODS[id].e.repeat(Math.min(q,3))).join("")||"&nbsp;"}</span><span class="cwheel">🛒</span></div>`;
+  if(m.step==="shop"){
+    return `<div class="market">
+      <div class="mksign">🛒 ${P("سوبرماركت العمارة","subirmarkit al-ʿimara")}</div>
+      <div class="shelves">${SHELVES.map(row=>`<div class="shelf">${row.map(id=>{const p=PRODS[id],need=m.list.find(x=>x.id===id);return `<button class="prod ${need?"need":""} ${m.fly===id?"fly":""}" data-prod="${id}"><span class="pe">${p.e}</span><span class="pn">${p.ar}</span><span class="tag">${ar(p.p)} ر.س</span></button>`;}).join("")}</div>`).join("")}</div>
+      <div class="shopper">${me}${cartHtml}</div>
+    </div>`;
+  }
+  const items=cart.flatMap(([id,q])=>Array(q).fill(id));
+  const scanned=items.slice(0,m.scan);
+  return `<div class="market checkout">
+    <div class="mksign">🧾 ${P("الكاشير","al-kashir")}</div>
+    <div class="register"><span class="rscr">${ar(scanned.reduce((a,id)=>a+PRODS[id].p,0))} ر.س</span></div>
+    <div class="belt">${items.map((id,i)=>`<span class="bi ${i<m.scan?"done":""}">${PRODS[id].e}</span>`).join("")}</div>
+    <div class="cashier">${fig("🧕")}<b>📟</b></div>
+    <div class="buyer">${me}${cartHtml}</div>
+    ${m.step==="card"||m.method==="card"?`<div class="pos ${m.paid?"ok":""}">💳<span>${m.paid?"✓":"••••".slice(0,m.pin.length)||"PIN"}</span></div>`:""}
+    ${m.step==="cash"||m.method==="cash"?`<div class="tray">${m.given.map(x=>`<span>${x>=5?"💵":"🪙"}<small>${ar(x)}</small></span>`).join("")}</div>`:""}
+  </div>`;
+}
+function souqPanel(v,K){
+  const m=S.mk,el=Math.floor(((m.doneAt||Date.now())-m.t0)/1000),tm=`⏱️ ${ar(Math.floor(el/60))}:${ar(String(el%60).padStart(2,"0"))}`;
+  const best=PL[CUR].souqBest;
+  let h=`<div class="mkhead"><b>🛒 ${P("لعبة السوق","luʿbat al-suq")}</b><span>${tm}</span>${best?`<span>🏆 ${P("أفضل وقت","afdal waqt")}: ${ar(Math.floor(best/60))}:${ar(String(best%60).padStart(2,"0"))}</span>`:""}</div>`;
+  const say=(id,arr)=>`<div class="now me"><div class="nowwho"><b>${v.e}</b><span>${P("قُل:","qul:")}</span></div><div class="ar big">${arr[0]}</div>${S.tr?`<div class="tr">${arr[1]}</div>`:""}${S.en?`<div class="en">${arr[2]}</div>`:""}${m.said[id]?`<div class="hint center">✓ ⭐</div>`:`<button class="say" data-mksay="${id}">🗣️ ${P("قالها","qalaha")} ⭐</button>`}</div>`;
+  const them=(arr)=>`<div class="now them"><div class="nowwho"><b>🧕</b><span>${P("الكاشيرة تقول:","al-kashira taqul:")}</span></div><div class="ar big">${arr[0]}</div>${S.tr?`<div class="tr">${arr[1]}</div>`:""}${S.en?`<div class="en">${arr[2]}</div>`:""}</div>`;
+  if(m.step==="shop"){
+    h+=`<div class="mklist"><b>📝 ${P("قائمة المشتريات:","qa'imat al-mushtarayat:")}</b>${m.list.map(x=>{const p=PRODS[x.id],have=m.cart[x.id]||0;return `<span class="li ${have>=x.q?"ok":""}">${have>=x.q?"✅":"⬜"} ${p.e} ${ar(x.q)} × ${p.ar} <small>(${ar(have)}/${ar(x.q)})</small></span>`;}).join("")}</div>
+      <div class="hint center">👆 ${P("اضغط على المنتجات في الرفوف لتضعها في العربة.","idghat ʿala al-muntajat fi al-rufuf.")}</div>`;
+    if(m.last){const p=PRODS[m.last];h+=say("add-"+m.last,[`أضع ال${p.ar} في العربة.`,`adaʿu al-${p.tr} fi al-ʿaraba.`,`I put the ${p.tr} in the cart.`]);}
+    const cart=Object.entries(m.cart);
+    h+=`<div class="mkcartlist">🛒 ${cart.length?cart.map(([id,q])=>`<span class="ci">${PRODS[id].e}×${ar(q)} <button data-mkrm="${id}" title="أرجع">−</button></span>`).join(""):P("العربة فارغة","al-ʿaraba farigha")} · ${P(`المجموع: ${riyalAr(mkTotal())}`,`al-majmuʿ: ${riyalTr(mkTotal())}`)}</div>`;
+    h+=mkListOk()?`<div class="tog center"><button class="big huge" id="mkCheckout">🧾 ${P("اذهب إلى الكاشير","idhhab ila al-kashir")}</button></div>`:`<div class="hint center">${P("أكمل القائمة أوّلاً!","akmil al-qa'ima awwalan!")}</div>`;
+    return h;
+  }
+  const total=mkTotal();
+  if(m.step==="cashier"){
+    h+=them(["السلام عليكم! هل وجدتَ كلّ ما تريد؟","al-salamu ʿalaykum! hal wajadta kulla ma turid?","Hello! Did you find everything you wanted?"]);
+    h+=say("found",["وعليكم السلام! نعم، الحمد لله.","wa ʿalaykum al-salam! naʿam, al-hamdu lillah.","And peace be upon you! Yes, praise be to Allah."]);
+    if(m.said.found){
+      const items=Object.values(m.cart).reduce((a,b)=>a+b,0);
+      if(m.scan<items)h+=`<div class="win center">📟 ${P("الكاشيرة تمسح المنتجات… بيب!","al-kashira tamsahu al-muntajat… bib!")}</div>`;
+      else{
+        h+=them([`المجموع ${riyalAr(total)}. كيف ${GV("ستدفع","ستدفعين")}؟ بالبطاقة أم نقداً؟`,`al-majmuʿ ${riyalTr(total)}. kayfa ${GV("satadfaʿ","satadfaʿin")}? bil-bitaqa am naqdan?`,`The total is ${total} riyals. How will you pay? Card or cash?`]);
+        h+=`<div class="tog center"><button class="big huge paybtn" id="payCard">💳 ${P("بالبطاقة","bil-bitaqa")}</button><button class="big huge paybtn" id="payCash">💵 ${P("نقداً","naqdan")}</button></div>`;
+      }
+    }
+    return h;
+  }
+  if(m.step==="card"){
+    h+=say("card",["سأدفع بالبطاقة.","sa'adfaʿu bil-bitaqa.","I'll pay by card."]);
+    if(m.said.card){
+      h+=them(["أدخل الرقم السرّي، من فضلك.","adkhil al-raqma al-sirri, min fadlik.","Enter your PIN, please."]);
+      h+=`<div class="pinpad"><div class="pinscr">${"●".repeat(m.pin.length)}${"○".repeat(4-m.pin.length)}</div>${[1,2,3,4,5,6,7,8,9,"⌫",0,"✓"].map(k=>`<button data-pin="${k}" ${k==="✓"&&m.pin.length<4?"disabled":""}>${typeof k==="number"?ar(k):k}</button>`).join("")}</div>`;
+    }
+    return h;
+  }
+  if(m.step==="cash"){
+    h+=say("cash",["سأدفع نقداً.","sa'adfaʿu naqdan.","I'll pay in cash."]);
+    if(m.said.cash){
+      const g=mkGiven();
+      h+=them([`المجموع ${riyalAr(total)}.`,`al-majmuʿ ${riyalTr(total)}.`,`The total is ${total} riyals.`]);
+      h+=`<div class="hint center">${P("اضغط على النقود لتعطيها للكاشيرة:","idghat ʿala al-nuqud:")}</div>
+        <div class="wallet">${MONEY.map(x=>`<button data-cash="${x}">${x>=5?"💵":"🪙"}<b>${ar(x)}</b><small>ر.س</small></button>`).join("")}</div>
+        <div class="win center">${P(`أعطيتَ: ${riyalAr(g||0).replace("٠ ريالات","٠")} من ${riyalAr(total)}`,`aʿtayta: ${g} / ${total}`)}</div>
+        <div class="tog center">${g?`<button id="cashUndo">↺ ${P("أرجع النقود","arjiʿ al-nuqud")}</button>`:""}${g>=total?`<button class="big huge" id="cashGive">🤝 ${P("تفضّلي النقود","tafaddali al-nuqud")}</button>`:""}</div>`;
+    }
+    return h;
+  }
+  if(m.step==="done"){
+    const ch=m.method==="cash"?mkGiven()-total:0;
+    h+=them(m.method==="card"?["تمّت العملية بنجاح ✓ شكراً لك!","tammati al-ʿamaliyya bi-najah! shukran lak!","Payment successful ✓ Thank you!"]
+      :ch>0?[`الباقي ${riyalAr(ch)}. ${GV("تفضّل","تفضّلي")}! شكراً لك.`,`al-baqi ${riyalTr(ch)}. tafaddal! shukran lak.`,`Your change is ${ch} riyals. Here you go! Thank you.`]:["المبلغ بالضبط، ما شاء الله! شكراً لك.","al-mablagh bil-dabt, ma sha'a allah! shukran lak.","Exact amount, masha'Allah! Thank you."]);
+    h+=say("bye",["شكراً لكِ! مع السلامة.","shukran laki! maʿa al-salama.","Thank you! Goodbye."]);
+    const cart=Object.entries(m.cart);
+    h+=`<div class="receipt"><b>🧾 ${P("الفاتورة","al-fatura")}</b>${cart.map(([id,q])=>`<div><span>${PRODS[id].e} ${PRODS[id].ar} × ${ar(q)}</span><span>${ar(PRODS[id].p*q)}</span></div>`).join("")}<div class="tot"><span>${P("المجموع","al-majmuʿ")}</span><span>${ar(total)} ر.س</span></div><div><span>${m.method==="card"?"💳 بطاقة":"💵 نقداً"}</span><span>${m.method==="cash"?`${P("الباقي","al-baqi")}: ${ar(ch)}`:""}</span></div><div class="hint center">${tm}</div></div>`;
+    if(m.said.bye)h+=finishCard("souq","🛒",P("تسوّقتَ بنجاح!","tasawwaqta bi-najah!"));
+    return h;
+  }
+  return h;
+}
+function bindSouq(){
+  const m=S.mk;if(!m)return;
+  document.querySelectorAll("[data-prod]").forEach(b=>b.onclick=()=>mkAdd(b.dataset.prod));
+  document.querySelectorAll("[data-mkrm]").forEach(b=>b.onclick=()=>mkRemove(b.dataset.mkrm));
+  document.querySelectorAll("[data-mksay]").forEach(b=>b.onclick=()=>{const id=b.dataset.mksay;if(m.said[id])return;m.said[id]=1;addStars(1);yay();
+    if(id==="found"){render();const n=Object.values(m.cart).reduce((a,c)=>a+c,0);const tick=()=>{if(S.phase!=="souq"||m.scan>=n)return;m.scan++;tone(1400,.07,0,"square",.08);render();setTimeout(tick,450);};setTimeout(tick,400);return;}
+    render();});
+  const on=(id,f)=>{const e=$(id);if(e)e.onclick=f;};
+  on("mkCheckout",()=>{m.step="cashier";m.scan=0;beep();render();});
+  on("payCard",()=>{m.step="card";m.method="card";beep();render();});
+  on("payCash",()=>{m.step="cash";m.method="cash";beep();render();});
+  document.querySelectorAll("[data-pin]").forEach(b=>b.onclick=()=>{const k=b.dataset.pin;
+    if(k==="⌫")m.pin=m.pin.slice(0,-1);else if(k==="✓"){if(m.pin.length===4){tone(880,.1);tone(1320,.15,.12);m.paid=true;m.step="done";m.doneAt=Date.now();saveBest();}}
+    else if(m.pin.length<4)m.pin+=k;tone(1000,.04);render();});
+  document.querySelectorAll("[data-cash]").forEach(b=>b.onclick=()=>{m.given.push(+b.dataset.cash);tone(+b.dataset.cash>=5?520:1200,.06);render();});
+  on("cashUndo",()=>{m.given=[];render();});
+  on("cashGive",()=>{const ch=mkGiven()-mkTotal();if(ch===0)addStars(1);m.step="done";m.doneAt=Date.now();saveBest();yay();render();if(ch===0)pop("🎯","دفعتَ المبلغ بالضبط! ⭐");});
+}
+function saveBest(){const m=S.mk,sec=Math.floor((m.doneAt-m.t0)/1000);if(!PL[CUR].souqBest||sec<PL[CUR].souqBest){const had=!!PL[CUR].souqBest;PL[CUR].souqBest=sec;saveHome();if(had)setTimeout(()=>pop("🏆","رقمٌ قياسيٌّ جديد في السوق!"),900);}}
+
+/* ================= exciting mini-games inside adventures ================= */
+var GAME=null;
+function openGame(kind,done){
+  const o=$("gameBox");GAME={kind,done,score:0,hits:0};
+  o.hidden=false;
+  ({flight:gFlight,wires:gWires,cook:gCook,wudu:gWudu})[kind](o);
+}
+function closeGame(win){const o=$("gameBox"),g=GAME;if(!g)return;if(g.raf)cancelAnimationFrame(g.raf);if(g.iv)clearInterval(g.iv);if(g.key)document.removeEventListener("keydown",g.key);GAME=null;o.hidden=true;o.innerHTML="";if(win&&g.done)g.done(g.score);}
+const gHead=(e,t,tr)=>`<div class="ghead"><b>${e} ${P(t,tr)}</b><button id="gX">✕</button></div>`;
+function gBind(o){const x=o.querySelector("#gX");if(x)x.onclick=()=>closeGame(false);}
+
+/* --- fly the plane: dodge clouds and birds, collect stars --- */
+function gFlight(o){
+  const g=GAME,city=(S.placeData&&S.placeData.city)||CITIES[0];g.lane=1;g.obs=[];g.t0=Date.now();g.dur=25000;g.last=0;
+  o.innerHTML=`<div class="gcard">${gHead("🧑‍✈️",`قُد الطائرة إلى ${city[0]}!`,`qud al-ta'ira ila ${city[1]}!`)}
+    <div class="ginfo"><span id="fScore">⭐ ٠</span><span id="fTime">⏱️ ٢٥</span><span id="fHits">💥 ٠</span></div>
+    <div class="sky" id="sky"><div class="ground"></div><span class="plane2" id="plane">✈️</span></div>
+    <div class="gcmd" id="fCmd">${P("اصعد وانزل لتتجنّب الغيوم والطيور، واجمع النجوم!","isʿad wa-inzil li-tatajannaba al-ghuyuma wal-tuyur!")}</div>
+    <div class="tog center"><button class="big huge" id="fUp">⬆️ ${P("اصعد","isʿad")}</button><button class="big huge" id="fDown">⬇️ ${P("انزل","inzil")}</button></div></div>`;
+  gBind(o);
+  const sky=o.querySelector("#sky"),plane=o.querySelector("#plane");
+  const setLane=l=>{g.lane=Math.max(0,Math.min(2,l));plane.style.top=(14+g.lane*33)+"%";tone(500+g.lane*120,.05);};
+  setLane(1);
+  o.querySelector("#fUp").onclick=()=>setLane(g.lane-1);o.querySelector("#fDown").onclick=()=>setLane(g.lane+1);
+  g.key=e=>{if(e.key==="ArrowUp"){e.preventDefault();setLane(g.lane-1);}if(e.key==="ArrowDown"){e.preventDefault();setLane(g.lane+1);}};
+  document.addEventListener("keydown",g.key);
+  const CMDS=[["⬆️ اصعد! غيمةٌ أمامك!","isʿad! ghaymatun amamak!"],["⬇️ انزل! طائرٌ قادم!","inzil! ta'irun qadim!"],["⭐ اجمع النجمة!","ijmaʿ al-najma!"]];
+  const step=ts=>{
+    if(!GAME)return;const el=Date.now()-g.t0;
+    if(ts-g.last>850){g.last=ts;const star=Math.random()<.3,lane=Math.floor(Math.random()*3);const sp=document.createElement("span");sp.className="ob";sp.textContent=star?"⭐":rnd(["☁️","⛈️","🦅","☁️"]);sp.style.top=(14+lane*33)+"%";sky.appendChild(sp);g.obs.push({el:sp,x:100,lane,star});
+      if(!star&&lane===g.lane){const c=o.querySelector("#fCmd");c.innerHTML=P(...(lane===0?CMDS[1]:CMDS[0]));} else if(star){const c=o.querySelector("#fCmd");c.innerHTML=P(...CMDS[2]);}}
+    g.obs.forEach(b=>{b.x-=1.25;b.el.style.left=b.x+"%";
+      if(!b.hit&&b.x<16&&b.x>4&&b.lane===g.lane){b.hit=true;b.el.remove();
+        if(b.star){g.score++;tone(1200,.08);tone(1600,.1,.08);o.querySelector("#fScore").textContent="⭐ "+ar(g.score);}
+        else{g.hits++;tone(150,.2,0,"square",.08);plane.classList.remove("shake");void plane.offsetWidth;plane.classList.add("shake");o.querySelector("#fHits").textContent="💥 "+ar(g.hits);}}});
+    g.obs=g.obs.filter(b=>{if(b.x<-8){b.el.remove();return false;}return !b.hit;});
+    o.querySelector("#fTime").textContent="⏱️ "+ar(Math.max(0,Math.ceil((g.dur-el)/1000)));
+    if(el>=g.dur){
+      sky.classList.add("landing");plane.style.top="70%";
+      o.querySelector("#fCmd").innerHTML=`🛬 ${P(`هبوطٌ آمن في ${city[0]}! جمعتَ ${ar(g.score)} نجوم.`,`hubutun amin fi ${city[1]}!`)}`;
+      o.querySelector(".tog").innerHTML=`<button class="big huge" id="fDone">✅ ${P("أحسنتَ يا كابتن!","ahsanta ya kabtin!")}</button>`;
+      o.querySelector("#fDone").onclick=()=>{if(g.score)addStars(Math.min(5,g.score));yay();closeGame(true);};
+      return;}
+    g.raf=requestAnimationFrame(step);};
+  g.raf=requestAnimationFrame(step);
+}
+
+/* --- connect the wires: read the Arabic colour words --- */
+function gWires(o){
+  const g=GAME,C=[["red","🟥","أحمر","ahmar"],["blue","🟦","أزرق","azraq"],["green","🟩","أخضر","akhdar"],["yellow","🟨","أصفر","asfar"]];
+  const right=shuffle(C.slice());g.sel=null;g.ok={};
+  const draw=()=>{o.innerHTML=`<div class="gcard">${gHead("🔌","صِل الأسلاك بالألوان الصحيحة!","sil al-aslak bil-alwan al-sahiha!")}
+    <div class="gcmd">${P("اضغط سلكاً، ثمّ اضغط اسم لونه بالعربية.","idghat silkan, thumma idghat isma lawnihi bil-ʿarabiyya.")}</div>
+    <div class="wires"><div class="wcol">${C.map(c=>`<button class="wl ${g.sel===c[0]?"sel":""} ${g.ok[c[0]]?"ok":""}" data-wl="${c[0]}">${c[1]}〰️</button>`).join("")}</div>
+      <div class="wmid">${Object.keys(g.ok).length===4?"⚡💡":"🔋"}</div>
+      <div class="wcol">${right.map(c=>`<button class="wr ${g.ok[c[0]]?"ok":""}" data-wr="${c[0]}">${g.ok[c[0]]?c[1]+" ":""}${c[2]}${S.tr?`<small>${c[3]}</small>`:""}</button>`).join("")}</div></div>
+    ${Object.keys(g.ok).length===4?`<div class="tog center"><button class="big huge" id="wDone">⚡ ${P("الكهرباء جاهزة!","al-kahraba' jahiza!")}</button></div>`:""}</div>`;
+    gBind(o);
+    o.querySelectorAll("[data-wl]").forEach(b=>b.onclick=()=>{if(g.ok[b.dataset.wl])return;g.sel=b.dataset.wl;tone(700,.05);draw();});
+    o.querySelectorAll("[data-wr]").forEach(b=>b.onclick=()=>{if(!g.sel||g.ok[b.dataset.wr])return;
+      if(b.dataset.wr===g.sel){g.ok[g.sel]=1;g.score++;g.sel=null;tone(900,.08);tone(1300,.1,.08);}else{tone(160,.2,0,"square",.08);b.classList.add("bad");setTimeout(()=>b.classList.remove("bad"),400);return;}draw();});
+    const d=o.querySelector("#wDone");if(d)d.onclick=()=>{yay();confetti(30);closeGame(true);};
+  };draw();
+}
+
+/* --- cook the kabsa: follow the Arabic steps --- */
+function gCook(o){
+  const g=GAME,ING={fire:["🔥","النار","al-nar"],chicken:["🍗","الدجاج","al-dajaj"],water:["💧","الماء","al-ma'"],spice:["🧂","البهارات","al-baharat"],rice:["🍚","الأرز","al-aruzz"],onion:["🧅","البصل","al-basal"]};
+  const STEPS=[["fire","أوّلاً، أشعل النار.","awwalan, ashʿil al-nar."],["onion","ثمّ ضع البصل في القدر.","thumma daʿ al-basala fi al-qidr."],["chicken","الآن أضف الدجاج.","al-ana adif al-dajaj."],["spice","أضف البهارات.","adif al-baharat."],["water","صبّ الماء.","subb al-ma'."],["rice","وأخيراً، أضف الأرز!","wa akhiran, adif al-aruzz!"]];
+  g.i=0;g.pot=[];const btns=shuffle(Object.keys(ING));
+  const draw=(msg)=>{const s=STEPS[g.i];o.innerHTML=`<div class="gcard">${gHead("👨‍🍳","اطبخ الكبسة!","utbukh al-kabsa!")}
+    <div class="ginfo"><span>${ar(g.i)}/${ar(STEPS.length)}</span></div>
+    <div class="potzone"><span class="pot ${g.i?"hot":""}">🍲</span><span class="potin">${g.pot.join("")}</span>${g.i?`<span class="steam2">♨️</span>`:""}</div>
+    ${s?`<div class="gcmd big">📖 ${P(s[1],s[2])}</div>`:`<div class="gcmd big">🍛 ${P("الكبسة جاهزة! ما شاء الله!","al-kabsa jahiza! ma sha'a allah!")}</div>`}
+    ${msg?`<div class="alert">${msg}</div>`:""}
+    ${s?`<div class="ings">${btns.map(k=>`<button data-ing="${k}">${ING[k][0]}<b>${ING[k][1]}</b></button>`).join("")}</div>`:`<div class="tog center"><button class="big huge" id="cDone">🍛 ${P("قدّم الكبسة","qaddim al-kabsa")}</button></div>`}</div>`;
+    gBind(o);
+    o.querySelectorAll("[data-ing]").forEach(b=>b.onclick=()=>{const k=b.dataset.ing;
+      if(k===STEPS[g.i][0]){g.pot.push(ING[k][0]);g.i++;g.score++;tone(600+g.i*80,.08);draw();}
+      else{tone(160,.2,0,"square",.08);draw(`🙈 ${P("لا! اقرأ الخطوة مرّة أخرى.","la! iqra' al-khutwa marratan ukhra.")}`);}});
+    const d=o.querySelector("#cDone");if(d)d.onclick=()=>{yay();confetti(30);closeGame(true);};
+  };draw();
+}
+
+/* --- wudu in the right order --- */
+function gWudu(o){
+  const g=GAME,ST=[["🤲","غسل اليدين","ghasl al-yadayn"],["👄","المضمضة","al-madmada"],["👃","الاستنشاق","al-istinshaq"],["😊","غسل الوجه","ghasl al-wajh"],["💪","غسل الذراعين","ghasl al-dhiraʿayn"],["🧑","مسح الرأس","mash al-ra's"],["👂","مسح الأذنين","mash al-udhunayn"],["🦶","غسل القدمين","ghasl al-qadamayn"]];
+  g.i=0;const order=shuffle(ST.map((_,i)=>i));
+  const draw=(msg)=>{o.innerHTML=`<div class="gcard">${gHead("🚰","رتّب خطوات الوضوء!","rattib khutuwat al-wudu'!")}
+    <div class="gcmd">${P("اضغط الخطوات بالترتيب الصحيح، من الأولى إلى الأخيرة.","idghat al-khutuwat bil-tartib al-sahih.")}</div>
+    <div class="wudone">${ST.slice(0,g.i).map((s,i)=>`<span>${ar(i+1)}. ${s[0]} ${s[1]}</span>`).join("")||"…"}</div>
+    ${msg?`<div class="alert">${msg}</div>`:""}
+    ${g.i<ST.length?`<div class="ings">${order.filter(i=>i>=g.i).map(i=>`<button data-wd="${i}">${ST[i][0]}<b>${ST[i][1]}</b>${S.tr?`<small>${ST[i][2]}</small>`:""}</button>`).join("")}</div>`
+      :`<div class="win center">💧 ${P("وضوءٌ صحيح! أحسنت.","wudu'un sahih! ahsant.")}</div><div class="tog center"><button class="big huge" id="wuDone">✅ ${P("انتهيتُ من الوضوء","intahaytu min al-wudu'")}</button></div>`}</div>`;
+    gBind(o);
+    o.querySelectorAll("[data-wd]").forEach(b=>b.onclick=()=>{const i=+b.dataset.wd;
+      if(i===g.i){g.i++;g.score++;tone(700+g.i*60,.08);draw();}
+      else{tone(160,.2,0,"square",.08);draw(`🙂 ${P(`ليس بعد! ما الخطوة رقم ${ar(g.i+1)}؟`,`laysa baʿd!`)}`);}});
+    const d=o.querySelector("#wuDone");if(d)d.onclick=()=>{yay();closeGame(true);};
+  };draw();
 }
 </script>
 </body></html>
