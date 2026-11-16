@@ -3756,5 +3756,301 @@ _kidReply0=function(k,text){
   }
   return r;
 };
+
+/* ================= kids chat brain v3: realistic conversation ================= */
+var KP={
+ yusuf:{floor:3,pet:null,wish:["حصاناً","hisanan"],best:["عليّ","ʿali"],subject:["الرياضة","al-riyada"],dream:["لاعبَ كرة قدم","laʿiba kurat qadam"],game:["الكرة مع أبي في الحديقة","al-kura maʿa abi"],place:["الملعب","al-malʿab"],season:["الشتاء","al-shita'"],drink:["عصير البرتقال","ʿasir al-burtuqal"],today:["لعبتُ الكرة مع جاري، ثمّ أكلنا الكبسة","laʿibtu al-kura maʿa jari"],fear:["الظلام قليلاً","al-zalam qalilan"],sleep:"التاسعة",why:{like:"لأنّي أركض كثيراً وأسجّل أهدافاً!",food:"لأنّ أمّي تطبخها بالدجاج، وهي لذيذة جداً!",color:"لأنّه لون السماء والبحر 🌊",animal:"لأنّه سريعٌ وقويّ!",subject:"لأنّنا نلعب ونركض فيها!",dream:"لأنّي أحبّ الكرة أكثر من أيّ شيء!",season:"لأنّ الجوّ بارد ونشرب الشاي مع جدّي ☕"}},
+ maryam:{floor:7,pet:["سمكة","samaka","بُلبُل"],best:["سارة","sara"],subject:["الفنّ","al-fann"],dream:["رسّامة","rassama"],game:["الرسم والتلوين","al-rasm wal-talwin"],place:["بيت جدّتي","bayt jaddati"],season:["الربيع","al-rabiʿ"],drink:["الحليب بالفراولة","al-halib bil-farawla"],today:["رسمتُ وردةً وأعطيتها لأمّي","rasamtu wardatan"],fear:["العناكب 🕷️","al-ʿanakib"],sleep:"الثامنة والنصف",why:{like:"لأنّي أحبّ الألوان، وأرسم كلّ شيء أراه!",food:"لأنّها طريّة ولذيذة بالجبن 🧀",color:"لأنّه لون الورد 🌸",animal:"لأنّه ناعمٌ ولطيف 🐰",subject:"لأنّنا نرسم ونلوّن فيها!",dream:"لأنّي أحبّ أن أرسم لوحاتٍ جميلة!",season:"لأنّ الزهور تتفتّح فيه 🌷"}},
+ omar:{floor:12,pet:null,wish:["روبوتاً يساعدني","robotan"],best:["أخي عليّ","akhi ʿali"],subject:["العلوم","al-ʿulum"],dream:["مهندسَ روبوتات","muhandisa robotat"],game:["تركيب المكعّبات والروبوتات","tarkib al-mukaʿʿabat"],place:["مكتبة المدرسة","maktabat al-madrasa"],season:["الخريف","al-kharif"],drink:["الماء البارد","al-ma' al-barid"],today:["بنيتُ روبوتاً صغيراً من المكعّبات","banaytu robotan"],fear:["الرعد ⛈️","al-raʿd"],sleep:"التاسعة",why:{like:"لأنّها تتحرّك وتفكّر مثل الإنسان! 🤖",food:"لأنّ أبي يشتريها لي يوم الخميس!",color:"لأنّه لون الأشجار 🌳",animal:"لأنّه كبير وذكيّ جداً!",subject:"لأنّنا نعمل تجارب عجيبة! 🧪",dream:"لأنّي أريد أن أصنع روبوتاً يساعد الناس!",season:"لأنّ الأوراق تتساقط بألوانٍ جميلة 🍂"}},
+ sara:{floor:15,pet:["قطّة","qitta","لولو"],best:["مريم","maryam"],subject:["العربيّة","al-ʿarabiyya"],dream:["طبيبةً بيطريّة للحيوانات","tabibatan baytariyya"],game:["اللعب مع قطّتي لولو","al-laʿib maʿa qittati"],place:["الحديقة","al-hadiqa"],season:["الصيف","al-sayf"],drink:["عصير المانجو","ʿasir al-manju"],today:["أطعمتُ قطّتي وقرأتُ قصّة","atʿamtu qittati"],fear:["الكلاب الكبيرة","al-kilab al-kabira"],sleep:"التاسعة",why:{like:"لأنّها ناعمة وتحبّني، وعندي قطّة اسمها لولو! 🐱",food:"لأنّها حلوة ومفيدة 🍓",color:"لأنّه لون العنب 🍇",animal:"لأنّها ألطف حيوان في العالم!",subject:"لأنّي أحبّ القصص والكلمات الجميلة!",dream:"لأنّي أحبّ الحيوانات وأريد أن أعالجها!",season:"لأنّنا نذهب إلى الشاطئ 🏖️"}},
+ hamza:{floor:5,pet:["عصفور","ʿusfur","زقزوق"],best:["يوسف","yusuf"],subject:["الرياضيات","al-riyadiyyat"],dream:["طيّاراً","tayyaran"],game:["ركوب الدرّاجة","rukub al-darraja"],place:["الشاطئ","al-shati'"],season:["الصيف","al-sayf"],drink:["اللبن","al-laban"],today:["ركبتُ درّاجتي حول العمارة ثلاث مرّات","rakibtu darrajati"],fear:["المرتفعات قليلاً","al-murtafaʿat"],sleep:"الثامنة",why:{like:"لأنّها سريعة وأشعر أنّي أطير! 🚲",food:"لأنّ أبي يشويه في الحديقة يوم الجمعة 🍗",color:"لأنّه لون درّاجتي!",animal:"لأنّه ملك الغابة! 🦁",subject:"لأنّي أحبّ الأرقام والحساب!",dream:"لأنّي أريد أن أطير فوق الغيوم ✈️",season:"لأنّ المدرسة تنتهي ونذهب إلى البحر!"}}
+};
+var KSTORIES=[
+ ["كان هناك عصفورٌ صغير لا يعرف الطيران. 🐦","كلّ يوم كان يحاول ويسقط، لكنّه لم يستسلم.","وفي يومٍ من الأيّام… طار عالياً فوق الأشجار! 🌳","والدرس: لا تستسلم أبداً، وقل: إن شاء الله سأنجح! 💪"],
+ ["ذهب ولدٌ اسمه خالد إلى السوق مع أبيه. 🛒","وجد محفظةً على الأرض فيها نقودٌ كثيرة! 💰","لم يأخذها، بل أعطاها لصاحبها.","ففرح الرجل وقال له: بارك الله فيك! أنت ولدٌ أمين ⭐"],
+ ["كانت هناك نملةٌ تعمل طوال الصيف وتجمع الطعام. 🐜","وكان الجندب يغنّي ويلعب ولا يعمل.","فلمّا جاء الشتاء، كانت النملة في بيتها الدافئ ومعها طعام كثير.","والدرس: نعمل اليوم لنرتاح غداً! 😊"],
+ ["رأت بنتٌ اسمها ليلى قطّةً صغيرة جائعة تحت المطر. 🐱🌧️","أخذتها إلى البيت وأعطتها حليباً.","ومن يومها صارت القطّة تتبعها في كلّ مكان! 💛","والدرس: الرحمة بالحيوانات تُحبّب الله فينا."]
+];
+var KJOKES=[["لماذا لا تلعب السمكة كرة السلّة؟ 🐟","لأنّها تخاف من الشبكة! 😂"],["ماذا قال الرقم صفر للرقم ثمانية؟ 0️⃣8️⃣","حزامك جميل! 😂"],["لماذا ذهبت الطماطم إلى الطبيب؟ 🍅","لأنّها صارت حمراء جداً! 😂"],["ما الشيء الذي يمشي بلا أرجل؟ ⏰","الساعة! 😂"],["لماذا حمل الولد السلّم إلى المدرسة؟ 🪜","لأنّه يريد أن يذهب إلى المرحلة العليا! 😂"]];
+var KRIDDLES=[{q:"ما الشيء الذي له أسنان ولا يعضّ؟ 🤔",a:["مشط","المشط"],ans:"المِشط! 🪮"},{q:"ما الشيء الذي كلّما أخذتَ منه كبُر؟ 🤔",a:["حفر","الحفره","حفره"],ans:"الحُفرة! 🕳️"},{q:"ما الشيء الذي يكتب ولا يقرأ؟ 🤔",a:["قلم","القلم"],ans:"القلم! ✏️"},{q:"ما الشيء الذي له عينٌ ولا يرى؟ 🤔",a:["ابره","الابره","إبرة"],ans:"الإبرة! 🪡"},{q:"بيتٌ بلا أبواب ولا نوافذ، ما هو؟ 🤔",a:["بيض","البيضه","بيضه"],ans:"البيضة! 🥚"},{q:"ما الشيء الذي يجري ولا يمشي؟ 🤔",a:["ماء","الماء","مويه","النهر","نهر"],ans:"الماء! 💧"}];
+var AR_NUM_W=["صفر","واحد","اثنان","ثلاثة","أربعة","خمسة","ستّة","سبعة","ثمانية","تسعة","عشرة"];
+var DAYS_AR=["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
+var FOOD_W=["كبسه","معكرونه","مكرونه","شاورما","فواكه","فاكهه","دجاج","بيتزا","برجر","برقر","رز","ارز","حلوي","شوكولا","ايس كريم","ايسكريم","سمك","لحم","مندي","كيك","بطاطس","سلطه","فلافل","تمر","موز","تفاح","فراوله","عنب","بيض","جبن","خبز","ملوخيه","مقلوبه","سمبوسه"];
+var COLOR_W=[["ازرق","الأزرق"],["احمر","الأحمر"],["اخضر","الأخضر"],["اصفر","الأصفر"],["وردي","الورديّ"],["بنفسجي","البنفسجيّ"],["اسود","الأسود"],["ابيض","الأبيض"],["برتقالي","البرتقاليّ"],["بني","البنّيّ"],["رمادي","الرماديّ"],["ذهبي","الذهبيّ"],["سماوي","السماويّ"]];
+var PET_W=[["قطه","قطّة","f"],["قطط","قطط","p"],["بس","قطّة","f"],["كلب","كلب","m"],["عصفور","عصفور","m"],["طير","طير","m"],["ببغاء","ببغاء","m"],["سمكه","سمكة","f"],["سمك","سمك","m"],["ارنب","أرنب","m"],["سلحفاه","سلحفاة","f"],["حصان","حصان","m"],["هامستر","هامستر","m"],["دجاجه","دجاجة","f"]];
+var KID_PROTECT=null;
+function kidFixSafe(n){
+  if(typeof kidFix==="undefined")return n;
+  if(!KID_PROTECT){KID_PROTECT=new Set();const add=w=>{w=normAr(w);KID_PROTECT.add(w);KID_PROTECT.add("ال"+w);};FOOD_W.forEach(add);COLOR_W.forEach(c=>add(c[0]));PET_W.forEach(p=>add(p[0]));LIKE_KEYS.forEach(l=>add(l[0]));if(typeof AZ_DICT!=="undefined")Object.values(AZ_DICT).forEach(v=>v.split(" ").forEach(w=>KID_PROTECT.add(normAr(w))));["عندي","عندك","قطتي","اخوي","اختي","لعبتي","ابي","امي","بيتي"].forEach(w=>KID_PROTECT.add(w));}
+  return n.split(" ").map(w=>KID_PROTECT.has(w)||w.length<4?w:kidFix(w)).join(" ");
+}
+function wordIn(n,list){const ws=n.split(" ");return list.find(f=>ws.some(w=>w===f||w==="ال"+f||w==="و"+f||(f.length>=4&&w.startsWith(f))||(f.length>=4&&w.startsWith("ال"+f))))||(list.find(f=>f.includes(" ")&&n.includes(f)));}
+function kGender(k,m,f){return k.g==="f"?f:m;}
+function kTime(){const d=new Date(),h=d.getHours()%12||12,m=d.getMinutes();return `${AR_NUM_W[h]||ar(h)}${m>=50?" إلّا عشر دقائق تقريباً":m>=40?" إلّا ثلث":m>=25&&m<35?" والنصف":m>=15&&m<25?" والربع":m>=35?" والنصف تقريباً":m>=5?" وبضع دقائق":" تماماً"}`;}
+function kidBrain(k,text){
+  const c=S.kidChat,d=kidData(k.id),P2=KP[k.id]||KP.yusuf,X=(typeof KID_EXTRA!=="undefined"&&KID_EXTRA[k.id])||{animal:["القطّة","",""],sura:["سورة الفاتحة",""],now:["ألعب",""]};
+  d.know=d.know||{};d.facts=d.facts||{};c.asked=c.asked||{};
+  const raw=String(text),n0=normAr(raw),n=kidFixSafe(n0),words=n.split(" ").filter(Boolean),me=PL_INFO[CUR].name,meTr=PL_INFO[CUR].tr;
+  const out=[];let hearts=0;const say=(a,t)=>out.push([a,t||""]);
+  const has=(...ws)=>ws.some(w=>(" "+n+" ").includes(w.startsWith(" ")||w.endsWith(" ")?w:w));
+  const hasW=(...ws)=>ws.some(w=>words.includes(w));
+  const pick=a=>a[Math.floor(Math.random()*a.length)];
+  const isQ=/[؟?]/.test(raw)||/^(هل|ما|ماذا|كم|كيف|اين|وين|من|متي|لماذا|ليش|شو|وش|ايش|اي|مين|وشو|شلون)( |$)/.test(n)||hasW("هل","ماذا","لماذا","ليش","كيف","متي","وين","اين","مين");
+  const yes=hasW("نعم","اي","ايوه","ايه","اكيد","طبعا","اجل","بلي","صح","موافق","ok","اوكي","يب","يس")||has("نعم","اكيد","طبعا"),no=hasW("لا","لأ","ابدا","مستحيل","كلا")||has("ليس عندي","ما عندي","لا يوجد","ماعندي");
+  const you=GV("أنتَ","أنتِ"),youTr=GV("anta","anti"),Ka=GV("ك","كِ");
+  let done=new Set();const hit=id=>{if(done.has(id))return false;done.add(id);return true;};
+  const setTopic=t=>{c.topic=t;};
+  const reqName=d.know.pname;
+  // ---------- 0. empty / emoji / laughter ----------
+  if(!n.replace(/[^\u0600-\u06FFa-z0-9]/g,"")){
+    if(/😂|🤣|😆|😄|😁/.test(raw))say(pick(["😂😂","هههه 😄 أنت مضحك!","😆😆"]));
+    else if(/❤|💛|💙|😍|🥰/.test(raw)){say("💛💛 شكراً!");hearts++;}
+    else if(/👍|👌/.test(raw))say("👍😊");
+    else if(/😢|😭|☹|😞/.test(raw)){say(`لا تحزن${GV("","ي")} 💛 ماذا حدث؟`);c.pending="sad";}
+    else say(pick(["😊","😄","👋"]));
+    return {out,hearts};
+  }
+  if(/^(ه{2,}|ها{2,}|هه+|خخ+|لول|lol)/.test(n)){say(pick(["😂😂 ما الذي أضحكك؟","هههه 😄","😂 أنت مضحك يا "+me+"!"]));return {out,hearts};}
+  // ---------- 1. rude words ----------
+  if(has("غبي","اسكت","انقلع","وقح","حمار","تافه","اكرهك","ما احبك","مااحبك","سخيف")){say(pick(["هذا كلامٌ ليس لطيفاً 😕 لنتكلّم بأدبٍ مثل الأصدقاء.","أوه… هذا يُحزنني 😢 الصديق يقول كلاماً طيّباً.","لنكن لطيفين مع بعض 🤝 الكلمة الطيّبة صدقة!"]));return {out,hearts};}
+  const feel=has("فرحان","سعيد","مبسوط","زعلان","حزين","متضايق","تعبان","نعسان","جوعان","مريض","طفشان","ملل","زهقان","خايف","خائف");
+  const strong=isQ||feel||has("السلام عليكم","سلام عليكم","مرحبا","اهلا","صباح الخير","مساء الخير","مع السلامه","الي اللقاء","في امان الله","قصه","احكي","حكايه","نكته","نكت","لغز","فزوره","اسف","سامحني","شكرا","جزاك","نلعب","العب معي","احبك","تعال بيتي","تعالي بيتي")||hasW("هلا","باي","هاي");
+  // ---------- 3. "and you?" ----------
+  if(words.length<=3&&/^(و ?انت|و ?انتي|انت|انتي|ماذا عنك|وانت كمان|وانتي كمان|شو عنك|وش عنك|وعنك|انت بعد)( |$)/.test(n)&&c.lastAsk){
+    const L=c.lastAsk,A={name:`اسمي ${k.ar}.`,age:`عمري ${AGE_W[k.age][0]}.`,like:`أنا أحبّ ${k.like[0]} ${k.like[2]}`,grade:`أنا في الصفّ ${k.grade[0]}.`,pet:P2.pet?`عندي ${P2.pet[0]} اسمها ${P2.pet[2]}!`:`لا، ليس عندي، لكنّي أتمنّى ${P2.wish[0]}!`,sib:k.sib[0],food:`طعامي المفضّل ${k.food[0]} 😋`,color:`لوني المفضّل ${k.color[0]}.`,today:`اليوم ${P2.today[0]}.`,dream:`أريد أن أصبح ${P2.dream[0]}!`,best:`${kGender(k,"صديقي","صديقتي")} المقرّب${kGender(k,"","ة")} ${P2.best[0]}.`,place:`أحبّ ${P2.place[0]}.`,how:"أنا بخير والحمد لله!"}[L];
+    if(A){say(A.replace("اسمها",P2.pet&&/عصفور/.test(P2.pet[0])?"اسمه":"اسمها"));setTopic(L==="pet"?"pet":L);if(!["how","today"].includes(L))say(`و${you}؟`);else c.pending=null;return {out,hearts};}
+  }
+  // ---------- 2. answers to what the kid just asked ----------
+  const LOOSE=["riddle","why_like","grade","school_like","sib","sib_play","today","dream","best","place","story_more","joke_offer","visit","pet_name","sad"];
+  if(c.pending&&LOOSE.includes(c.pending)&&strong&&!(c.pending==="sad"&&!isQ&&!has("مرحبا","السلام عليكم","قصه","نكته","لغز")))c.pending=null;
+  const pend=c.pending;let answered=false;
+  const ackPend=()=>{answered=true;c.pending=null;};
+  if(pend&&!isQ){
+    if(pend==="name"){
+      let nm=raw.replace(/[؟?!.,،]/g," ").replace(/^(انا|أنا|اسمي|إسمي|ana|ismi|esmi)\s+/i,"").replace(/^(اسمي|إسمي|ismi|esmi)\s+/i,"").trim().split(/\s+/)[0]||"";
+      const bad=!nm||findAge(n)||has("احب","عمري")||["لا","نعم","مرحبا","سلام","اهلا","هلا","شكرا","وانت","وانتي","انت"].includes(normAr(nm));
+      if(!bad&&words.length<=4&&(!strong||has("اسمي"))){d.know.name=1;d.know.pname=me;say(pick([`تشرّفنا يا ${me}! 😊`,`أهلاً يا ${me}! اسمك جميل 😊`,`ما شاء الله، ${me}! اسمٌ جميل جداً.`]),`tasharrafna ya ${meTr}!`);ackPend();}
+    }
+    else if(pend==="age"){const a=findAge(n);if(a){d.know.age=a;ackPend();say(a===k.age?`ما شاء الله! وأنا عمري ${AGE_W[k.age][0]} أيضاً! نحن في نفس العمر 🤝`:a>k.age?`ما شاء الله! أنت أكبر منّي، أنا عمري ${AGE_W[k.age][0]}.`:`ما شاء الله! أنا أكبر منك قليلاً، عمري ${AGE_W[k.age][0]}.`,"");if(a===k.age)hearts++;d.facts.age=1;}}
+    else if(pend==="like"&&(LIKE_KEYS.some(x=>n.includes(x[0]))||!strong)){const L=LIKE_KEYS.find(x=>n.includes(x[0]));ackPend();
+      if(L){d.know.like=L[2];const same=L[2]===k.like[0]||L[1]===k.like[2];say(same?`رائع! أنا أيضاً أحبّ ${k.like[0]}! نحن نحبّ نفس الشيء 💛`:`جميل! ${L[1]} أمّا أنا فأحبّ ${k.like[0]} ${k.like[2]}.`);if(same)hearts++;setTopic("like");}
+      else{d.know.like=raw.slice(0,30);say(pick([`واو، هذا جميل! 😄 ${kGender(k,"لماذا تحبّ ذلك؟","لماذا تحبّ ذلك؟").replace("تحبّ",GV("تحبّ","تحبّين"))}`,"جميل جداً! 😄"]));if(out[0][0].includes("لماذا"))c.pending="why_like";}}
+    else if(pend==="why_like"){ackPend();say(pick(["فهمت! سببٌ جميل 😊","آه، هذا رائع! 👍","معك حقّ! 😄"]));}
+    else if(pend==="grade"){const g=findAge(n)||(has("اول")?1:has("ثاني")?2:has("ثالث")?3:has("رابع")?4:has("خامس")?5:has("سادس")?6:null);ackPend();d.know.grade=g||raw.slice(0,20);
+      const mine={7:2,8:3,9:4}[k.age]||3;say(g===mine?`نحن في نفس الصفّ! 🤝 هل ${GV("تحبّ","تحبّين")} المدرسة؟`:`جميل! أنا في الصفّ ${k.grade[0]}. هل ${GV("تحبّ","تحبّين")} المدرسة؟`);c.pending="school_like";c.asked.school_like=1;}
+    else if(pend==="school_like"){ackPend();say(yes?`وأنا أيضاً! مادّتي المفضّلة ${P2.subject[0]} 📚`:no?`أحياناً تكون صعبة، لكنّها مفيدة! 💪 أنا أحبّ ${P2.subject[0]}.`:`فهمت 😊 أنا أحبّ ${P2.subject[0]}.`);setTopic("subject");}
+    else if(pend==="pet"&&(yes||no||PET_W.some(p=>wordIn(n,[p[0]])))){ackPend();const pw=PET_W.find(p=>wordIn(n,[p[0]]));
+      if(no&&!pw){say(P2.pet?`أنا عندي ${P2.pet[0]} اسمها ${P2.pet[2]}! 😊`.replace("اسمها",/عصفور/.test(P2.pet[0])?"اسمه":"اسمها"):`ولا أنا! لكنّي أتمنّى ${P2.wish[0]} 😄`);}
+      else{d.know.pet=pw?pw[1]:"حيوان";say(`واو! ${pw?(pw[2]==="f"?"ما اسمها؟":"ما اسمه؟"):"ما هو؟ وما اسمه؟"} 😍`);c.pending="pet_name";c.petG=pw?pw[2]:"m";}}
+    else if(pend==="pet_name"&&words.length<=3){ackPend();setTopic("pet");const nm=raw.replace(/[؟?!.,،]/g," ").replace(/^(اسمه|اسمها|ismo|ismha|esmo|esmha)\s+/i,"").trim().split(/\s+/)[0];d.know.petName=nm;say(`${nm}! اسمٌ لطيف جداً 😍 سلّم ${GV("لي","لي")} على ${c.petG==="f"?"قطّتك":"حيوانك"}!`.replace("قطّتك",d.know.pet&&d.know.pet!=="قطّة"?(c.petG==="f"?d.know.pet+"ك":d.know.pet+"ك"):"قطّتك").replace("حيوانك",d.know.pet?d.know.pet+"ك":"حيوانك"));hearts++;}
+    else if(pend==="sib"){ackPend();if(no){d.know.sib="0";say(`لا بأس! ${k.id==="hamza"?"ولا أنا! نحن مثل بعض 🤝":"يمكنك أن تلعب معنا في العمارة! 😊"}`);}else{d.know.sib=raw.slice(0,30);say(pick([`ما شاء الله! الله يحفظهم 💛 ${k.sib[0]}`,`جميل! هل تلعبون معاً؟ 😊`]));if(out[out.length-1][0].includes("تلعبون"))c.pending="sib_play";}}
+    else if(pend==="sib_play"){ackPend();say(yes?"رائع! اللعب مع الإخوة ممتع جداً 😄":"لا بأس، يمكنك أن تلعب معي! 😊");}
+    else if(pend==="food"&&(!!wordIn(n,FOOD_W)||(!strong&&words.length<=4&&!yes&&!no))){ackPend();const f=wordIn(n,FOOD_W);d.know.food=f||raw.slice(0,20);const mine=normAr(k.food[0]).replace(/^ال/,"");
+      say(f&&mine.includes(f.slice(0,4))?`وأنا أيضاً! ${k.food[0]} أطيب طعام 😋🤝`:`يمّي! 😋 أنا أحبّ ${k.food[0]} أكثر شيء.`);setTopic("food");if(f&&mine.includes(f.slice(0,4)))hearts++;}
+    else if(pend==="color"&&(COLOR_W.some(x=>n.includes(x[0]))||(!strong&&words.length<=3&&!yes&&!no))){ackPend();const cl=COLOR_W.find(x=>n.includes(x[0]));d.know.color=cl?cl[1]:raw.slice(0,15);const same=cl&&normAr(k.color[0]).includes(cl[0]);
+      say(same?`وأنا لوني المفضّل ${k.color[0]} أيضاً! 🤝`:`${cl?cl[1].replace(/^ال/,"")+" لونٌ جميل!":"جميل!"} أمّا أنا فأحبّ ${k.color[0]}.`);setTopic("color");if(same)hearts++;}
+    else if(pend==="today"){ackPend();d.know.today=raw.slice(0,40);say(`${pick(["ما شاء الله!","جميل!","رائع!"])} أمّا أنا فاليوم ${P2.today[0]} 😊`);}
+    else if(pend==="dream"){ackPend();d.know.dream=raw.slice(0,30);say(`ما شاء الله! ستكون${GV("","ين")} رائع${GV("اً","ة")} إن شاء الله 🌟 وأنا أريد أن أصبح ${P2.dream[0]}.`);setTopic("dream");}
+    else if(pend==="best"){ackPend();d.know.best=raw.slice(0,20);say(`ما شاء الله! صديقي المقرّب ${P2.best[0]} 😊`.replace("صديقي المقرّب",k.g==="f"?"صديقتي المقرّبة":"صديقي المقرّب"));}
+    else if(pend==="place"){ackPend();say(`جميل! أنا أحبّ ${P2.place[0]} 😊`);setTopic("place");}
+    else if(pend==="how"){if(has("بخير","الحمد","تمام","زين","منيح","كويس","مبسوط","فرحان","طيب","ممتاز")){ackPend();say(pick(["الحمد لله! 😊","الحمد لله، دائماً إن شاء الله 💛"]));}
+      else if(has("تعبان","مريض","زعلان","حزين","مو زين","مش منيح","متضايق")){ackPend();say(`سلامتك! 💛 ماذا حدث؟`);c.pending="sad";}}
+    else if(pend==="sad"){ackPend();say(pick([`لا تحزن${GV("","ي")} يا ${me} 💛 كلّ شيءٍ سيكون بخير إن شاء الله. هل تريد${GV("","ين")} أن أحكي لك نكتة؟`,`أنا معك 🤗 قل: الحمد لله على كلّ حال. هل تريد${GV("","ين")} نكتة تضحكك؟`]));c.pending="joke_offer";}
+    else if(pend==="joke_offer"){ackPend();if(yes){const j=pick(KJOKES);say(j[0]);say(j[1]);}else say("حسناً 😊 أنا هنا إذا احتجتني.");}
+    else if(pend==="riddle"){const R=KRIDDLES[c.riddle];ackPend();if(R&&R.a.some(a=>n.includes(normAr(a)))){say(`صحيح! 🎉 أنت ذكي${GV("","ة")} جداً!`);hearts++;}else if(has("لا اعرف","مدري","ما اعرف","استسلم","لا ادري")||hasW("قل","قول","الجواب")){say(`الجواب: ${R.ans}`);}else{say(`لا 😄 حاول${GV("","ي")} مرّة أخرى! أو قل: لا أعرف.`);c.pending="riddle";}}
+    else if(pend==="story_more"){ackPend();if(yes){const s=KSTORIES[(c.story+1)%KSTORIES.length];c.story=(c.story+1)%KSTORIES.length;s.forEach(l=>say(l));}else say("حسناً 😊 هل أعجبتك القصّة؟");}
+    else if(pend==="friends"){if(yes||has("موافق","هيا","يلا","حسنا")){ackPend();if(d.lv<1)d.lv=1;hearts++;c.madeFriends=true;say("ياي! صرنا أصدقاء! 💛");}else if(no){ackPend();say("لا بأس 😊 ربّما لاحقاً!");}}
+    else if(pend==="play"){if(yes||has("هيا","يلا","موافق","حسنا")){ackPend();say("رائع! هيّا إلى الحديقة! 🏃");c.play=true;}else if(no||has("بعدين","غدا","لاحقا")){ackPend();say("حسناً، ربّما غداً إن شاء الله! 😊");}}
+    else if(pend==="visit"){ackPend();say(yes?"رائع! سأستأذن أمّي أوّلاً إن شاء الله 😊":"حسناً 😊");}
+  }
+  // ---------- 4. greetings / courtesy ----------
+  if((has("السلام عليكم","سلام عليكم")||hasW("السلام","سلام"))&&!has("مع السلامه")&&hit("salam")){say("وعليكم السلام ورحمة الله وبركاته! 😊");c.greeted=true;}
+  else if(has("مرحبا","اهلا","هلا","هاي","صباح الخير","مساء الخير","صباح","مساء")&&!has("مع السلامه")&&hit("hi")){say(has("صباح")?"صباح النور! ☀️":has("مساء")?"مساء النور! 🌙":pick(["أهلاً وسهلاً! 😊","هلا والله! 😄","مرحباً! 👋"]));c.greeted=true;}
+  if(has("كيف حالك","كيفك","شلونك","كيف الحال","اخبارك","كيف انت","كيفك انت","عامل ايه","شخبارك")&&hit("how")){say(`${pick(["بخير والحمد لله!","الحمد لله، تمام!","أنا بخير، شكراً!"])} ${GV("وأنتَ","وأنتِ")}؟ كيف حال${Ka}؟`);c.pending="how";c.lastAsk="how";}
+  if(has("شكرا","جزاك الله","مشكور","يعطيك العافيه")&&hit("thx"))say(has("جزاك")?"وإيّاك! 😊":pick(["العفو! 😊","على الرحب والسعة!","لا شكر على واجب 💛"]));
+  if(has("اسف","آسف","سامحني","معليش","المعذره")&&hit("sorry"))say("لا بأس! مسامح 💛");
+  if(has("ماشاء الله","ما شاء الله")&&hit("msha"))say("تبارك الله! 😊");
+  if((has("الحمد لله")||hasW("بخير"))&&!answered&&!done.has("how")&&hit("hamd"))say(pick(["الحمد لله دائماً 💛","الحمد لله! 😊"]));
+  if(has("ان شاء الله")&&hit("insha"))say("إن شاء الله! 🤲");
+  if(has("سبحان الله")&&hit("sub"))say("سبحان الله وبحمده 🌿");
+  if(has("رمضان","العيد","عيد")&&hit("eid"))say(has("رمضان")?"أحبّ رمضان كثيراً! نفطر مع العائلة ونصلّي التراويح 🌙":"العيد أجمل يوم! نلبس ملابس جديدة ونأخذ العيديّة 🎉");
+  // ---------- 5. questions about the kid ----------
+  if(isQ){
+    if((has("اسم قطتك","اسم حيوانك","اسم عصفورك","اسم سمكتك","اسم قطك")||(has("اسمها","اسمه")&&!has("اسمك")))&&hit("q_name")){if(c.topic==="pet"||has("قطت","قطك","عصفور","سمكت","حيوان"))say(P2.pet?`اسم${/عصفور/.test(P2.pet[0])?"ه":"ها"} ${P2.pet[2]}! 😍`:"ليس عندي حيوان 😅");else say(k.sib[0]);}
+    if(has("اسمك","ما اسم","شو اسم","وش اسم","مين انت","من انت")&&hit("q_name")){say(pick([`اسمي ${k.ar} 😊`,`أنا ${k.ar}!`]));d.facts.name=1;}
+    if(has("عمرك","كم عمر","كم سنه","عمر ك","كم صار عمرك")&&hit("q_age")){say(`عمري ${AGE_W[k.age][0]}.`);d.facts.age=1;}
+    if((has("هل تحب","هل تحبين")||(hasW("هل")&&has("تحب")))&&hit("q_doyoulike")){
+      const L=LIKE_KEYS.find(x=>n.includes(x[0])),f=wordIn(n,FOOD_W),cl=COLOR_W.find(x=>n.includes(x[0]));
+      if(L){const same=L[2]===k.like[0]||L[1]===k.like[2];say(same?`نعم! أحبّ ${k.like[0]} كثيراً ${k.like[2]} هي هوايتي المفضّلة!`:`ممم… أحبّ ${L[2]} قليلاً، لكنّي أحبّ ${k.like[0]} أكثر ${k.like[2]}`);setTopic("like");if(same)hearts++;}
+      else if(f){const mine=normAr(k.food[0]).replace(/^ال/,"");say(mine.includes(f.slice(0,4))?`نعم!! ${k.food[0]} طعامي المفضّل 😋`:pick([`نعم، طعمه لذيذ! لكنّ طعامي المفضّل ${k.food[0]} 😋`,`ممم… لا بأس، أنا أحبّ ${k.food[0]} أكثر.`]));setTopic("food");}
+      else if(cl)say(normAr(k.color[0]).includes(cl[0])?"نعم! هو لوني المفضّل! 💛":`لونٌ جميل، لكنّي أحبّ ${k.color[0]} أكثر.`);
+      else if(has("مدرس"))say(`نعم! أحبّ المدرسة، خاصّةً ${P2.subject[0]} 📚`);
+      else if(has("صلا","تصلي"))say("نعم الحمد لله! 🕌");
+      else if(has("العب","لعب","الالعاب"))say(`نعم! أحبّ ${P2.game[0]} 🎮`);
+      else if(has("حيوان","قطط","كلاب"))say(`نعم! حيواني المفضّل ${X.animal[0]} ${X.animal[2]||""}`);
+      else if(has("ي ","ني","تحبني"))say(`طبعاً! ${kGender(k,"أنتَ صديقي","أنتَ صديقي")} 💛`.replace("أنتَ صديقي",GV(kGender(k,"أنتَ صديقي","أنتَ صديقي"),kGender(k,"أنتِ صديقتي","أنتِ صديقتي"))));
+      else say(pick(["ممم… نعم، أظنّ ذلك 😊","نعم! 😄","أحياناً 😄"]));}
+    if(has("ماذا تحب","شو تحب","وش تحب","ايش تحب","هوايت","هوايه","ماذا تحبين","شو بتحب")&&!done.has("q_doyoulike")&&hit("q_like")){say(`أحبّ ${k.like[0]} كثيراً! ${k.like[2]}`);d.facts.like=1;setTopic("like");}
+    if(has("صف","سنه دراسيه")&&has("اي","في","كم","وين")&&!has("تصف")&&hit("q_grade")){say(`أنا في الصفّ ${k.grade[0]} 🏫`);d.facts.grade=1;}
+    if(has("مدرستك","اي مدرسه","وين تدرس","اين تدرس")&&hit("q_school"))say(`أدرس في مدرسة الحيّ، في الصفّ ${k.grade[0]} 🏫`);
+    if(has("ماده","مادتك","المواد")&&hit("q_subject")){say(`مادّتي المفضّلة ${P2.subject[0]}! 📚`);setTopic("subject");}
+    if(has("معلم","استاذ","ابله")&&hit("q_teacher"))say(`${kGender(k,"معلّمي","معلّمتي")} لطيف${kGender(k,"","ة")} جداً، ويعلّمنا العربيّة والقرآن 📚`);
+    if((has("اخوه","اخوان","اخوات","اخت","اخو","اخ ","اخوتك","اخواتك","عندك اخ"))&&!has("اخبار")&&hit("q_sib")){say(k.sib[0]);d.facts.sib=1;}
+    if((has("طعام","اكلتك","وجبه","تاكل","اكلك"))&&hit("q_food")){say(`طعامي المفضّل ${k.food[0]}! 😋`);d.facts.food=1;setTopic("food");}
+    else if(has("ماذا اكلت","شو اكلت","وش اكلت","اكلت")&&hit("q_ate"))say(pick([`أكلتُ ${k.food[0]}، كانت لذيذة 😋`,"أكلتُ سندويش جبن وشربتُ حليباً 🥪"]));
+    if(has("مشروب","تشرب")&&hit("q_drink"))say(`أحبّ ${P2.drink[0]} 🧃`);
+    if(has("لون")&&hit("q_color")){say(`لوني المفضّل ${k.color[0]}.`);d.facts.color=1;setTopic("color");}
+    if(has("حيوان")&&!done.has("q_doyoulike")&&hit("q_animal")){say(`حيواني المفضّل ${X.animal[0]} ${X.animal[2]||""}`);setTopic("animal");}
+    if(has("عندك قطه","عندك كلب","عندك حيوان","عندك عصفور","عندك سمك","تربي","عندكم حيوان","عندك قط")&&hit("q_pet")&&setTopic("pet")!==1)say(P2.pet?`نعم! عندي ${P2.pet[0]} اسمها ${P2.pet[2]} 😍`.replace("اسمها",/عصفور/.test(P2.pet[0])?"اسمه":"اسمها"):`لا، ليس عندي، لكنّي أتمنّى ${P2.wish[0]}! 😄`);
+    if(has("تصبح","تصير","لما تكبر","عندما تكبر","حلمك","تكون في المستقبل","مهنه","وظيفه")&&hit("q_dream")){say(`أريد أن أصبح ${P2.dream[0]}! 🌟`);setTopic("dream");}
+    if(has("صديقك","صاحبك","صديقتك","صاحبتك","اعز")&&hit("q_best"))say(`${kGender(k,"صديقي المقرّب","صديقتي المقرّبة")} ${P2.best[0]} 😊 وأنتَ صديقي الجديد!`.replace("وأنتَ صديقي",GV("وأنتَ "+kGender(k,"صديقي","صديقي"),"وأنتِ "+kGender(k,"صديقتي","صديقتي"))));
+    if(has("مكانك","تحب تروح","تحب تذهب","اين تحب","وين تحب")&&hit("q_place")){say(`أحبّ ${P2.place[0]}! 😊`);setTopic("place");}
+    if(has("فصل","الشتاء","الصيف","الربيع","الخريف")&&hit("q_season")){say(`أحبّ ${P2.season[0]}!`);setTopic("season");}
+    if(has("لعبتك","تلعب ايش","ماذا تلعب","شو تلعب","وش تلعب","العابك")&&hit("q_game"))say(`أحبّ ${P2.game[0]} 🎮`);
+    if(has("ماذا فعلت اليوم","شو سويت","وش سويت","ماذا فعلت","يومك","كيف كان يومك")&&hit("q_today"))say(`اليوم ${P2.today[0]} 😊`);
+    if(has("ماذا تفعل","شو تسوي","وش تسوي","ماذا تعمل","ايش تسوي","شو تعمل","ماذا تفعلين","ايش تعمل","تسوين","وش تسون","شو تسون")&&!done.has("q_today")&&hit("q_now"))say(`الآن ${X.now[0]} 😊`);
+    if(has("تخاف","خايف")&&hit("q_fear"))say(`أخاف من ${P2.fear[0]}، لكنّي أقول: بسم الله، فأشعر بالأمان 💪`);
+    if(has("تنام","نومك")&&hit("q_sleep"))say(`أنام الساعة ${P2.sleep} لأنّ عندي مدرسة 😴`);
+    if(has("تصلي","تصلين","صليت","الصلاه")&&!done.has("q_doyoulike")&&hit("q_pray"))say(`نعم الحمد لله! أصلّي الصلوات الخمس، وأذهب مع ${kGender(k,"أبي","أمّي")} إلى المسجد 🕌`);
+    if(has("قران","سوره","تحفظ")&&hit("q_quran")){say(`أحفظ ${X.sura[0]}، وأحبّها كثيراً! 📖 و${you}، ماذا ${GV("تحفظ","تحفظين")}؟`);c.pending="quran";}
+    if(has("ولد ام بنت","بنت ام ولد","انت ولد","انت بنت","انتي بنت","انتي ولد")&&hit("q_g"))say(k.g==="f"?"أنا بنت 👧":"أنا ولد 👦");
+    if(has("تسكن","بيتك","اي طابق","كم طابق","طابقك","شقتك")&&hit("q_home"))say(`أسكن في الطابق ${FL&&FL[P2.floor]?FL[P2.floor].ar.replace(/^الطابق\s*/,""):ar(P2.floor)} في هذه العمارة 🏢`);
+    if(has("من اين","من وين","جنسيتك","اين ولدت")&&hit("q_from"))say("أنا أسكن هنا في هذه العمارة مع عائلتي 🏢");
+    if(has("حقيقي","روبوت","انسان","ذكاء")&&has("انت","انتي","هل")&&!has("تحب")&&hit("q_real"))say(`أنا ${kGender(k,"طفلٌ","طفلةٌ")} في لعبة العمارة 😄 لستُ حقيقيّاً، لكنّي أحبّ الكلام معك!`.replace("حقيقيّاً",kGender(k,"حقيقيّاً","حقيقيّة")));
+    if(has("كم الساعه","الساعه كم","كم الوقت")&&hit("q_time"))say(`الساعة الآن ${kTime()} ⏰`);
+    if(has("اي يوم","ما اليوم","اليوم ايش","ايش اليوم","وش اليوم","شو اليوم")&&hit("q_day"))say(`اليوم ${DAYS_AR[new Date().getDay()]} 📅`);
+    if(has("الجو","الطقس","تمطر","حار","بارد")&&hit("q_weather"))say(typeof WEATHER!=="undefined"&&WEATHER==="rain"?"الجوّ ممطر اليوم 🌧️ أحبّ صوت المطر!":isNight()?"الجوّ هادئ، والقمر جميل الليلة 🌙":"الجوّ جميل اليوم ☀️ مناسب للعب في الحديقة!");
+    if(has("تعرف")&&hit("q_know")){const o=KIDS.find(x=>x.id!==k.id&&n.includes(normAr(x.ar)));if(o)say(`نعم! ${o.ar} ${o.g==="f"?"تسكن":"يسكن"} في عمارتنا، ${o.g==="f"?"هي":"هو"} لطيف${o.g==="f"?"ة":""} جداً 😊`);else if(n.includes(normAr(PL_INFO.by.name))||n.includes(normAr(PL_INFO.ib.name)))say("نعم! أراه كثيراً في المصعد 😄".replace("أراه",n.includes(normAr(PL_INFO.by.name))?"أراها":"أراه"));}
+    if((has("زائد","ناقص","ضرب")||/\d\s*[+\-×x*]\s*\d/.test(raw.replace(/[٠-٩]/g,x=>"٠١٢٣٤٥٦٧٨٩".indexOf(x))))&&hit("q_math")){const m=raw.replace(/[٠-٩]/g,x=>"٠١٢٣٤٥٦٧٨٩".indexOf(x)).match(/(\d+)\s*(\+|زائد|-|ناقص|×|x|\*)\s*(\d+)/);if(m){const a=+m[1],b=+m[3],op=m[2],r=/\+|زائد/.test(op)?a+b:/-|ناقص/.test(op)?a-b:a*b;say(`${a} ${/\+|زائد/.test(op)?"زائد":/-|ناقص/.test(op)?"ناقص":"ضرب"} ${b} يساوي ${r}! 🧮 ${k.id==="hamza"?"أنا أحبّ الحساب!":""}`);}}
+    // "why?" about the last thing the kid said
+    if(words.length<=3&&hasW("لماذا","ليش","ليه","لمه","وليش","ولماذا")&&!done.size&&hit("q_why")){const r=c.topic&&P2.why[c.topic];say(r?r:pick(["لأنّي أحبّ ذلك 😄","هكذا 😄 لا أعرف السبب!"]));}
+    if(words.length<=3&&hasW("متي")&&!done.size&&hit("q_when"))say(pick(["بعد العصر عادةً 😊","يوم الجمعة إن شاء الله!"]));
+    if(words.length<=3&&hasW("مع من","مع مين","مين معك")&&hit("q_with"))say(`مع ${kGender(k,"أبي وأخي","أمّي وأختي")} 😊`);
+  }
+  // ---------- 6. statements from the player ----------
+  if(!isQ||!done.size){
+    if(!answered&&(has("اسمي","انا اسمي")||(/^انا [^ ]+$/.test(n)&&!findAge(n)&&!has("بخير","تعبان","فرحان","زعلان","جوعان","مريض","حزين","سعيد","مبسوط","طفشان")))&&hit("s_name")){
+      if(d.know.name&&d.know.pname)say(`أعرف، ${GV("أنتَ","أنتِ")} ${me}! 😄`);else{d.know.name=1;d.know.pname=me;say(`تشرّفنا يا ${me}! 😊`);}if(c.pending==="name")c.pending=null;}
+    if(!answered&&has("عمري")&&findAge(n)&&hit("s_age")){const a=findAge(n);d.know.age=a;say(a===k.age?"نحن في نفس العمر! 🤝":`ما شاء الله! أنا عمري ${AGE_W[k.age][0]}.`);if(a===k.age)hearts++;if(c.pending==="age")c.pending=null;}
+    if(!answered&&has("احب")&&!has("احبك")&&hit("s_like")){
+      const L=LIKE_KEYS.find(x=>n.includes(x[0])),f=wordIn(n,FOOD_W),cl=COLOR_W.find(x=>n.includes(x[0])),pw=PET_W.find(p=>wordIn(n,[p[0]]));
+      if(L){d.know.like=L[2];const same=L[2]===k.like[0]||L[1]===k.like[2];say(same?`أنا أيضاً أحبّ ${k.like[0]}! 🤝💛`:`جميل! ${L[1]} ${pick([`منذ متى ${GV("تحبّ","تحبّين")} ذلك؟`,`هل ${GV("أنتَ","أنتِ")} ماهر${GV("","ة")} فيه؟`])}`);if(same)hearts++;else c.pending="why_like";if(c.pending==="like")c.pending=null;}
+      else if(f){d.know.food=f;const mine=normAr(k.food[0]).replace(/^ال/,"");say(mine.includes(f.slice(0,4))?`وأنا أيضاً!! 😋🤝`:`يمّي! 😋 وأنا أحبّ ${k.food[0]}.`);}
+      else if(cl){d.know.color=cl[1];say(`${cl[1].replace(/^ال/,"")} لونٌ جميل! 🎨`);}
+      else if(pw)say(`وأنا أحبّ ${X.animal[0]} ${X.animal[2]||""} 😍`);
+      else if(has("الله","رسول"))say("ونحن نحبّ الله ورسوله ﷺ أكثر من كلّ شيء 💛");
+      else if(has("اللعب","العب","لعب"))say(`وأنا أحبّ ${P2.game[0]}! 🎮`);
+      else if(c.pending!=="like")say(pick([`جميل! لماذا ${GV("تحبّه","تحبّينه")}؟`,"واو! 😄"]));
+      if(c.pending==="like"&&(L||f))c.pending=null;}
+    if(has("احبك","احبج","حبيبي")&&hit("s_love")){say(`وأنا أحبّك في الله يا ${me}! 💛`);hearts++;}
+    if(has("عندي")&&!answered&&hit("s_have")){const pw=PET_W.find(p=>wordIn(n,[p[0]]));
+      if(pw){d.know.pet=pw[1];say(`ما شاء الله! ${pw[2]==="f"?"ما اسمها؟":"ما اسمه؟"} 😍`);c.pending="pet_name";c.petG=pw[2];}
+      else if(has("اخ","اخت","اخوان","اخوات")){d.know.sib=raw.slice(0,30);say(`ما شاء الله! الله يحفظهم 💛 ${k.sib[0]}`);}
+      else if(has("مدرسه","اختبار","امتحان","واجب"))say(pick(["الله يوفّقك! 💪 ذاكر جيّداً.","بالتوفيق! أنا أيضاً عندي واجبات 📚"]).replace("ذاكر",GV("ذاكر","ذاكري")));
+      else if(has("درا","سيكل"))say("رائع! أنا أيضاً… أقصد حمزة يحبّ الدرّاجات كثيراً 🚲".replace("أنا أيضاً… أقصد حمزة يحبّ",k.id==="hamza"?"وأنا أيضاً عندي درّاجة! أحبّ":"حمزة يحبّ"));
+      else if(has("بلايستيشن","ايباد","جوال","تابلت","العاب"))say("واو! لكن لا تلعب كثيراً، عيونك مهمّة 😄👀".replace("تلعب",GV("تلعب","تلعبي")));
+      else say(pick(["ما شاء الله! 😊","جميل! 😄"]));}
+    if(has("فرحان","سعيد","مبسوط","مستانس","فرحانه","سعيده","مبسوطه")&&hit("s_happy")){say(`الحمد لله! أنا فرحان${kGender(k,"","ة")} لأنّك فرحان${GV("","ة")} 😄 لماذا؟`);c.pending="why_like";}
+    if(has("زعلان","حزين","متضايق","زعلانه","حزينه","ضايق")&&hit("s_sad")){say(`لا تحزن${GV("","ي")} يا ${me} 💛 ماذا حدث؟`);c.pending="sad";}
+    if(has("تعبان","تعبانه","نعسان","نعسانه")&&hit("s_tired"))say(has("نعسان")?"اذهب ونم مبكّراً، ولا تنسَ أذكار النوم 😴🌙".replace("اذهب ونم",GV("اذهب ونم","اذهبي ونامي")).replace("تنسَ",GV("تنسَ","تنسي")):`سلامتك! استرح${GV("","ي")} قليلاً واشرب${GV("","ي")} ماءً 💧`);
+    if(has("جوعان","جوعانه","جعت")&&hit("s_hungry"))say(`وأنا أيضاً! 😋 ما رأيك في ${k.food[0]}؟`);
+    if(has("مريض","مريضه")&&hit("s_ill"))say(`سلامتك! شفاك الله وعافاك 🤲💛`);
+    if(has("طفشان","ملل","زهقان","طفشانه","مليت")&&hit("s_bored")){say(`هيّا نلعب لعبة! هل ${GV("تريد","تريدين")} لغزاً؟ 🤔`);c.pending="riddle_offer";}
+    if(has("خايف","خائف")&&hit("s_scared"))say("لا تخف! قل: بسم الله، والله معك دائماً 💪".replace("تخف",GV("تخف","تخافي")));
+    if(has("ذهبت","رحت","سافرت","زرت")&&hit("s_went")){const pl=has("حديقه")?"الحديقة":has("بحر","شاطئ")?"الشاطئ":has("مسجد")?"المسجد":has("سوق","مول")?"السوق":has("مدرسه")?"المدرسة":has("جد","جده","جدي")?"بيت الجدّ":"";say(pl?`جميل! ماذا فعلت في ${pl}؟ 😄`.replace("فعلت",GV("فعلتَ","فعلتِ")):`ما شاء الله! هل استمتعت${GV("َ","ِ")}؟ 😄`);c.pending="why_like";}
+    if(hasW("اكلت","اكلنا")&&!isQ&&hit("s_ate"))say("بالهناء والشفاء! 😋 هل كان لذيذاً؟");
+    if(hasW("لعبت","لعبنا")&&!isQ&&hit("s_played"))say(`رائع! هل فز${GV("تَ","تِ")}؟ 🏆`);
+    if(has("انت لطيف","انتي لطيفه","انت ذكي","انتي ذكيه","انت حلو","انتي حلوه","انت رائع","انتي رائعه","انت طيب","انتي طيبه","انت مضحك")&&hit("s_compl")){say(`شكراً! و${you} أيضاً 😊💛`);hearts++;}
+    if(has("صلي","صليت","الصلاه")&&!isQ&&hit("s_pray"))say("تقبّل الله! 🤲");
+    if(has("انا في الصف","انا بالصف","صفي")&&hit("s_grade")){const g=findAge(n)||(has("اول")?1:has("ثاني")?2:has("ثالث")?3:has("رابع")?4:has("خامس")?5:null);d.know.grade=g;say(g&&g===({7:2,8:3,9:4}[k.age]||3)?"نحن في نفس الصفّ! 🤝":`ما شاء الله! أنا في الصفّ ${k.grade[0]}.`);}
+  }
+  // ---------- 7. requests: story, joke, riddle, play, friends ----------
+  if((has("قصه","حكايه")||(has("احكي","احك لي","احكيلي")&&!has("نكت","لغز")))&&hit("r_story")){c.story=c.story==null?Math.floor(Math.random()*KSTORIES.length):(c.story+1)%KSTORIES.length;KSTORIES[c.story].forEach(l=>say(l));say(`هل ${GV("تريد","تريدين")} قصّةً أخرى؟ 📖`);c.pending="story_more";}
+  if(has("نكته","نكت","ضحكني","اضحكني","نكتة")&&hit("r_joke")){let j;do{j=pick(KJOKES);}while(KJOKES.length>1&&j===c.lastJoke);c.lastJoke=j;say(j[0]);say(j[1]);}
+  if((has("لغز","فزوره","الغاز")||(c.pending==="riddle_offer"&&yes))&&hit("r_riddle")){c.riddle=((c.riddle==null?Math.floor(Math.random()*KRIDDLES.length):c.riddle)+1)%KRIDDLES.length;say(KRIDDLES[c.riddle].q);c.pending="riddle";}
+  else if(c.pending==="riddle_offer"&&no){c.pending=null;say(`حسناً 😊 ماذا ${GV("تحبّ","تحبّين")} أن نفعل؟`);}
+  if(has("عد معي","نعد","عد من","عد للعشره","عد الي")&&hit("r_count"))say(AR_NUM_W.slice(1).join("، ")+"! 🔢");
+  if(has("غني","انشوده","نشيد","تغني")&&hit("r_song"))say("أنا أحبّ الأناشيد! 🎵 «طلع البدر علينا، من ثنيّات الوداع» 🌙");
+  if(has("صديق","اصدقاء","اصحاب","صاحبي","نصير اصحاب","نكون اصدقاء")&&!c.madeFriends&&hit("r_friend")){if(d.lv<1)d.lv=1;hearts++;c.madeFriends=true;say(`نعم! أنا ${kGender(k,"صديقك","صديقتك")} الآن! 💛`.replace("صديقك",GV("صديقك","صديقتكِ")));}
+  if(has("نلعب","تلعب معي","العب معي","نروح الحديقه","هيا نلعب","يلا نلعب","تعال نلعب","تعالي نلعب")&&!c.play&&hit("r_play")){say(`نعم! هيّا نلعب ${k.playAr[0]} في الحديقة! 🌳`);c.play=true;}
+  if(has("تعال بيتي","تعالي بيتي","زورني","تعال عندي","تعالي عندي","تزورني")&&hit("r_visit"))say("إن شاء الله! سأستأذن أمّي أوّلاً 😊🏠");
+  if(has("مع السلامه","باي","الي اللقاء","في امان الله","اراك","لازم اروح","يجب ان اذهب","تصبح علي خير","تصبحين علي خير")&&hit("bye")){say(has("تصبح")?`وأنت من أهله! نوماً هنيئاً يا ${me} 🌙`:`مع السلامة يا ${me}! ${GV("تعال","تعالي")} مرّةً أخرى 💛`);c.bye=true;}
+  // ---------- 8. plain yes/no or short reply with no context ----------
+  if(!out.length&&!answered&&words.length<=2&&(yes||no))say(yes?pick(["جميل! 😊","رائع! 👍","حسناً 😄"]):pick(["حسناً 😊","لا بأس 😊"]));
+  if(!out.length&&!answered&&findAge(n)&&words.length<=2&&!d.know.age){const a=findAge(n);d.know.age=a;say(`عمرك ${a}؟ ${a===k.age?"مثلي! 🤝":"ما شاء الله!"}`);}
+  // ---------- 9. not understood ----------
+  if(!out.length){
+    if(isQ)say(pick(["🤔 سؤالٌ جميل! لكنّي لا أعرف جوابه. اسألني عن مدرستي، أو أكلي المفضّل، أو قل: احكِ لي قصّة!",`ممم… لا أعرف 🙈 لكن اسألني عن ${pick(["حيواني المفضّل","ماذا أريد أن أصبح","ماذا فعلت اليوم","صديقي المقرّب"])}!`,"هذا سؤالٌ صعب 😅 اسألني شيئاً آخر!"]));
+    else if(words.length>=3)say(pick(["آه، فهمت 😊","حقّاً؟ 😮","ما شاء الله! 😄","جميل! 😊"]));
+    else{say(pick(["لم أفهم جيّداً 🤔 اكتبها بطريقةٍ أخرى؟","ماذا تقصد؟ 🤔".replace("تقصد",GV("تقصد","تقصدين")),"هممم 🙈 لم أفهم."]));return {out,hearts,confused:true};}
+  }
+  // ---------- 10. keep the conversation going ----------
+  if(!c.bye&&!c.play&&!c.pending){
+    const ord=["name","age","like","school_like","food","pet","sib","color","today","dream","best","place"];
+    const know={name:d.know.name,age:d.know.age,like:d.know.like,school_like:d.know.grade||c.asked.school_like,food:d.know.food,pet:d.know.pet||d.know.petNo,sib:d.know.sib,color:d.know.color,today:c.asked.today,dream:d.know.dream,best:d.know.best,place:c.asked.place};
+    let next=null;
+    if(d.lv<1&&!c.madeFriends&&c.turns>=4&&(c.frN||0)<2&&(!c.askedFr||c.turns-c.askedFr>=5)){next="friends";c.askedFr=c.turns;c.frN=(c.frN||0)+1;}
+    else if(d.lv>=1&&c.turns>=(c.lv0>=1?3:6)&&!c.invited)next="play";
+    else if(c.turns%2===1||out.length<2||["name","age","like"].some(x=>!know[x]))next=ord.find(x=>!know[x]&&!c.asked[x]);
+    if(next){if(next!=="friends")c.asked[next]=1;
+      const Q={name:`و${you}، ما اسمك؟`,age:"كم عمرك؟",like:`ماذا ${GV("تحبّ","تحبّين")} أن ${GV("تفعل","تفعلي")}؟`,school_like:`في أيّ صفٍّ ${you}؟`,food:`ما طعامك المفضّل؟ 😋`,pet:`هل عندك حيوانٌ في البيت؟ 🐾`,sib:`هل عندك إخوة؟`,color:`ما لونك المفضّل؟ 🎨`,today:`ماذا ${GV("فعلتَ","فعلتِ")} اليوم؟`,dream:`ماذا ${GV("تريد","تريدين")} أن ${GV("تصبح","تصبحي")} عندما ${GV("تكبر","تكبري")}؟ 🌟`,best:`من ${GV("صديقك","صديقتكِ")} المقرّب${GV("","ة")}؟`,place:`ما مكانك المفضّل؟`,friends:"هل نصبح أصدقاء؟ 🤝",play:`هل ${GV("تريد","تريدين")} أن نلعب ${k.playAr[0]} في الحديقة؟ 🌳`}[next];
+      if(next==="play")c.invited=true;
+      c.pending=next==="school_like"?"grade":next;c.lastAsk=next==="school_like"?"grade":next;say(Q);}
+  }
+  return {out,hearts};
+}
+kidReply=function(k,text){
+  if(/[a-zA-Z]/.test(text)){
+    if(isEnglishMsg(text)&&!/[؀-ۿ]/.test(text))return {out:[["أنا أتكلّم العربية فقط 😊 تستطيع أن تكتب العربية بالحروف الإنجليزية، مثل: salam, ismi …","ana atakallamu al-ʿarabiyya faqat."]],hearts:0,confused:true};
+    text=text.replace(/[a-zA-Z0-9'’\-][a-zA-Z0-9'’\-\s]*[a-zA-Z0-9]|[a-zA-Z]/g,m=>/[a-zA-Z]/.test(m)?" "+arabizi(m)+" ":m);
+  }
+  return kidBrain(k,text);
+};
+// returning friends: greet with what the kid remembers
+var _openKidChat3=openKidChat;
+openKidChat=function(id){
+  _openKidChat3(id);const k=KIDS.find(x=>x.id===id),d=kidData(id),c=S.kidChat;if(!k||!c||!d.lv)return;
+  const kn=d.know||{},me=PL_INFO[CUR].name,opts=[];
+  if(kn.petName)opts.push(`كيف حال ${kn.petName}؟ 🐾`);
+  if(kn.like)opts.push(`هل ما زلت ${GV("تحبّ","تحبّين")} ${String(kn.like).replace(/^ال/,"ال")}؟ 😊`);
+  if(kn.dream)opts.push(`هل ما زلت ${GV("تريد","تريدين")} أن ${GV("تصبح","تصبحي")} ${kn.dream}؟ 🌟`);
+  opts.push(`ماذا ${GV("فعلتَ","فعلتِ")} اليوم؟`);
+  const q=opts[Math.floor(Math.random()*opts.length)];
+  c.log=[{who:"kid",l:[`السلام عليكم يا ${me}! اشتقتُ إليك 😊 ${q}`,""]}];
+  c.pending=q.includes("فعلت")?"today":q.includes("كيف حال")?"how":"why_like";c.lastAsk=q.includes("فعلت")?"today":"how";c.topic=q.includes("كيف حال")?"pet":null;c.asked={today:q.includes("فعلت")?1:0};
+};
+// realistic typing time: longer replies take longer
+var _kidSend3=kidSend;
+kidSend=function(text){
+  const c=S.kidChat;if(!c||c.typing||c.done)return;text=String(text).trim();if(!text)return;
+  const k=KIDS.find(x=>x.id===c.id),d=kidData(k.id);
+  const ab=/[a-zA-Z]/.test(text)&&!isEnglishMsg(text)?text.replace(/[a-zA-Z0-9'’\-][a-zA-Z0-9'’\-\s]*[a-zA-Z0-9]|[a-zA-Z]/g,x=>/[a-zA-Z]/.test(x)?arabizi(x):x):null;
+  c.log.push(ab?{who:"me",l:[text,""],ab}:{who:"me",l:[text,""]});c.turns++;c.typing=true;tone(700,.05);render();
+  const r=kidReply(k,text),len=r.out.reduce((s,l)=>s+l[0].length,0);
+  const step=(i)=>{
+    if(i>=r.out.length){c.typing=false;
+      if(!r.confused)addStars(1);
+      if(r.hearts)d.hearts=(d.hearts||0)+r.hearts;
+      if(c.madeFriends&&c.lv0===0&&!c.celebrated){c.celebrated=true;setTimeout(()=>{yay();confetti(30);pop(k.e,`صار ${k.ar} ${k.g==="f"?"صديقتك":"صديقك"}! 💛`);},300);}
+      if(c.turns>=3&&d.lv>=1&&c.lv0>=1&&d.lv<2)d.lv=2;
+      if(c.bye||c.play){c.done=true;countOnce("kids");}
+      saveHome();render();return;}
+    c.log.push({who:"kid",l:r.out[i]});tone(900,.05);
+    if(i<r.out.length-1){render();setTimeout(()=>step(i+1),Math.min(2200,500+r.out[i+1][0].length*28));}else step(i+1);
+  };
+  setTimeout(()=>step(0),Math.min(2600,600+(r.out[0]?r.out[0][0].length:10)*30));
+};
+
+if(typeof KID_VOCAB!=="undefined")KID_VOCAB.push("تسوي","تسوين","تلعب","قصه","نكته","لغز");
+if(typeof AZ_DICT!=="undefined"){["tsawwi","tsawi","tsawy","tsoy"].forEach(w=>AZ_DICT[w]="تسوي");["tsawwin","tsawin","tsaween","tsawween"].forEach(w=>AZ_DICT[w]="تسوين");["qissa","qessa","gissa","9eta","qisa"].forEach(w=>AZ_DICT[w]="قصه");["nukta","nokta","nekta"].forEach(w=>AZ_DICT[w]="نكته");["lughz","loghz","lugz"].forEach(w=>AZ_DICT[w]="لغز");["i7ki","ehki","ihki","e7ki"].forEach(w=>AZ_DICT[w]="احكي");["3indak","3endak","indak","3ndk"].forEach(w=>AZ_DICT[w]="عندك");["3indik","3endik","indik"].forEach(w=>AZ_DICT[w]="عندك");["3indi","3endi","indi","3ndi"].forEach(w=>AZ_DICT[w]="عندي");["qitta","qittah","gitta"].forEach(w=>AZ_DICT[w]="قطه");}
+/* ================= paste / drop a picture into the chat ================= */
+function clipImage(dt){if(!dt)return null;for(const it of (dt.items||[])){if(it.kind==="file"&&/^image\//.test(it.type)){const f=it.getAsFile();if(f)return f;}}for(const f of (dt.files||[]))if(/^image\//.test(f.type))return f;return null;}
+document.addEventListener("paste",e=>{
+  if(!document.getElementById("waIn"))return;
+  const f=clipImage(e.clipboardData);if(!f)return;
+  e.preventDefault();sendPic(f);
+},true);
+document.addEventListener("dragover",e=>{if(document.getElementById("waIn")&&e.dataTransfer&&[...(e.dataTransfer.types||[])].includes("Files"))e.preventDefault();},true);
+document.addEventListener("drop",e=>{if(!document.getElementById("waIn"))return;const f=clipImage(e.dataTransfer);if(!f)return;e.preventDefault();sendPic(f);},true);
 </script>
 </body></html>
