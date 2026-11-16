@@ -597,6 +597,7 @@ button.tile:hover{border-color:var(--bld)}
 .kb.me{justify-self:start;flex-direction:row}.kb.me>div{background:#dcf8c6}.kb.kid{justify-self:end;flex-direction:row-reverse}
 .kopts{display:grid;gap:8px;margin:6px 0}.kopts button{text-align:start;font-size:1.1rem;font-weight:700;padding:10px 12px;border-radius:14px;border:2px solid #b39ddb;background:#fff}.kopts button:hover{background:#f3e5f5}.kopts small{display:block;font-size:.75rem;color:#777;font-weight:400}
 .kfree{display:flex;gap:6px;margin-bottom:6px}.kfree input{flex:1;font-size:1.1rem;padding:8px 10px;border:2px solid #ccd;border-radius:12px}
+.kchips{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:0 8px 8px;font-size:.85rem}.kchips button{background:#f3e5f5;border:1px solid #ce93d8;border-radius:14px;padding:4px 10px;font-size:.9rem;cursor:pointer}
 .kfacts{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}.kfacts span{background:#fff8e1;border-radius:10px;padding:2px 8px;font-size:.9rem}
 .kfriends{margin-top:8px;background:#fff;border:2px dashed #ce93d8;border-radius:14px;padding:10px}.kf{display:flex;gap:10px;align-items:flex-start;padding:6px 0;border-bottom:1px solid #f3e5f5}.kf:last-child{border:0}.kfe{font-size:2rem}
 @media (max-width:820px){.kidsroom{height:500px}.kidst{width:70px;zoom:.85}}
@@ -608,6 +609,15 @@ button.tile:hover{border-color:var(--bld)}
 .apt .aempty{position:absolute;left:50%;top:45%;transform:translateX(-50%);background:#fff;border-radius:12px;padding:6px 12px;font-weight:700}
 .apt .afigs{position:absolute;left:24%;bottom:14px;display:flex;gap:10px}
 @media (max-width:820px){.apt .aitem{font-size:2.1rem}.apt .aspot{max-width:100px}}
+.apt .adrop{position:absolute;transform:translate(-50%,0);width:110px;height:84px;border:3px dashed rgba(255,255,255,.0);border-radius:18px;background:none;display:flex;align-items:flex-end;justify-content:center;z-index:1;pointer-events:none;transition:.15s}
+.apt.moving .adrop{border-color:rgba(255,193,7,.75);background:rgba(255,236,179,.25);pointer-events:auto;cursor:pointer}.apt .adrop span{font-size:.7rem;background:#fff8;border-radius:8px;padding:0 5px;margin-bottom:-18px;color:#5d4037;font-weight:700}
+.apt .adrop.ready{animation:dropPulse 1s infinite}.apt .adrop.hov{background:rgba(129,199,132,.55);border-color:#43a047;transform:translate(-50%,0) scale(1.08)}
+.apt.moving .aspot{z-index:2}.apt.moving .aitem{cursor:grab;animation:wiggle .9s infinite}
+.aghost{position:fixed;z-index:9999;pointer-events:none;font-size:3.4rem;transform:translate(-50%,-60%) scale(1.2);background:none;border:0;filter:drop-shadow(0 6px 8px rgba(0,0,0,.35))}
+@keyframes dropPulse{50%{background:rgba(255,236,179,.5)}}@keyframes wiggle{25%{transform:rotate(-6deg)}75%{transform:rotate(6deg)}}
+.pincard{max-width:380px;text-align:center}.doorpic{position:relative;font-size:4rem;line-height:1;margin:4px 0}.doorpic .lock{position:absolute;font-size:1.6rem;left:50%;margin-left:6px;top:28px}
+.pinscr2{font-size:2rem;letter-spacing:10px;background:#263238;color:#80deea;border-radius:12px;padding:6px;margin:8px auto;max-width:220px;direction:ltr}.pinscr2.bad{animation:pshake .35s;color:#ef9a9a}
+.pinpad2{display:grid;grid-template-columns:repeat(3,72px);gap:10px;justify-content:center;margin:10px auto;direction:ltr}.pinpad2 button{height:64px;font-size:1.6rem;font-weight:800;border-radius:16px;background:#f5f5f5;border:2px solid #ddd;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}.pinpad2 button small{font-size:.65rem;color:#888;font-weight:400}.pinpad2 button[data-hp="✓"]{background:#e8f5e9;border-color:#66bb6a}
 .park .pk:focus,.beach .pk:focus{outline:none}
 .beachb{background:#e3f4fd;border-color:#4fb3e8}.parkb{background:#e7f6df;border-color:#6dbb4a}
 .mosqueb{background:#dff5ea;border-color:var(--good)}
@@ -1012,11 +1022,12 @@ function playPark(k){
 function renderScene(){
   const v=V();
   $("scene").classList.toggle("night",isNight()&&!["place","house"].includes(S.phase)&&!(S.phase==="mosque"&&outKind()!=="mosque"));
-  $("scene").classList.toggle("rain",WEATHER==="rain"&&!["place","house"].includes(S.phase));
+  $("scene").classList.toggle("rain",WEATHER==="rain"&&!["place","house","myhome","kids","souq"].includes(S.phase)&&!(S.phase==="door"&&S.live&&!S.live.done));
   if(S.phase==="myhome"||(S.phase==="door"&&S.live&&!S.live.done)){
     const mine=S.phase==="myhome";
     $("scene").innerHTML=aptScene(mine?CUR:other(),!mine);
     $("scene").querySelectorAll("[data-aitem]").forEach(b=>b.onclick=()=>{if(!mine)return;S.aptTap=+b.dataset.aitem;beep();render();});
+    if(mine&&S.aptMove&&typeof bindAptMove==="function")bindAptMove();
     return;
   }
   if(S.phase==="kids"){
@@ -3373,7 +3384,10 @@ function aptScene(k,visiting){
 }
 function startMyHome(){
   if(!HOME.f){openHome();return;}
-  newRound(true);S.phase="myhome";S.aptTap=null;S.aptSaid={};try{stopAdhan();}catch(e){}knock();render();
+  askHomePin(enterMyHome);
+}
+function enterMyHome(){
+  newRound(true);S.phase="myhome";S.aptTap=null;S.aptMove=false;S.aptPick=null;S.aptSaid={};try{stopAdhan();}catch(e){}knock();render();
 }
 function myHomePanel(v){
   const items=HOME.items||[],pend=(PL[CUR].pend||[]).length,tap=S.aptTap!=null?items[S.aptTap]:null;
@@ -3392,5 +3406,212 @@ function bindApt(){
   on("aptGift",openHome);on("aptEdit",openHome);
   on("aptOut",()=>{S.rounds=(S.rounds||0)+1;newRound(false);});
 }
+
+/* ================= kids chat: replies follow what he types ================= */
+function normAr(t){return String(t).replace(/[ً-ْـ]/g,"").replace(/[أإآ]/g,"ا").replace(/ة/g,"ه").replace(/ى/g,"ي").replace(/[؟?!.,،]/g," ").replace(/\s+/g," ").trim();}
+var NUMS={"5":5,"6":6,"7":7,"8":8,"9":9,"10":10,"11":11,"12":12,"خمس":5,"خمسه":5,"ست":6,"سته":6,"سبع":7,"سبعه":7,"ثمان":8,"ثماني":8,"ثمانيه":8,"تسع":9,"تسعه":9,"عشر":10,"عشره":10};
+function findAge(n){const d=n.replace(/[٠-٩]/g,x=>"٠١٢٣٤٥٦٧٨٩".indexOf(x)).match(/\b(5|6|7|8|9|10|11|12)\b/);if(d)return +d[1];for(const w of n.split(" "))if(NUMS[w])return NUMS[w];return null;}
+var LIKE_KEYS=[["كره","⚽","كرة القدم"],["كوره","⚽","كرة القدم"],["قدم","⚽","كرة القدم"],["رسم","🎨","الرسم"],["الوان","🎨","الرسم"],["روبوت","🤖","الروبوتات"],["قطط","🐱","القطط"],["قطه","🐱","القطط"],["دراج","🚲","الدرّاجات"],["سيكل","🚲","الدرّاجات"],["العاب","🎮","الألعاب"],["لعب","🎮","الألعاب"],["تقني","🎮","التقنية"],["بلايستيشن","🎮","الألعاب"],["سباح","🏊","السباحة"],["قراء","📚","القراءة"],["قصص","📚","القصص"]];
+function kidAsk(c,key,k){
+  const G2=GV;c.pending=key;
+  return ({name:[`وأنتَ، ما اسمك؟`.replace("وأنتَ",GV("وأنتَ","وأنتِ")),`wa ${GV("anta","anti")}, ma ismu${GV("ka","ki")}?`],
+    age:[`كم عمرك؟`,`kam ʿumru${GV("ka","ki")}?`],
+    like:[`ماذا ${GV("تحبّ","تحبّين")} أن ${GV("تفعل","تفعلي")}؟`,`madha ${GV("tuhibbu an tafʿal","tuhibbina an tafʿali")}?`],
+    grade:[`في أيّ صفٍّ ${GV("أنتَ","أنتِ")}؟`,`fi ayyi saffin ${GV("anta","anti")}?`],
+    friends:[`هل نصبح أصدقاء؟ 🤝`,`hal nusbihu asdiqa'?`],
+    play:[`هل ${GV("تريد","تريدين")} أن نلعب ${k.playAr[0]} في الحديقة؟ 🌳`,`hal ${GV("turidu","turidina")} an nalʿaba ${k.playAr[1]} fi al-hadiqa?`]})[key];
+}
+function kidReply(k,text){
+  const c=S.kidChat,d=kidData(k.id),n=normAr(text),out=[],me=PL_INFO[CUR].name;let hearts=0,understood=false;d.know=d.know||{};
+  const isQ=/(^| )(ما|كم|هل|كيف|اين|وين|ماذا|شو|وش|ليش|لماذا|متي)( |$)/.test(n)||/[؟?]/.test(text);
+  const has=(...ws)=>ws.some(w=>n.includes(w));
+  const say=(ar1,tr1)=>out.push([ar1,tr1||""]);
+  if(/[a-zA-Z]{3,}/.test(text)&&!/[؀-ۿ]/.test(text)){say("أنا أتكلّم العربية فقط 😊 اكتب بالعربية من فضلك!","ana atakallamu al-ʿarabiyya faqat. uktub bil-ʿarabiyya!");return {out,hearts};}
+  // answers to the kid's last question
+  if(c.pending==="age"){const a=findAge(n);if(a){understood=true;d.know.age=a;say(a===k.age?`ما شاء الله! وأنا عمري ${AGE_W[k.age][0]} أيضاً! نحن في نفس العمر 🤝`:`ما شاء الله! أنا عمري ${AGE_W[k.age][0]}.`,a===k.age?`ma sha'a allah! wa ana ʿumri ${AGE_W[k.age][1]} aydan!`:`ma sha'a allah! ana ʿumri ${AGE_W[k.age][1]}.`);if(a===k.age)hearts++;d.facts.age=1;c.pending=null;}}
+  if((c.pending==="name"&&!understood&&n.length&&!isQ&&(n.startsWith("انا ")||n.split(" ").length<=2)&&!findAge(n)&&!n.includes("احب")&&!n.includes("عمري")&&!has("سلام","مرحبا","اهلا","هلا","نعم","شكرا","باي","بخير","تمام","طيب","صباح","مساء")&&n!=="لا")||(n.includes("اسمي")&&!d.know.name)){understood=true;d.know.name=1;say(`تشرّفنا يا ${me}! 😊`,`tasharrafna ya ${PL_INFO[CUR].tr}!`);if(c.pending==="name")c.pending=null;}
+  else if(n.includes("اسمي")){understood=true;say(`أعرف، أنت ${me}! 😄`,`aʿrif, anta ${PL_INFO[CUR].tr}!`);}
+  if(c.pending==="like"||has("احب")){const L=LIKE_KEYS.find(x=>n.includes(x[0]));
+    if(L&&has("احب")||L&&c.pending==="like"){understood=true;d.know.like=L[2];const same=L[2]===k.like[0]||(L[1]===k.like[2]);say(same?`رائع! أنا أيضاً أحبّ ${k.like[0]}! نحن نحبّ نفس الشيء 💛`:`جميل! ${L[1]} أمّا أنا فأحبّ ${k.like[0]} ${k.like[2]}.`,same?`ra'iʿ! ana aydan uhibbu ${k.like[1]}!`:`jamil! amma ana fa-uhibbu ${k.like[1]}.`);if(same)hearts++;c.pending=null;}
+    else if(c.pending==="like"&&has("احب")){understood=true;say("جميل جداً! 😄","jamil jiddan!");c.pending=null;}}
+  if(c.pending==="friends"&&has("نعم","اي","ايوه","ايه","اكيد","طبعا","حسنا","طيب","موافق","هيا","يلا")){understood=true;if(d.lv<1)d.lv=1;hearts++;say("ياي! صرنا أصدقاء! 💛","yay! sirna asdiqa'!");c.pending=null;c.madeFriends=true;}
+  if(c.pending==="play"){if(has("نعم","اي","ايوه","ايه","اكيد","طبعا","حسنا","طيب","موافق","هيا","يلا")){understood=true;say("رائع! هيّا إلى الحديقة! 🏃","ra'iʿ! hayya ila al-hadiqa!");c.play=true;c.pending=null;}
+    else if(has("لا","بعدين","غدا","ليس")){understood=true;say("حسناً، ربّما غداً إن شاء الله!","hasanan, rubbama ghadan in sha'a allah!");c.pending=null;}}
+  // greetings and questions from the player
+  if(has("السلام عليكم","سلام عليكم")){understood=true;say("وعليكم السلام ورحمة الله! 😊","wa ʿalaykum al-salam wa rahmatu allah!");c.greeted=true;}
+  else if(has("مرحبا","اهلا","هلا","صباح الخير","مساء الخير")){understood=true;say(has("صباح")?"صباح النور! 😊":has("مساء")?"مساء النور! 😊":"أهلاً وسهلاً! 😊",has("صباح")?"sabah al-nur!":has("مساء")?"masa' al-nur!":"ahlan wa sahlan!");c.greeted=true;}
+  if(has("اسمك","ما اسم","شو اسم","وش اسم")){understood=true;d.facts.name=1;say(`اسمي ${k.ar}.`,`ismi ${k.tr}.`);}
+  if(has("عمرك","كم عمر","كم سنه","عمر ك")){understood=true;d.facts.age=1;say(`عمري ${AGE_W[k.age][0]}.`,`ʿumri ${AGE_W[k.age][1]}.`);}
+  else if(has("عمري")&&findAge(n)&&!d.know.age){understood=true;const a=findAge(n);d.know.age=a;say(a===k.age?`نحن في نفس العمر! 🤝`:`ما شاء الله!`,a===k.age?"nahnu fi nafsi al-ʿumr!":"ma sha'a allah!");if(a===k.age)hearts++;}
+  if(has("كيف حالك","كيفك","شلونك","كيف الحال")){understood=true;say(`بخير والحمد لله! ${GV("وأنتَ","وأنتِ")}؟`,`bi-khayr wal-hamdu lillah! wa ${GV("anta","anti")}?`);c.pending="how";}
+  else if(c.pending==="how"&&has("بخير","الحمد لله","تمام","زين","منيح")){understood=true;say("الحمد لله! 😊","al-hamdu lillah!");c.pending=null;}
+  if(has("تحب","هوايت","هوايه","ماذا تحب","شو تحب","وش تحب")){understood=true;d.facts.like=1;say(`أحبّ ${k.like[0]} كثيراً! ${k.like[2]}`,`uhibbu ${k.like[1]} kathiran!`);}
+  if(has("صف","مدرس")&&has("اي","في","كم")){understood=true;d.facts.grade=1;say(`أنا في الصفّ ${k.grade[0]}.`,`ana fi al-saffi ${k.grade[1]}.`);}
+  if(has("اخوه","اخوان","اخوات","اخ ","اخت","اخو")&&!has("اخبار")){understood=true;d.facts.sib=1;say(k.sib[0],k.sib[1]);}
+  if(has("طعام","اكل","اكلتك","وجبه")){understood=true;d.facts.food=1;say(`طعامي المفضّل ${k.food[0]}! 😋`,`taʿami al-mufaddal ${k.food[1]}!`);}
+  if(has("لون")){understood=true;d.facts.color=1;say(`لوني المفضّل ${k.color[0]}.`,`lawni al-mufaddal ${k.color[1]}.`);}
+  if(has("اين تسكن","وين تسكن","تسكن")){understood=true;say("أسكن هنا في العمارة مع عائلتي! 🏢","askunu huna fi al-ʿimara maʿa ʿa'ilati!");}
+  if(has("صديق","اصدقاء","اصحاب","صاحبي")&&!c.madeFriends){understood=true;if(d.lv<1)d.lv=1;hearts++;c.madeFriends=true;say(`نعم! أنا ${k.g==="f"?"صديقتك":"صديقك"} الآن! 💛`,`naʿam! ana ${k.g==="f"?"sadiqatuk":"sadiquk"} al-an!`);}
+  if(has("نلعب","تلعب","العب معي","نروح الحديقه","الحديقه","هيا نلعب","يلا نلعب")&&!c.play){understood=true;say(`نعم! هيّا نلعب ${k.playAr[0]} في الحديقة! 🌳`,`naʿam! hayya nalʿabu ${k.playAr[1]} fi al-hadiqa!`);c.play=true;}
+  if(has("شكرا","جزاك الله")){understood=true;say("العفو! 😊","al-ʿafw!");}
+  if(has("مع السلامه","باي","الي اللقاء","في امان الله","اراك")){understood=true;say(`مع السلامة يا ${me}! ${GV("تعال","تعالي")} مرّةً أخرى 💛`,`maʿa al-salama! ${GV("taʿala","taʿali")} marratan ukhra!`);c.bye=true;}
+  if(!understood){say(rnd(["لم أفهم جيّداً 🤔 جرّب أن تسألني سؤالاً!","هممم… لا أفهم 🙈 اكتبها بطريقةٍ أخرى؟","ماذا تقصد؟ 🤔"]),"lam afham jayyidan…");return {out,hearts,confused:true};}
+  // keep the conversation going: the kid asks the next thing it wants to know
+  if(!c.bye&&!c.play&&!c.pending){
+    const next=!d.know.name?"name":!d.know.age?"age":!d.know.like?"like":(d.lv<1&&!c.madeFriends&&c.turns>=3)?"friends":(d.lv>=1&&c.turns>=(c.lv0>=1?2:4)&&!c.invited)?"play":null;
+    if(next){if(next==="play")c.invited=true;const q=kidAsk(c,next,k);say(q[0],q[1]);}
+  }
+  return {out,hearts};
+}
+function kidChips(k){
+  const c=S.kidChat,G2=(m,f)=>k.g==="f"?f:m;
+  const byPending={age:["عمري ثماني سنوات.","عمري تسع سنوات."],name:[`اسمي ${PL_INFO[CUR].name}.`],like:["أحبّ الألعاب والتقنية!","أحبّ كرة القدم!","أحبّ الرسم!"],friends:["نعم! 🤝","طبعاً!"],play:["نعم، هيّا بنا!","ليس الآن."],how:["بخير، الحمد لله!"]};
+  if(c.pending&&byPending[c.pending])return byPending[c.pending];
+  const base=[];if(!c.greeted)base.push("السلام عليكم!");
+  const d=kidData(k.id);if(!d.facts.name)base.push(`ما اسمك؟`);if(!d.facts.age)base.push("كم عمرك؟");if(!d.facts.like)base.push(`ماذا ${G2("تحبّ","تحبّين")}؟`);
+  if(!d.facts.grade)base.push(`في أيّ صفٍّ ${G2("أنتَ","أنتِ")}؟`);if(!d.facts.food)base.push("ما طعامك المفضّل؟");if(!d.facts.sib)base.push(`هل ${G2("عندك","عندكِ")} إخوة؟`);
+  base.push("هل نلعب معاً؟","مع السلامة!");return base.slice(0,4);
+}
+function openKidChat(id){
+  const k=KIDS.find(x=>x.id===id);if(!k)return;const d=kidData(id);
+  d.know=d.know||{};S.kidChat={id,log:[],pending:null,turns:0,lv0:d.lv,typing:false};
+  S.kidChat.log.push({who:"kid",l:d.lv?[`أهلاً يا ${PL_INFO[CUR].name}! اشتقتُ إليك 😊`,`ahlan ya ${PL_INFO[CUR].tr}! ishtaqtu ilayk!`]:[`👋 ...`,""]});
+  knock();render();
+}
+function kidSend(text){
+  const c=S.kidChat;if(!c||c.typing||c.done)return;text=String(text).trim();if(!text)return;
+  const k=KIDS.find(x=>x.id===c.id),d=kidData(k.id);
+  c.log.push({who:"me",l:[text,""]});c.turns++;c.typing=true;tone(700,.05);render();
+  setTimeout(()=>{
+    const r=kidReply(k,text);c.typing=false;
+    r.out.forEach(l=>c.log.push({who:"kid",l}));
+    if(!r.confused)addStars(1);
+    if(r.hearts)d.hearts=(d.hearts||0)+r.hearts;
+    if(c.madeFriends&&c.lv0===0&&!c.celebrated){c.celebrated=true;setTimeout(()=>{yay();confetti(30);pop(k.e,`صار ${k.ar} ${k.g==="f"?"صديقتك":"صديقك"}! 💛`);},300);}
+    if(c.turns>=3&&d.lv>=1&&c.lv0>=1&&d.lv<2)d.lv=2;
+    if(c.bye||c.play){c.done=true;countOnce("kids");}
+    saveHome();tone(900,.06);render();
+  },700+Math.random()*500);
+}
+function kidsPanel(v){
+  const c=S.kidChat;
+  let h=`<div class="win">👫 ${P("تعرّف على أطفال العمارة وتكلّم معهم!","taʿarraf ʿala atfal al-ʿimara!")}</div>`;
+  if(!c)return h+`<div class="hint center">👆 ${P("اضغط على طفلٍ لتبدأ الكلام معه.","idghat ʿala tiflin li-tabda'a al-kalam.")}</div>`+friendsList();
+  const k=KIDS.find(x=>x.id===c.id),d=kidData(k.id);
+  h+=`<div class="kchat"><div class="khead">${k.e} <b>${d.facts.name?k.ar:P("طفلٌ جديد","tiflun jadid")}</b> <span>${d.lv?"💛".repeat(Math.min(5,d.hearts||1)):""}</span><button id="kidBack">↩ ${P("رجوع","rujuʿ")}</button></div>
+    <div class="klog" id="kidLog">${c.log.map(m=>`<div class="kb ${m.who}"><b>${m.who==="me"?v.e:k.e}</b><div>${esc(m.l[0])}${S.tr&&m.l[1]?`<small>${m.l[1]}</small>`:""}</div></div>`).join("")}${c.typing?`<div class="kb kid"><b>${k.e}</b><div>${typingHtml().replace(/تكتب|يكتب/,k.g==="f"?"تكتب":"يكتب")}</div></div>`:""}</div>`;
+  if(c.play&&c.done)h+=`<div class="tog center"><button class="big huge" id="kidPlay">🌳 ${P(`اذهب إلى الحديقة مع ${k.ar}`,`idhhab ila al-hadiqa maʿa ${k.tr}`)}</button></div>`;
+  else if(c.done)h+=`<div class="win center">💛 ${P(`أحسنت! تكلّمتَ مع ${k.ar}.`,`ahsant!`)}</div>`+kidFacts(k)+`<div class="tog center"><button class="big" id="kidBack2">👫 ${P("تكلّم مع طفلٍ آخر","takallam maʿa tiflin akhar")}</button><button class="big" id="next">🚀 ${P("مهمة جديدة","mahamma jadida")}</button></div>`;
+  else h+=`<div class="kfree"><input id="kidIn" dir="rtl" lang="ar" autocomplete="off" placeholder="✍️ اكتب رسالتك بالعربية…"><button id="kidSend">➤</button></div>
+    <div class="kchips">💡 ${kidChips(k).map(t=>`<button data-kchip="${esc(t)}">${t}</button>`).join("")}</div>`;
+  h+=`</div>`+(c.done?"":kidFacts(k));
+  return h;
+}
+function bindKids(){
+  document.querySelectorAll("[data-kid]").forEach(b=>b.onclick=()=>openKidChat(b.dataset.kid));
+  const c=S.kidChat,on=(id,f)=>{const e=$(id);if(e)e.onclick=f;};
+  on("kidBack",()=>{S.kidChat=null;render();});on("kidBack2",()=>{S.kidChat=null;render();});
+  const inp=$("kidIn");
+  if(inp){const send=()=>{const t=inp.value;inp.value="";kidSend(t);};on("kidSend",send);inp.onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();send();}};if(!c.typing)setTimeout(()=>{try{inp.focus();}catch(e){}},30);}
+  document.querySelectorAll("[data-kchip]").forEach(b=>b.onclick=()=>{const i=$("kidIn");if(i){i.value=b.dataset.kchip;i.focus();}});
+  if(c&&c.play)on("kidPlay",()=>playWithKid(c.id));
+  const lg=$("kidLog");if(lg)lg.scrollTop=lg.scrollHeight;
+}
+
+/* ================= home door code ================= */
+function pinHash(p){let h=5381;for(const ch of "tower:"+CUR+":"+p)h=((h<<5)+h+ch.charCodeAt(0))>>>0;return "h"+h.toString(36);}
+function askHomePin(onOk){
+  const o=$("gameBox"),hasPin=!!PL[CUR].homePin;let mode=hasPin?"enter":"set",val="",first="",msg="",bad=false,tries=0;
+  const title={enter:["🔐 أدخل رمز باب شقّتك","adkhil ramza babi shaqqatik"],set:["🆕 اختر رمزاً سرّياً لباب شقّتك (٤ أرقام)","ikhtar ramzan sirriyyan li-babi shaqqatik"],confirm:["🔁 أدخل الرمز مرّة أخرى للتأكيد","adkhil al-ramza marratan ukhra lil-ta'kid"]};
+  const draw=()=>{
+    o.innerHTML=`<div class="gcard pincard">${gHead("🚪",title[mode][0],title[mode][1])}
+      <div class="doorpic">🚪<span class="lock">${mode==="enter"?"🔒":"🔑"}</span></div>
+      <div class="pinscr2 ${bad?"bad":""}">${"●".repeat(val.length)}${"○".repeat(4-val.length)}</div>
+      ${msg?`<div class="${bad?"alert":"win"} center">${msg}</div>`:""}
+      <div class="pinpad2">${[1,2,3,4,5,6,7,8,9,"⌫",0,"✓"].map(k=>`<button data-hp="${k}" ${k==="✓"&&val.length<4?"disabled":""}>${typeof k==="number"?`${ar(k)}<small>${k}</small>`:k}</button>`).join("")}</div>
+      ${mode==="enter"&&tries>=2?`<div class="tog center"><button class="small" id="hpForgot">🤔 ${P("نسيتُ الرمز","nasitu al-ramz")}</button></div>`:""}</div>`;
+    o.hidden=false;gBind(o);
+    o.querySelectorAll("[data-hp]").forEach(b=>b.onclick=()=>press(b.dataset.hp));
+    const fg=o.querySelector("#hpForgot");if(fg)fg.onclick=()=>{PL[CUR].homePin=null;saveHome();mode="set";val="";msg=P("لا بأس! اختر رمزاً جديداً.","la ba's! ikhtar ramzan jadidan.");bad=false;draw();};
+  };
+  const press=k=>{bad=false;
+    if(k==="⌫"){val=val.slice(0,-1);tone(500,.04);}
+    else if(k==="✓"){if(val.length<4)return;submit();return;}
+    else if(val.length<4){val+=k;tone(900,.04);}
+    draw();};
+  const submit=()=>{
+    if(mode==="set"){first=val;val="";mode="confirm";msg="";tone(700,.06);draw();return;}
+    if(mode==="confirm"){
+      if(val===first){PL[CUR].homePin=pinHash(val);saveHome();tone(880,.1);tone(1320,.15,.12);msg=`✅ ${P("حُفظ الرمز! تذكّره جيّداً.","hufiza al-ramz! tadhakkarhu jayyidan.")}`;val="";draw();setTimeout(()=>{closeGame(false);onOk();},900);}
+      else{bad=true;mode="set";val="";first="";msg=`❌ ${P("الرمزان مختلفان! اختر الرمز من جديد.","al-ramzani mukhtalifan!")}`;tone(160,.25,0,"square",.08);draw();}
+      return;}
+    if(pinHash(val)===PL[CUR].homePin){tone(880,.1);tone(1320,.15,.12);msg=`🔓 ${P("الرمز صحيح! تفضّل بالدخول.","al-ramzu sahih! tafaddal bil-dukhul.")}`;val="";draw();setTimeout(()=>{closeGame(false);onOk();},700);}
+    else{tries++;bad=true;val="";msg=`❌ ${P("الرمز خطأ! حاول مرّة أخرى.","al-ramzu khata'! hawil marratan ukhra.")}`;tone(160,.25,0,"square",.08);draw();}
+  };
+  GAME={kind:"pin"};draw();
+}
+
+/* ================= rearrange furniture inside the apartment ================= */
+var _aptScene0=aptScene;
+aptScene=function(k,visiting){
+  let h=_aptScene0(k,visiting);
+  if(S.phase==="myhome"&&S.aptMove&&!visiting){
+    const pick=S.aptPick;
+    const targets=SPOTS.map((sp,i)=>`<button class="adrop ${pick!=null?"ready":""}" data-adrop="${i}" style="left:${SPOT_POS[i].l};bottom:${SPOT_POS[i].b}"><span>${sp[0]}</span></button>`).join("");
+    h=h.replace('<div class="afigs">',targets+'<div class="afigs">').replace('class="house apt"','class="house apt moving"');
+  }
+  return h;
+};
+function aptMoveTo(j,spot){
+  const it=(HOME.items||[])[j];if(!it||it.p===spot){S.aptPick=null;render();return;}
+  it.p=spot;HOME.items.splice(j,1);HOME.items.push(it);
+  S.aptPick=null;S.aptTap=HOME.items.length-1;S.aptMoved=(S.aptMoved||0)+1;
+  saveHome();tone(660,.06);tone(990,.08,.07);render();
+}
+function bindAptMove(){
+  const sc=$("scene");if(!sc||S.phase!=="myhome"||!S.aptMove)return;
+  sc.querySelectorAll("[data-adrop]").forEach(b=>b.onclick=()=>{if(S.aptPick!=null)aptMoveTo(S.aptPick,+b.dataset.adrop);});
+  sc.querySelectorAll("[data-aitem]").forEach(b=>{
+    b.style.touchAction="none";
+    b.onclick=null;
+    b.onpointerdown=e=>{
+      e.preventDefault();const j=+b.dataset.aitem,x0=e.clientX,y0=e.clientY;let ghost=null,moved=false;
+      const mv=ev=>{if(!moved&&Math.hypot(ev.clientX-x0,ev.clientY-y0)<8)return;
+        if(!moved){moved=true;ghost=b.cloneNode(true);ghost.className="aghost";document.body.appendChild(ghost);b.style.opacity=".3";sc.querySelectorAll(".adrop").forEach(d=>d.classList.add("ready"));}
+        ghost.style.left=ev.clientX+"px";ghost.style.top=ev.clientY+"px";
+        sc.querySelectorAll(".adrop").forEach(d=>d.classList.remove("hov"));
+        ghost.style.display="none";const el=document.elementFromPoint(ev.clientX,ev.clientY);ghost.style.display="";
+        const d=el&&el.closest&&el.closest("[data-adrop]");if(d)d.classList.add("hov");};
+      const up=ev=>{window.removeEventListener("pointermove",mv);window.removeEventListener("pointerup",up);
+        if(!moved){S.aptPick=S.aptPick===j?null:j;S.aptTap=j;beep();render();return;}
+        ghost.style.display="none";const el=document.elementFromPoint(ev.clientX,ev.clientY);ghost.remove();
+        const d=el&&el.closest&&el.closest("[data-adrop]");
+        if(d)aptMoveTo(j,+d.dataset.adrop);else{b.style.opacity="";render();}};
+      window.addEventListener("pointermove",mv);window.addEventListener("pointerup",up);
+    };
+  });
+}
+var _myHomePanel0=myHomePanel;
+myHomePanel=function(v){
+  if(!S.aptMove)return _myHomePanel0(v).replace(/<button class="big" id="aptEdit">[\s\S]*?<\/button>/,`<button class="big" id="aptMove">🔀 ${P("حرّك الأثاث","harrik al-athath")}</button>`);
+  const items=HOME.items||[],it=S.aptPick!=null?items[S.aptPick]:null,last=S.aptTap!=null?items[S.aptTap]:null;
+  let h=`<div class="win">🔀 ${P("وضع ترتيب الأثاث","wadʿ tartib al-athath")}</div>
+    <div class="hint center">👆 ${P("اسحب القطعة إلى مكان جديد، أو اضغط عليها ثمّ اضغط على المكان.","ishab al-qitʿa ila makan jadid, aw idghat ʿalayha thumma ʿala al-makan.")}</div>`;
+  if(it&&FURN[it.i])h+=`<div class="now me"><div class="ar big">${FURN[it.i][0]} ${P(`أين ${GV("تريد","تريدين")} أن ${GV("تضع","تضعي")} ${FURN[it.i][1]}؟`,`ayna ${GV("turidu an tadaʿ","turidina an tadaʿi")} ${FURN[it.i][2]}?`)}</div></div>`;
+  else if(last&&FURN[last.i]&&S.aptMoved){const sp=SPOTS[last.p]||SPOTS[0];
+    h+=`<div class="now me"><div class="nowwho"><b>${v.e}</b><span>${P("قُل:","qul:")}</span></div><div class="ar big">${P(`وضعتُ ${FURN[last.i][1]} ${sp[0]}.`,"")}</div>${S.tr?`<div class="tr">wadaʿtu ${FURN[last.i][2]} ${sp[1]}.</div>`:""}
+      ${S.aptSaid["m"+S.aptMoved]?`<div class="hint center">✓ ⭐</div>`:`<button class="say" id="aptMSay">🗣️ ${P("قالها","qalaha")} ⭐</button>`}</div>`;}
+  h+=`<div class="tog center"><button class="big huge" id="aptDone">✅ ${P("انتهيت من الترتيب","intahaytu min al-tartib")}</button></div>`;
+  return h;
+};
+var _bindApt0=bindApt;
+bindApt=function(){
+  _bindApt0();
+  const on=(id,f)=>{const e=$(id);if(e)e.onclick=f;};
+  on("aptMove",()=>{S.aptMove=true;S.aptPick=null;S.aptMoved=0;beep();render();});
+  on("aptDone",()=>{S.aptMove=false;S.aptPick=null;yay();render();});
+  on("aptMSay",()=>{const k="m"+S.aptMoved;if(S.aptSaid[k])return;S.aptSaid[k]=1;if(S.aptMoved<=5)addStars(1);yay();render();});
+  bindAptMove();
+};
 </script>
 </body></html>
