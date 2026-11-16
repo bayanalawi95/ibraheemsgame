@@ -612,9 +612,10 @@ button.tile:hover{border-color:var(--bld)}
 .apt .adrop{position:absolute;transform:translate(-50%,0);width:110px;height:84px;border:3px dashed rgba(255,255,255,.0);border-radius:18px;background:none;display:flex;align-items:flex-end;justify-content:center;z-index:1;pointer-events:none;transition:.15s}
 .apt.moving .adrop{border-color:rgba(255,193,7,.75);background:rgba(255,236,179,.25);pointer-events:auto;cursor:pointer}.apt .adrop span{font-size:.7rem;background:#fff8;border-radius:8px;padding:0 5px;margin-bottom:-18px;color:#5d4037;font-weight:700}
 .apt .adrop.ready{animation:dropPulse 1s infinite}.apt .adrop.hov{background:rgba(129,199,132,.55);border-color:#43a047;transform:translate(-50%,0) scale(1.08)}
-.apt.moving .aspot{z-index:2}.apt.moving .aitem{cursor:grab;animation:wiggle .9s infinite}
+.apt.moving .aspot{z-index:2}.apt img{-webkit-user-drag:none;user-select:none}.aghost img{width:1em;height:1em}.apt.moving .aitem,.apt.moving .aitem img{touch-action:none}.apt.moving .aitem{cursor:grab;animation:wiggle .9s infinite}
 .aghost{position:fixed;z-index:9999;pointer-events:none;font-size:3.4rem;transform:translate(-50%,-60%) scale(1.2);background:none;border:0;filter:drop-shadow(0 6px 8px rgba(0,0,0,.35))}
 @keyframes dropPulse{50%{background:rgba(255,236,179,.5)}}@keyframes wiggle{25%{transform:rotate(-6deg)}75%{transform:rotate(6deg)}}
+.kb .kab{display:block;direction:rtl;color:#2e7d32;font-weight:700;margin-top:2px}
 .pincard{max-width:380px;text-align:center}.doorpic{position:relative;font-size:4rem;line-height:1;margin:4px 0}.doorpic .lock{position:absolute;font-size:1.6rem;left:50%;margin-left:6px;top:28px}
 .pinscr2{font-size:2rem;letter-spacing:10px;background:#263238;color:#80deea;border-radius:12px;padding:6px;margin:8px auto;max-width:220px;direction:ltr}.pinscr2.bad{animation:pshake .35s;color:#ef9a9a}
 .pinpad2{display:grid;grid-template-columns:repeat(3,72px);gap:10px;justify-content:center;margin:10px auto;direction:ltr}.pinpad2 button{height:64px;font-size:1.6rem;font-weight:800;border-radius:16px;background:#f5f5f5;border:2px solid #ddd;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}.pinpad2 button small{font-size:.65rem;color:#888;font-weight:400}.pinpad2 button[data-hp="✓"]{background:#e8f5e9;border-color:#66bb6a}
@@ -1020,6 +1021,7 @@ function playPark(k){
   pk.cur=k;pk.done[k]=1;beep();render();
 }
 function renderScene(){
+  if(S.aptDrag)return;
   const v=V();
   $("scene").classList.toggle("night",isNight()&&!["place","house"].includes(S.phase)&&!(S.phase==="mosque"&&outKind()!=="mosque"));
   $("scene").classList.toggle("rain",WEATHER==="rain"&&!["place","house","myhome","kids","souq"].includes(S.phase)&&!(S.phase==="door"&&S.live&&!S.live.done));
@@ -3499,7 +3501,7 @@ function kidsPanel(v){
   if(!c)return h+`<div class="hint center">👆 ${P("اضغط على طفلٍ لتبدأ الكلام معه.","idghat ʿala tiflin li-tabda'a al-kalam.")}</div>`+friendsList();
   const k=KIDS.find(x=>x.id===c.id),d=kidData(k.id);
   h+=`<div class="kchat"><div class="khead">${k.e} <b>${d.facts.name?k.ar:P("طفلٌ جديد","tiflun jadid")}</b> <span>${d.lv?"💛".repeat(Math.min(5,d.hearts||1)):""}</span><button id="kidBack">↩ ${P("رجوع","rujuʿ")}</button></div>
-    <div class="klog" id="kidLog">${c.log.map(m=>`<div class="kb ${m.who}"><b>${m.who==="me"?v.e:k.e}</b><div>${esc(m.l[0])}${S.tr&&m.l[1]?`<small>${m.l[1]}</small>`:""}</div></div>`).join("")}${c.typing?`<div class="kb kid"><b>${k.e}</b><div>${typingHtml().replace(/تكتب|يكتب/,k.g==="f"?"تكتب":"يكتب")}</div></div>`:""}</div>`;
+    <div class="klog" id="kidLog">${c.log.map(m=>`<div class="kb ${m.who}"><b>${m.who==="me"?v.e:k.e}</b><div>${esc(m.l[0])}${m.ab?`<small class="kab">✍️ ${esc(m.ab)}</small>`:""}${S.tr&&m.l[1]?`<small>${m.l[1]}</small>`:""}</div></div>`).join("")}${c.typing?`<div class="kb kid"><b>${k.e}</b><div>${typingHtml().replace(/تكتب|يكتب/,k.g==="f"?"تكتب":"يكتب")}</div></div>`:""}</div>`;
   if(c.play&&c.done)h+=`<div class="tog center"><button class="big huge" id="kidPlay">🌳 ${P(`اذهب إلى الحديقة مع ${k.ar}`,`idhhab ila al-hadiqa maʿa ${k.tr}`)}</button></div>`;
   else if(c.done)h+=`<div class="win center">💛 ${P(`أحسنت! تكلّمتَ مع ${k.ar}.`,`ahsant!`)}</div>`+kidFacts(k)+`<div class="tog center"><button class="big" id="kidBack2">👫 ${P("تكلّم مع طفلٍ آخر","takallam maʿa tiflin akhar")}</button><button class="big" id="next">🚀 ${P("مهمة جديدة","mahamma jadida")}</button></div>`;
   else h+=`<div class="kfree"><input id="kidIn" dir="rtl" lang="ar" autocomplete="off" placeholder="✍️ اكتب رسالتك بالعربية…"><button id="kidSend">➤</button></div>
@@ -3568,26 +3570,36 @@ function aptMoveTo(j,spot){
   S.aptPick=null;S.aptTap=HOME.items.length-1;S.aptMoved=(S.aptMoved||0)+1;
   saveHome();tone(660,.06);tone(990,.08,.07);render();
 }
+function aptDropAt(x,y){
+  const sc=$("scene"),room=sc&&sc.querySelector(".apt");if(!room)return null;
+  const r=room.getBoundingClientRect();if(x<r.left-20||x>r.right+20||y<r.top-20||y>r.bottom+20)return null;
+  let best=null,bd=1e9;sc.querySelectorAll("[data-adrop]").forEach(d=>{const q=d.getBoundingClientRect(),cx=q.left+q.width/2,cy=q.top+q.height/2,dd=Math.hypot(x-cx,y-cy);if(dd<bd){bd=dd;best=d;}});
+  return best;
+}
 function bindAptMove(){
   const sc=$("scene");if(!sc||S.phase!=="myhome"||!S.aptMove)return;
+  sc.querySelectorAll(".apt img").forEach(im=>{im.draggable=false;});
   sc.querySelectorAll("[data-adrop]").forEach(b=>b.onclick=()=>{if(S.aptPick!=null)aptMoveTo(S.aptPick,+b.dataset.adrop);});
   sc.querySelectorAll("[data-aitem]").forEach(b=>{
-    b.style.touchAction="none";
+    b.style.touchAction="none";b.draggable=false;b.ondragstart=e=>e.preventDefault();
     b.onclick=null;
     b.onpointerdown=e=>{
-      e.preventDefault();const j=+b.dataset.aitem,x0=e.clientX,y0=e.clientY;let ghost=null,moved=false;
-      const mv=ev=>{if(!moved&&Math.hypot(ev.clientX-x0,ev.clientY-y0)<8)return;
-        if(!moved){moved=true;ghost=b.cloneNode(true);ghost.className="aghost";document.body.appendChild(ghost);b.style.opacity=".3";sc.querySelectorAll(".adrop").forEach(d=>d.classList.add("ready"));}
-        ghost.style.left=ev.clientX+"px";ghost.style.top=ev.clientY+"px";
-        sc.querySelectorAll(".adrop").forEach(d=>d.classList.remove("hov"));
-        ghost.style.display="none";const el=document.elementFromPoint(ev.clientX,ev.clientY);ghost.style.display="";
-        const d=el&&el.closest&&el.closest("[data-adrop]");if(d)d.classList.add("hov");};
-      const up=ev=>{window.removeEventListener("pointermove",mv);window.removeEventListener("pointerup",up);
-        if(!moved){S.aptPick=S.aptPick===j?null:j;S.aptTap=j;beep();render();return;}
-        ghost.style.display="none";const el=document.elementFromPoint(ev.clientX,ev.clientY);ghost.remove();
-        const d=el&&el.closest&&el.closest("[data-adrop]");
-        if(d)aptMoveTo(j,+d.dataset.adrop);else{b.style.opacity="";render();}};
-      window.addEventListener("pointermove",mv);window.addEventListener("pointerup",up);
+      e.preventDefault();try{b.releasePointerCapture(e.pointerId);}catch(_){}
+      const j=+b.dataset.aitem,x0=e.clientX,y0=e.clientY;let ghost=null,moved=false,hov=null;
+      const mark=d=>{if(hov===d)return;if(hov)hov.classList.remove("hov");hov=d;if(d)d.classList.add("hov");};
+      const mv=ev=>{if(!moved&&Math.hypot(ev.clientX-x0,ev.clientY-y0)<8)return;ev.preventDefault();
+        if(!moved){moved=true;S.aptDrag=true;ghost=document.createElement("div");ghost.className="aghost";ghost.innerHTML=b.innerHTML;document.body.appendChild(ghost);b.style.opacity=".3";sc.querySelectorAll(".adrop").forEach(d=>d.classList.add("ready"));}
+        ghost.style.left=ev.clientX+"px";ghost.style.top=ev.clientY+"px";mark(aptDropAt(ev.clientX,ev.clientY));};
+      const end=(ev,cancel)=>{window.removeEventListener("pointermove",mv);window.removeEventListener("pointerup",up);window.removeEventListener("pointercancel",cc);S.aptDrag=false;
+        if(!moved){if(cancel)return;
+          const it=HOME.items[j];
+          if(S.aptPick!=null&&S.aptPick!==j&&it){aptMoveTo(S.aptPick,it.p);return;}
+          S.aptPick=S.aptPick===j?null:j;S.aptTap=j;beep();render();return;}
+        if(ghost)ghost.remove();
+        const d=cancel?hov:aptDropAt(ev.clientX,ev.clientY)||hov;
+        if(d)aptMoveTo(j,+d.dataset.adrop);else render();};
+      const up=ev=>end(ev,false),cc=ev=>end(ev,true);
+      window.addEventListener("pointermove",mv,{passive:false});window.addEventListener("pointerup",up);window.addEventListener("pointercancel",cc);
     };
   });
 }
@@ -3612,6 +3624,137 @@ bindApt=function(){
   on("aptDone",()=>{S.aptMove=false;S.aptPick=null;yay();render();});
   on("aptMSay",()=>{const k="m"+S.aptMoved;if(S.aptSaid[k])return;S.aptSaid[k]=1;if(S.aptMoved<=5)addStars(1);yay();render();});
   bindAptMove();
+};
+
+/* ================= kids chat: Arabic written in English letters (Arabizi) ================= */
+var AZ_DICT=(()=>{const m={},add=(ar,ws)=>ws.split(" ").forEach(w=>m[w]=ar);
+add("سلام","salam slam salaam");add("السلام","assalam assalamu asalam asalamu alsalam alsalamu essalam salamu");
+add("عليكم","alaikum alaykum alaikom alaykom aleikum aleykum 3alaykum 3alaikum 3likom 3alekom 3laykum alikum 3alikum");
+add("وعليكم","walaikum walaykum wa3alaykum wa3laykum w3likom w3alaikum wa3alaikum waalaikum");
+add("مرحبا","marhaba mar7aba marhba mr7ba marhaban mar7aban");add("اهلا","ahlan ahla ahlen hla2");add("هلا","hala halla");
+add("صباح","sabah saba7 sba7 sabaah");add("مساء","masa masaa masa2 masaa2");add("خير","khair khayr kheir kher 5air 5er 5ayr");
+add("النور","alnoor alnour alnur elnoor");add("انا","ana ane");add("اسمي","ismi esmi ismy esmy esmee ismee");
+add("اسمك","ismak esmak ismuk ismuka ismik esmik esmek smak");add("ما","ma maa");add("شو","shu sho shoo");add("وش","wesh wsh wish");add("ماذا","matha madha mada");
+add("كم","kam kem");add("عمري","3omri 3umri umri omri 3mri 3omry umry omry");add("عمرك","3omrak 3umrak umrak omrak 3mrak umruka 3omrik umrik omrik");
+add("سنه","sana sanah sene");add("سنوات","sanawat snin sneen");
+add("احب","a7eb a7ib ahib aheb ahebb ahibb uhibbu uhib a7b ahb ahibu");add("تحب","t7eb t7ib tuhib tuhibbu tahib tehib t7b tihib");
+add("كره","kora kura koora kurah korah kooora football");add("قدم","qadam gadam qadem");add("الرسم","alrasm elrasm");add("رسم","rasm rassm");
+add("روبوت","robot robots roboot");add("قطط","qitat qetat qotat");add("قطه","qita qitta qeta otta bisa biss");add("سيكل","sykl saykal sekel seekl");add("دراجه","darraja darrajah");
+add("العاب","ala3ab alaab al3aab");add("العب","al3ab al3b");add("لعب","la3b laab la3eb");add("بلايستيشن","playstation ps5 ps4 bleystation");
+add("سباحه","sibaha seba7a sba7a sibaa7a");add("قراءه","qiraa qira2a qiraa2 kiraa");add("قصص","qisas qesas");
+add("نعم","na3am naam na3m naem");add("ايوه","aywa aiwa aywah ewa eewa");add("ايه","eh eeh ih");add("اكيد","akeed akid");add("طبعا","tab3an tabaan tab3n");
+add("حسنا","hasanan 7asanan");add("طيب","tayeb tayyib tayb tyb");add("موافق","muwafeq mwafe2 mowafeq");add("يلا","yalla yala yallah");add("هيا","hayya haya");
+add("لا","la laa");add("بعدين","ba3dain ba3den ba3deen badain");add("غدا","ghadan bukra bokra");
+add("كيف","kaif kayf keif kif kef kaf");add("حالك","7alak halak halek 7alek 7alik halik");add("كيفك","kifak kefak keefak kifik kefik");add("شلونك","shlonak shlonik");add("الحال","alhal al7al");
+add("بخير","bikhair bi5air b5er bkhair bekhair bkher b5air bikhayr");add("الحمد لله","alhamdulillah al7amdulillah alhamdolillah hamdulillah al7mdllh alhamdulilah al7amdolilah hamdella");
+add("تمام","tamam tmam tamaam");add("زين","zain zein zen");add("منيح","mni7 mnee7");
+add("شكرا","shukran shokran shukr shukrn shokrn");add("جزاك","jazak jazaak");add("جزاك الله","jazakallah jazakalah");
+add("مع","ma3 ma3a maa3");add("السلامه","salama salameh assalama alsalama salamah");add("باي","bye bay baay byebye");
+add("الي","ila ela ilal");add("لقاء","liqaa leqaa liqa2");add("اللقاء","alliqaa alleqaa elleqa");add("امان","aman amaan");add("الله","allah alah allaah");add("اراك","arak araak");
+add("صديق","sadiq sadeeq sadeek sadi8");add("صديقي","sadiqi sadeeqi");add("صاحبي","sa7bi sahbi sa7ebi");add("اصدقاء","asdiqa asdiqaa asdiqa2 asdeqaa");add("اصحاب","as7ab ashab");
+add("نلعب","nal3ab nil3ab nel3ab nalaab nl3b");add("تلعب","tal3ab til3ab tel3ab");add("معي","ma3i ma3y maai m3ai");
+add("الحديقه","alhadiqa al7adiqa alhadeeqa al7adeeqa el7adiqa");add("حديقه","hadiqa 7adiqa hadeeqa 7adeeqa");add("نروح","nrooh nru7 nroo7 nro7");
+add("طعام","ta3am ta3aam taam");add("اكل","akl akel akil");add("اكلتك","aklatak aklitak");add("وجبه","wajba wajbah");add("لون","lawn loon lon");add("لونك","lawnak loonak");add("المفضل","almufaddal almofaddal elmofadal");
+add("تسكن","taskun tskon taskon");add("وين","wein wain wen fein");add("اين","ayna aina");
+add("اخ","akh ak5 5ay");add("اخو","akhu akhoo akho");add("اخوان","ikhwan ekhwan i5wan e5wan");add("اخوات","akhawat a5awat khawat");add("اخت","ukht okht o5t ukhti okhti");
+add("صف","saf saff");add("الصف","alsaf alsaff essaf");add("مدرسه","madrasa madrasah madrsa");add("في","fi fee fe");add("اي","ay ayy ayi");add("هل","hal hel");
+add("ليش","laish leish lesh leesh lysh");add("لماذا","limatha limadha");add("متي","mata emta imta");add("انت","anta enta inta int");add("انتي","anti enti inti");add("وانت","wanta winta wenta wint wenat");add("وانتي","wanti winti wenti");add("هنا","huna hena hon");
+add("خمسه","khamsa 5amsa");add("سته","sitta setta");add("سبعه","sab3a sabaa");add("ثمانيه","thamanya tamanya thamaniya 6amanya thaman");
+add("تسعه","tis3a tes3a");add("عشره","3ashra ashra 3ashara");add("ماشاء الله","mashallah mashaallah masha2allah");add("ان شاء الله","inshallah insha2allah inshaallah");
+add("هوايتك","hiwayatak hewaytak");add("هوايتي","hiwayati hewayti");add("و","wa w");add("ال","al el");
+return m;})();
+var AZ_EN="hello hi hey yes no my name is thanks thank you the how are what your i am fine good ok okay please play friend friends sorry".split(" ");
+function azWord(w){
+  if(AZ_DICT[w])return AZ_DICT[w];
+  if(/^\d+$/.test(w))return w;
+  if(/^(al|el)./.test(w)&&w.length>3){const r=w.slice(2);return "ال"+(AZ_DICT[r]||azChars(r));}
+  if(/^w(a)?./.test(w)&&w.length>3){const r=w.replace(/^wa?/,"");if(AZ_DICT[r])return "و"+AZ_DICT[r];}
+  return azChars(w);
+}
+function azChars(w){
+  const D={sh:"ش",kh:"خ",th:"ث",dh:"ذ",gh:"غ",ch:"تش",oo:"و",ou:"و",uu:"و",ee:"ي",ii:"ي",aa:"ا",ai:"اي",ay:"اي"},
+        C={b:"ب",t:"ت",j:"ج",7:"ح",h:"ه",5:"خ",d:"د",r:"ر",z:"ز",s:"س",9:"ص",6:"ط",3:"ع",8:"ق",f:"ف",q:"ق",k:"ك",l:"ل",m:"م",n:"ن",w:"و",y:"ي",2:"ء",g:"ق",v:"ف",p:"ب",c:"ك",x:"كس"};
+  let o="";for(let i=0;i<w.length;){const two=w.substr(i,2),ch=w[i],first=i===0,last=i===w.length-1;
+    if(D[two]){o+=(first&&/^(ee|ii|oo|ou|uu)$/.test(two)?"ا":"")+D[two];i+=2;continue;}
+    if("aeiou".includes(ch)){if(first)o+=(ch==="o"||ch==="u")?"او":(ch==="i"||ch==="e")&&w.length>2?"ا":"ا";else if(last)o+=ch==="a"?"ا":ch==="i"||ch==="e"&&false?"ي":ch==="o"||ch==="u"?"و":ch==="i"?"ي":"";else if(ch==="o"||ch==="u")o+="و";i++;continue;}
+    if(ch===w[i+1]&&C[ch]){o+=C[ch];i+=2;continue;}
+    o+=C[ch]||"";i++;}
+  return o;
+}
+function arabizi(text){
+  const toks=String(text).toLowerCase().replace(/['’`\-]/g,"").replace(/([a-z])\1{2,}/g,"$1").split(/(\s+|[.,!?؟،]+)/);
+  let out=toks.map(t=>/[a-z0-9]/.test(t)&&!/^\d+$/.test(t)?azWord(t):t).join("");
+  return out.replace(/(^|\s)ال\s+/g,"$1ال").replace(/\?/g,"؟").replace(/,/g,"،").replace(/\s+/g," ").trim();
+}
+function isEnglishMsg(text){const w=String(text).toLowerCase().match(/[a-z]+/g)||[];if(!w.length)return false;return w.filter(x=>AZ_EN.includes(x)).length/w.length>=0.5;}
+var _kidReply0=kidReply;
+kidReply=function(k,text){
+  if(/[a-zA-Z]/.test(text)){
+    if(isEnglishMsg(text)&&!/[؀-ۿ]/.test(text))return {out:[["أنا أتكلّم العربية فقط 😊 تستطيع أن تكتب العربية بالحروف الإنجليزية، مثل: salam, ismi …","ana atakallamu al-ʿarabiyya faqat. tastatiʿ an taktuba al-ʿarabiyya bil-huruf al-injliziyya."]],hearts:0,confused:true};
+    text=text.replace(/[a-zA-Z0-9'’\-][a-zA-Z0-9'’\-\s]*[a-zA-Z0-9]|[a-zA-Z]/g,m=>/[a-zA-Z]/.test(m)?" "+arabizi(m)+" ":m);
+  }
+  return _kidReply0(k,text);
+};
+var _kidSend0=kidSend;
+kidSend=function(text){
+  const c=S.kidChat;if(!c||c.typing||c.done)return;text=String(text).trim();if(!text)return;
+  const n0=c.log.length;_kidSend0(text);
+  const m=c.log[n0];
+  if(m&&m.who==="me"&&/[a-zA-Z]/.test(text)&&!isEnglishMsg(text)){m.ab=text.replace(/[a-zA-Z0-9'’\-][a-zA-Z0-9'’\-\s]*[a-zA-Z0-9]|[a-zA-Z]/g,x=>/[a-zA-Z]/.test(x)?arabizi(x):x);render();}
+};
+
+/* ================= kids chat: understand & analyse questions before answering ================= */
+var KID_EXTRA={yusuf:{animal:["الحصان","al-hisan","🐴"],sura:["سورة الفيل","surat al-fil"],now:["ألعب بالكرة في الممرّ","alʿabu bil-kura fi al-mamarr"]},
+ maryam:{animal:["الأرنب","al-arnab","🐰"],sura:["سورة الإخلاص","surat al-ikhlas"],now:["أرسم وردةً جميلة","arsumu wardatan jamila"]},
+ omar:{animal:["الفيل","al-fil","🐘"],sura:["سورة الناس","surat al-nas"],now:["أبني روبوتاً من المكعّبات","abni robotan min al-mukaʿʿabat"]},
+ sara:{animal:["القطّة طبعاً","al-qitta tabʿan","🐱"],sura:["سورة الكوثر","surat al-kawthar"],now:["أطعم قطّتي","utʿimu qittati"]},
+ hamza:{animal:["الأسد","al-asad","🦁"],sura:["سورة الفاتحة","surat al-fatiha"],now:["أصلح درّاجتي مع أبي","usallihu darrajati maʿa abi"]}};
+var KID_VOCAB="السلام عليكم مرحبا اهلا اسمك اسمي عمرك عمري تحب احب هوايتك صديق اصدقاء نلعب الحديقه شكرا السلامه كيف حالك بخير لونك المفضل طعامك اكلتك اخوه اخوات مدرسه الصف تسكن تصلي القران سوره حيوان تفعل".split(" ");
+function lev(a,b){if(Math.abs(a.length-b.length)>2)return 9;const d=[...Array(b.length+1).keys()];for(let i=1;i<=a.length;i++){let p=d[0];d[0]=i;for(let j=1;j<=b.length;j++){const t=d[j];d[j]=Math.min(d[j]+1,d[j-1]+1,p+(a[i-1]===b[j-1]?0:1));p=t;}}return d[b.length];}
+function kidFix(n){return n.split(" ").map(w=>{if(w.length<3||KID_VOCAB.includes(w))return w;let best=w,bd=w.length>4?2:1;KID_VOCAB.forEach(v=>{const x=lev(w,v);if(x<bd||(x===bd&&best===w&&x<=1)){bd=x;best=v;}});return best;}).join(" ");}
+function kidAnalyse(k,text){
+  const c=S.kidChat,d=kidData(k.id),X=KID_EXTRA[k.id]||KID_EXTRA.yusuf,n=normAr(text),out=[],say=(a,t)=>out.push([a,t||""]);
+  const words=n.split(" "),has=(...ws)=>ws.some(w=>n.includes(w));
+  const isQ=/[؟?]/.test(text)||/^(هل|ما|ماذا|كم|كيف|اين|وين|من|متي|لماذا|ليش|شو|وش|ايش)( |$)/.test(n)||words.includes("هل");
+  const tu=GV("تَ","تِ"),you=GV("أنتَ","أنتِ"),youTr=GV("anta","anti");
+  // 1) "and you?" → answer the same thing the kid just asked, then re-ask
+  if(words.length<=3&&/^(و ?انت|و ?انتي|انت|انتي|ماذا عنك|وانت كمان|وانتي كمان|و انت|شو عنك|وش عنك|وعنك)( |$)/.test(n)&&c.lastAsk){
+    const a={name:[`اسمي ${k.ar}.`,`ismi ${k.tr}.`],age:[`عمري ${AGE_W[k.age][0]}.`,`ʿumri ${AGE_W[k.age][1]}.`],like:[`أنا أحبّ ${k.like[0]} ${k.like[2]}`,`ana uhibbu ${k.like[1]}`],grade:[`أنا في الصفّ ${k.grade[0]}.`,`ana fi al-saff ${k.grade[1]}.`]}[c.lastAsk];
+    if(a){say("🤔 "+a[0],a[1]);const q=kidAsk(c,c.lastAsk,k);if(c.lastAsk!=="friends"&&c.lastAsk!=="play")say(`و${you}؟`,`wa ${youTr}?`);c.pending=c.lastAsk;return {out,hearts:0,handled:true};}
+  }
+  if(!isQ)return null;
+  // 2) yes/no: "هل تحب X؟"
+  if(has("هل تحب","هل تحبين","تحب ال","تحبين ال")||(words.includes("هل")&&has("تحب"))){
+    const L=LIKE_KEYS.find(x=>n.includes(x[0])),foodQ=has("كبسه","معكرونه","شاورما","فواكه","دجاج","بيتزا","برجر","رز","حلوي","شوكولا","ايس");
+    if(L){const same=L[2]===k.like[0]||L[1]===k.like[2];say(same?`نعم! أحبّ ${k.like[0]} كثيراً ${k.like[2]} هي هوايتي المفضّلة!`:`ممم… أحبّ ${L[2]} قليلاً، لكنّي أحبّ ${k.like[0]} أكثر ${k.like[2]}`,same?`naʿam! uhibbu ${k.like[1]} kathiran!`:`lakinni uhibbu ${k.like[1]} akthar.`);return {out,hearts:same?1:0,handled:true};}
+    if(foodQ){const nf=normAr(k.food[0]).replace(/^ال/,"");say(n.includes(nf.slice(0,4))?`نعم! ${k.food[0]} طعامي المفضّل 😋`:`نعم، لا بأس به، لكنّ طعامي المفضّل ${k.food[0]} 😋`,`taʿami al-mufaddal ${k.food[1]}`);return {out,hearts:0,handled:true};}
+    if(has("المدرسه","مدرسه")){say("نعم! أحبّ المدرسة وأحبّ معلّمتي 📚","naʿam! uhibbu al-madrasa!");return {out,hearts:0,handled:true};}
+  }
+  // 3) other questions the base chat doesn't cover
+  if(has("عندك اخ","عندك اخوه","لديك اخ","عندك اخوات","لديك اخوات","عندك اخت","كم اخ")){say(k.sib[0],k.sib[1]);d.facts.sib=1;return {out,hearts:0,handled:true};}
+  if(has("ولد ام بنت","بنت ام ولد","انت ولد","انت بنت","انتي بنت","انتي ولد")){say(k.g==="f"?"أنا بنت 👧":"أنا ولد 👦",k.g==="f"?"ana bint":"ana walad");return {out,hearts:0,handled:true};}
+  if(has("تصلي","تصلين","صليت")){say(`نعم الحمد لله! أصلّي الصلوات الخمس، وأذهب مع ${k.g==="f"?"أمّي":"أبي"} إلى المسجد 🕌`,"naʿam al-hamdu lillah! usalli al-salawat al-khams.");return {out,hearts:1,handled:true};}
+  if(has("قران","سوره","تحفظ")){say(`أحفظ ${X.sura[0]}، وأحبّها كثيراً! 📖 وأنت، ماذا تحفظ؟`.replace("وأنت",`و${you}`),`ahfazu ${X.sura[1]}!`);return {out,hearts:1,handled:true};}
+  if(has("حيوان")){say(`حيواني المفضّل ${X.animal[0]} ${X.animal[2]}`,`hayawani al-mufaddal ${X.animal[1]}`);return {out,hearts:0,handled:true};}
+  if(has("ماذا تفعل","شو تسوي","وش تسوي","ماذا تعمل","ايش تسوي","شو تعمل","ماذا تفعلين")){say(`الآن ${X.now[0]} 😊`,`al-an ${X.now[1]}`);return {out,hearts:0,handled:true};}
+  if(has("من اين","من وين","اين ولدت","جنسيتك")){say("أنا أسكن هنا في هذه العمارة مع عائلتي 🏢","askunu huna fi hadhihi al-ʿimara.");return {out,hearts:0,handled:true};}
+  if(has("رياضتك","رياضه")){say(`أحبّ ${k.like[0]} ${k.like[2]} وأحبّ الجري أيضاً!`,`uhibbu ${k.like[1]}`);return {out,hearts:0,handled:true};}
+  if(has("مدرستك","اي مدرسه","وين تدرس","اين تدرس")){say(`أدرس في مدرسة الحيّ، في الصفّ ${k.grade[0]} 🏫`,`adrusu fi madrasat al-hayy, fi al-saff ${k.grade[1]}`);d.facts.grade=1;return {out,hearts:0,handled:true};}
+  if(has("معلم","معلمه","استاذ","استاذه")){say(`${k.g==="f"?"معلّمتي":"معلّمي"} لطيفٌ جداً ويعلّمنا العربية والقرآن 📚`.replace("لطيفٌ",k.g==="f"?"لطيفة":"لطيف"),"muʿallimi latif jiddan");return {out,hearts:0,handled:true};}
+  return null;
+}
+var _kidAsk0=kidAsk;kidAsk=function(c,key,k){c.lastAsk=key;return _kidAsk0(c,key,k);};
+var _kidCore0=_kidReply0;
+_kidReply0=function(k,text){
+  const a=kidAnalyse(k,text);if(a)return a;
+  let r=_kidCore0(k,text);
+  if(r.confused){
+    const fixed=kidFix(normAr(text));
+    if(fixed!==normAr(text)){const a2=kidAnalyse(k,fixed+(/[؟?]/.test(text)?"؟":""));if(a2)return a2;const r2=_kidCore0(k,fixed+(/[؟?]/.test(text)?"؟":""));if(!r2.confused)return r2;}
+    const n=normAr(text),isQ=/[؟?]/.test(text)||/^(هل|ما|ماذا|كم|كيف|اين|وين|من|متي|لماذا|ليش|شو|وش|ايش)( |$)/.test(n);
+    if(isQ)r.out=[["🤔 سؤالٌ جميل! لكنّي لا أعرف جوابه. اسألني عن اسمي، أو عمري، أو هوايتي، أو طعامي المفضّل!","suʾalun jamil! lakinni la aʿrifu jawabah."]];
+  }
+  return r;
 };
 </script>
 </body></html>
