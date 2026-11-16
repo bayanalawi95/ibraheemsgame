@@ -582,6 +582,24 @@ button.tile:hover{border-color:var(--bld)}
 .ings{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:10px 0}.ings button{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:2rem;padding:8px 12px;border-radius:14px;background:#fff;border:2px solid #e0e0e0;min-width:90px}.ings button b{font-size:.9rem}.ings button small{font-size:.65rem;color:#777}
 .wudone{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;min-height:30px;margin:6px 0}.wudone span{background:#e3f2fd;border-radius:10px;padding:3px 8px;font-weight:700}
 .gamebtn{box-shadow:0 0 0 3px #ffca28 inset}
+.kidsroom{position:relative;width:100%;height:440px;border-radius:16px;overflow:hidden;direction:ltr;background:linear-gradient(#fff9c4 0 55%,#a5d6a7 55%)}
+.ksign{position:absolute;top:10px;left:50%;transform:translateX(-50%);background:#7e57c2;color:#fff;font-weight:800;padding:4px 16px;border-radius:12px}
+.kballoons{position:absolute;top:44px;left:6%;font-size:2rem;animation:bob 3s ease-in-out infinite}.kmat{position:absolute;left:5%;right:5%;bottom:30px;height:60px;border-radius:30px;background:repeating-linear-gradient(90deg,#ef5350 0 40px,#42a5f5 40px 80px,#ffee58 80px 120px,#66bb6a 120px 160px);opacity:.6}
+.kidst{position:absolute;bottom:70px;width:110px;height:200px;background:none;border:0;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:flex-end}
+.kidst .khearts{font-size:.9rem;min-height:1.2em}.kidst .kprop{position:absolute;right:4px;bottom:40px;font-size:1.4rem}
+.kidst:hover .fig,.kidst.on .fig{animation:bob .8s infinite}.kidst .plbl{position:static;margin-top:4px;background:#fff;border-radius:10px;padding:1px 8px;font-weight:800;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.kme{position:absolute;left:50%;bottom:6px;transform:translateX(-50%);zoom:.8}
+.kchat{border:2px solid #d1c4e9;border-radius:16px;overflow:hidden;margin-top:6px}
+.khead{display:flex;align-items:center;gap:8px;background:#ede7f6;padding:8px 10px;font-size:1.1rem}.khead button{margin-inline-start:auto}
+.klog{max-height:300px;overflow:auto;padding:10px;display:grid;gap:8px;background:#faf8ff}
+.kb{display:flex;gap:8px;align-items:flex-start;max-width:85%}.kb>b{font-size:1.5rem}.kb>div{background:#fff;border-radius:14px;padding:6px 12px;font-size:1.15rem;font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.1)}
+.kb small{display:block;font-size:.75rem;color:#777;font-weight:400}.kb em{display:block;font-size:.75rem;color:#999}
+.kb.me{justify-self:start;flex-direction:row}.kb.me>div{background:#dcf8c6}.kb.kid{justify-self:end;flex-direction:row-reverse}
+.kopts{display:grid;gap:8px;margin:6px 0}.kopts button{text-align:start;font-size:1.1rem;font-weight:700;padding:10px 12px;border-radius:14px;border:2px solid #b39ddb;background:#fff}.kopts button:hover{background:#f3e5f5}.kopts small{display:block;font-size:.75rem;color:#777;font-weight:400}
+.kfree{display:flex;gap:6px;margin-bottom:6px}.kfree input{flex:1;font-size:1.1rem;padding:8px 10px;border:2px solid #ccd;border-radius:12px}
+.kfacts{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}.kfacts span{background:#fff8e1;border-radius:10px;padding:2px 8px;font-size:.9rem}
+.kfriends{margin-top:8px;background:#fff;border:2px dashed #ce93d8;border-radius:14px;padding:10px}.kf{display:flex;gap:10px;align-items:flex-start;padding:6px 0;border-bottom:1px solid #f3e5f5}.kf:last-child{border:0}.kfe{font-size:2rem}
+@media (max-width:820px){.kidsroom{height:500px}.kidst{width:70px;zoom:.85}}
 .park .pk:focus,.beach .pk:focus{outline:none}
 .beachb{background:#e3f4fd;border-color:#4fb3e8}.parkb{background:#e7f6df;border-color:#6dbb4a}
 .mosqueb{background:#dff5ea;border-color:var(--good)}
@@ -793,10 +811,11 @@ function newRound(keepVisitor){
   if(!S.res.length)newBuilding();
   if(S.secretPrev!=null){S.detOn=S.secretPrev;S.secretPrev=null;}
   if(S.secret){S.secret=null;layout();}
+  if(S.guest){S.guest=null;layout();}
   do{S.t=1+Math.floor(Math.random()*TOP);S.side=Math.floor(Math.random()*4);}while(S.res[S.t][S.side].home);S.why=rnd(WHY);
   S.lifts.forEach(l=>{l.out=false;l.open=false;l.dir="";});
   if(Math.random()<.65)S.lifts[Math.floor(Math.random()*3)].out=true;
-  Object.assign(S,{phase:"reception",lift:null,pos:0,said:{},msg:"",dir:false,stuck:false,knocked:null,hide:Math.random()<.3,talking:false,outTried:null,wrongAt:null,ready:false,entering:false,exiting:false,arrived:false,skipped:null,vary:{},closed:false,goHome:false,mosque:null,park:null,houseDone:false,place:null,mk:null,lost:null,secret:null,counted:{},knockReq:null,rent:null,keyTrip:false,cancelFl:null,dlChosen:false,dlItem:null,nb:null,nbUp:0,nbDown:0,nbMsg:"",final:null,live:null,hint:{},build:{},shuf:{},shown:{},lw:{},det:newDet(),reward:null,rewardTaken:false,rid:(S.rid||0)+1});
+  Object.assign(S,{phase:"reception",lift:null,pos:0,said:{},msg:"",dir:false,stuck:false,knocked:null,hide:Math.random()<.3,talking:false,outTried:null,wrongAt:null,ready:false,entering:false,exiting:false,arrived:false,skipped:null,vary:{},closed:false,goHome:false,mosque:null,park:null,houseDone:false,place:null,mk:null,kidChat:null,lost:null,secret:null,counted:{},knockReq:null,rent:null,keyTrip:false,cancelFl:null,dlChosen:false,dlItem:null,nb:null,nbUp:0,nbDown:0,nbMsg:"",final:null,live:null,hint:{},build:{},shuf:{},shown:{},lw:{},det:newDet(),reward:null,rewardTaken:false,rid:(S.rid||0)+1});
   render();
 }
 /* ---------- rewards ---------- */
@@ -986,6 +1005,11 @@ function renderScene(){
   const v=V();
   $("scene").classList.toggle("night",isNight()&&!["place","house"].includes(S.phase)&&!(S.phase==="mosque"&&outKind()!=="mosque"));
   $("scene").classList.toggle("rain",WEATHER==="rain"&&!["place","house"].includes(S.phase));
+  if(S.phase==="kids"){
+    $("scene").innerHTML=kidsScene();
+    $("scene").querySelectorAll("[data-kid]").forEach(b=>b.onclick=()=>openKidChat(b.dataset.kid));
+    return;
+  }
   if(S.phase==="souq"){
     $("scene").innerHTML=souqScene();
     $("scene").querySelectorAll("[data-prod]").forEach(b=>b.onclick=()=>mkAdd(b.dataset.prod));
@@ -1087,6 +1111,7 @@ function layout(){
   for(const k of ["ib","by"]){const h=PL[k].home;if(h.f)S.res[h.f][h.s]=k===CUR?HOME_RES:RES_OF[k];}
   for(const k of ["ib","by"]){const m=PL[k].myRes;if(m&&m.f&&S.res[m.f]&&!S.res[m.f][m.s].home&&S.res[m.f][m.s]!==RES_OF[other()])S.res[m.f][m.s]=myResObj(m);}
   if(S.secret&&S.res[S.secret.f])S.res[S.secret.f][S.secret.s]=S.secret.r;
+  if(S.guest&&S.res[S.guest.f])S.res[S.guest.f][S.guest.s]=S.guest.r;
 }
 function startVisit(f,s){newRound(true);Object.assign(S,{t:f,side:s,hide:false});render();}
 function switchPlayer(k){
@@ -1881,7 +1906,7 @@ function focus(lines,afterHtml){
   return h;
 }
 function steps(){const names=["المحاسب","المصعد","الأزرار","الشقة"],ntr=["al-muhasib","al-misʿad","al-azrar","al-shaqqa"];
-  const cur={reception:0,lift:1,inside:2,ride:2,stuck:2,door:3,mosque:3,house:3,place:3,souq:3}[S.phase];
+  const cur={reception:0,lift:1,inside:2,ride:2,stuck:2,door:3,mosque:3,house:3,place:3,souq:3,kids:3}[S.phase];
   return `<div class="steps">${names.map((n,i)=>`<span class="${i<cur?"done":""} ${i===cur?"on":""}">${i<cur?"✓":ar(i+1)} ${P(n,ntr[i])}</span>`).join("")}</div>`;}
 
 /* pick one wording per round, so the dialogue changes every mission but stays stable while playing */
@@ -1894,7 +1919,7 @@ const CLOSED=()=>`<div class="alert">🚪 ${P("أُغلق باب المصعد، 
 function renderPanel(){
   const p=$("panel"),v=V(),t=T(),w=W(),K=kid(),Tc=teach();
   const he=G(t,"يسكن","تسكن"), heT=G(t,"yaskunu","taskunu");
-  let h=`<div class="top"><span class="avatar">${v.e}</span><div style="flex:1;min-width:180px"><div class="mission">${S.phase==="souq"?`🛒 ${P("السوق: اشترِ كلّ ما في القائمة!","al-suq: ishtari kulla ma fi al-qa'ima!")}`:S.lost?`${S.lost.kind==="cat"?"🐱":"🔑"} ${P(`ابحث عن ${S.lost.kind==="cat"?"قطّة":"مفتاح"} ${S.lost.owner.ar}`,`ibhath ʿan ${S.lost.kind==="cat"?"qittat":"miftah"} ${S.lost.owner.tr}`)}`:S.secret?`🕵️ ${P(`أين ${other()==="by"?"تختبئ":"يختبئ"} ${PL_INFO[other()].name}؟`,`ayna ${other()==="by"?"takhtabi'":"yakhtabi'"} ${PL_INFO[other()].tr}?`)}`:S.phase==="place"?`${PLACES[S.place].e} ${P(PLACES[S.place].ar,PLACES[S.place].tr)}`:S.mosque?(outKind()==="mosque"?`🕌 ${P("خذ","khudh")} <b>${t.e} ${P(t.ar,t.tr)}</b> ${P(`إلى المسجد لصلاة ${S.mosque.p.ar}`,`ila al-masjid li-salat ${S.mosque.p.tr}`)}`:`${OK().e} ${P("خذ","khudh")} <b>${t.e} ${P(t.ar,t.tr)}</b> ${P(`إلى ${OK().ar}`,`ila ${OK().tr}`)}`):(v.id==="dl"&&!S.goHome?(S.dlChosen?`📦 ${P("وصّل الطلب إلى","wassil al-talab ila")} <b>${t.e} ${P(t.ar,t.tr)}</b> · ${P(`الشقّة ${aptNo(S.t,S.side)}`,`al-shaqqa ${(S.t-1)*4+S.side+1}`)}`:`🛵 ${P("اختر شقّة لتوصل إليها الطلب","ikhtar shaqqa")}`):`🎯 ${S.goHome?P("اذهب إلى","idhhab ila"):P("زُر","zur")} <b>${t.e} ${P(t.ar,t.tr)}</b>`)}</div>
+  let h=`<div class="top"><span class="avatar">${v.e}</span><div style="flex:1;min-width:180px"><div class="mission">${S.phase==="kids"?`👫 ${P("أطفال العمارة","atfal al-ʿimara")}`:S.phase==="souq"?`🛒 ${P("السوق: اشترِ كلّ ما في القائمة!","al-suq: ishtari kulla ma fi al-qa'ima!")}`:S.lost?`${S.lost.kind==="cat"?"🐱":"🔑"} ${P(`ابحث عن ${S.lost.kind==="cat"?"قطّة":"مفتاح"} ${S.lost.owner.ar}`,`ibhath ʿan ${S.lost.kind==="cat"?"qittat":"miftah"} ${S.lost.owner.tr}`)}`:S.secret?`🕵️ ${P(`أين ${other()==="by"?"تختبئ":"يختبئ"} ${PL_INFO[other()].name}؟`,`ayna ${other()==="by"?"takhtabi'":"yakhtabi'"} ${PL_INFO[other()].tr}?`)}`:S.phase==="place"?`${PLACES[S.place].e} ${P(PLACES[S.place].ar,PLACES[S.place].tr)}`:S.mosque?(outKind()==="mosque"?`🕌 ${P("خذ","khudh")} <b>${t.e} ${P(t.ar,t.tr)}</b> ${P(`إلى المسجد لصلاة ${S.mosque.p.ar}`,`ila al-masjid li-salat ${S.mosque.p.tr}`)}`:`${OK().e} ${P("خذ","khudh")} <b>${t.e} ${P(t.ar,t.tr)}</b> ${P(`إلى ${OK().ar}`,`ila ${OK().tr}`)}`):(v.id==="dl"&&!S.goHome?(S.dlChosen?`📦 ${P("وصّل الطلب إلى","wassil al-talab ila")} <b>${t.e} ${P(t.ar,t.tr)}</b> · ${P(`الشقّة ${aptNo(S.t,S.side)}`,`al-shaqqa ${(S.t-1)*4+S.side+1}`)}`:`🛵 ${P("اختر شقّة لتوصل إليها الطلب","ikhtar shaqqa")}`):`🎯 ${S.goHome?P("اذهب إلى","idhhab ila"):P("زُر","zur")} <b>${t.e} ${P(t.ar,t.tr)}</b>`)}</div>
     ${S.en?`<div class="en">Visit ${t.en}.</div>`:""}</div>${steps()}</div>`;
 
   if(S.phase==="reception"&&S.mosque){
@@ -2065,6 +2090,9 @@ function renderPanel(){
   }
   else if(S.phase==="souq"){
     h+=souqPanel(v,K);
+  }
+  else if(S.phase==="kids"){
+    h+=kidsPanel(v);
   }
   else if(S.phase==="house"){
     const pk=S.park||(S.park={done:{},said:{},cur:null}),n=Object.keys(pk.done).length,NT=4;
@@ -2388,6 +2416,7 @@ function renderPanel(){
   on("beachTrip",startBeach);
   on("masjidIn",()=>startPlace("masjid",true));
   if(S.phase==="souq")bindSouq();
+  if(S.phase==="kids")bindKids();
   document.querySelectorAll("[data-plb]").forEach(b=>b.onclick=()=>playPlace(b.dataset.plb));
   on("plSay",()=>{const pk=S.park;if(!pk||!pk.cur||pk.said[pk.cur])return;pk.said[pk.cur]=1;addStars(1);yay();render();});
   on("recClip",()=>openRecClip());
@@ -2765,6 +2794,7 @@ function openAdv(){
   const card=(id,e,ar1,tr1,sub,dis)=>`<button class="advc" data-adv="${id}" ${dis?"disabled":""}><span class="ae">${e}</span><b>${P(ar1,tr1)}</b><small>${sub}</small></button>`;
   o.innerHTML=`<div class="homecard advcard"><div class="homehead"><h2>🎒 ${P("مغامرات جديدة","mughamarat jadida")}</h2><button id="advX">✕</button></div>
     <div class="advgrid">
+      ${card("kids","👫","أطفال العمارة","atfal al-ʿimara",`تعرّف عليهم وتكلّم معهم · ${ar(KIDS.filter(k=>kidData(k.id).lv>0).length)} أصدقاء`)}
       ${card("souq","🛒","السوبرماركت","al-subirmarkit","عربة، كاشير، بطاقة أو نقداً")}
       ${card("airport","✈️","المطار","al-matar","سافر إلى مدينة جديدة")}
       ${card("dinner","🍽️","عشاء في شقّتي","ʿasha' fi shaqqati","اطبخ وقدّم لضيفك")}
@@ -2779,7 +2809,8 @@ function openAdv(){
   o.hidden=false;$("advX").onclick=()=>{o.hidden=true;};o.onclick=e=>{if(e.target===o)o.hidden=true;};
   o.querySelectorAll("[data-adv]").forEach(b=>b.onclick=()=>{
     const k=b.dataset.adv;o.hidden=true;
-    if(k==="souq")startSouq();
+    if(k==="kids")startKids();
+    else if(k==="souq")startSouq();
     else if(["airport","dinner","boss"].includes(k))startPlace(k);
     else if(k==="cat"||k==="key")startLost(k);
     else if(k==="secret")startSecret();
@@ -3191,5 +3222,121 @@ function gWudu(o){
     const d=o.querySelector("#wuDone");if(d)d.onclick=()=>{yay();closeGame(true);};
   };draw();
 }
+
+/* ================= the building's kids: make friends and talk ================= */
+var KIDS=[
+ {id:"yusuf",e:"👦🏻",ar:"يوسف",tr:"yusuf",g:"m",age:9,grade:["الرابع","al-rabiʿ"],like:["كرة القدم","kurat al-qadam","⚽","football"],sib:["عندي أختٌ صغيرة اسمها ليلى.","ʿindi ukhtun saghira ismuha layla.","I have a little sister called Layla."],food:["الكبسة","al-kabsa"],color:["الأزرق","al-azraq"],play:"ball",playAr:["كرة القدم","kurat al-qadam"]},
+ {id:"maryam",e:"👧",ar:"مريم",tr:"maryam",g:"f",age:8,grade:["الثالث","al-thalith"],like:["الرسم","al-rasm","🎨","drawing"],sib:["عندي أخوان كبيران.","ʿindi akhawani kabiran.","I have two big brothers."],food:["المعكرونة","al-maʿkaruna"],color:["الورديّ","al-wardi"],play:"swing",playAr:["المراجيح","al-marajih"]},
+ {id:"omar",e:"🧒",ar:"عمر",tr:"ʿumar",g:"m",age:8,grade:["الثالث","al-thalith"],like:["الروبوتات","al-robotat","🤖","robots"],sib:["عندي أخٌ توأم اسمه علي!","ʿindi akhun taw'am ismuhu ʿali!","I have a twin brother called Ali!"],food:["الشاورما","al-shawarma"],color:["الأخضر","al-akhdar"],play:"slide",playAr:["الزحليقة","al-zuhliqa"]},
+ {id:"sara",e:"👧🏽",ar:"سارة",tr:"sara",g:"f",age:9,grade:["الرابع","al-rabiʿ"],like:["القطط","al-qitat","🐱","cats"],sib:["عندي أختٌ كبيرة اسمها هند.","ʿindi ukhtun kabira ismuha hind.","I have a big sister called Hind."],food:["الفواكه","al-fawakih"],color:["البنفسجيّ","al-banafsaji"],play:"swing",playAr:["المراجيح","al-marajih"]},
+ {id:"hamza",e:"👦🏽",ar:"حمزة",tr:"hamza",g:"m",age:7,grade:["الثاني","al-thani"],like:["الدرّاجات","al-darrajat","🚲","bikes"],sib:["لا، ليس عندي إخوة.","la, laysa ʿindi ikhwa.","No, I don't have any brothers or sisters."],food:["الدجاج المشويّ","al-dajaj al-mashwi"],color:["الأحمر","al-ahmar"],play:"ball",playAr:["الكرة","al-kura"]}];
+var MY_LIKES=[["الألعاب والتقنية","al-alʿab wal-tiqniya","🎮"],["كرة القدم","kurat al-qadam","⚽"],["الرسم","al-rasm","🎨"],["القطط","al-qitat","🐱"],["الروبوتات","al-robotat","🤖"],["الدرّاجات","al-darrajat","🚲"]];
+var AGE_W={7:["سبع سنوات","sabʿ sanawat"],8:["ثماني سنوات","thamani sanawat"],9:["تسع سنوات","tisʿ sanawat"],10:["عشر سنوات","ʿashr sanawat"]};
+function kidData(id){const all=PL[CUR].kids||(PL[CUR].kids={});return all[id]||(all[id]={lv:0,facts:{},hearts:0});}
+function kidRes(k){return {e:k.e,ar:k.ar,tr:k.tr,en:k.ar,g:k.g,m:1,ab:"",abt:"",abe:"",kid:true};}
+function startKids(){newRound(true);S.phase="kids";S.kidChat=null;try{stopAdhan();}catch(e){}beep();render();}
+function kidScript(k){
+  const d=kidData(k.id),me=PL_INFO[CUR].name,meT=PL_INFO[CUR].tr,G2=(m,f)=>k.g==="f"?f:m,you=G2("أنتَ","أنتِ");
+  const Q={
+    like:{say:[`ماذا ${G2("تحبّ","تحبّين")} أن ${G2("تفعل","تفعلي")}؟`,`madha ${G2("tuhibbu an tafʿal","tuhibbina an tafʿali")}?`,"What do you like to do?"],reply:[`أحبّ ${k.like[0]} كثيراً! ${k.like[2]}`,`uhibbu ${k.like[1]} kathiran!`,`I love ${k.like[3]}!`]},
+    grade:{say:[`في أيّ صفٍّ ${you}؟`,`fi ayyi saffin ${G2("anta","anti")}?`,"Which grade are you in?"],reply:[`أنا في الصفّ ${k.grade[0]}.`,`ana fi al-saffi ${k.grade[1]}.`,`I'm in grade ${k.grade[1]}.`]},
+    sib:{say:[`هل ${G2("عندك","عندكِ")} إخوة؟`,`hal ${G2("ʿindaka","ʿindaki")} ikhwa?`,"Do you have brothers or sisters?"],reply:k.sib},
+    food:{say:[`ما طعامك المفضّل؟`,`ma taʿamu${G2("ka","ki")} al-mufaddal?`,"What's your favourite food?"],reply:[`طعامي المفضّل ${k.food[0]}! 😋`,`taʿami al-mufaddal ${k.food[1]}!`,`My favourite food is ${k.food[1]}!`]},
+    color:{say:[`ما لونك المفضّل؟`,`ma lawnu${G2("ka","ki")} al-mufaddal?`,"What's your favourite colour?"],reply:[`لوني المفضّل ${k.color[0]}.`,`lawni al-mufaddal ${k.color[1]}.`,`My favourite colour is ${k.color[1]}.`]}};
+  const unknown=Object.keys(Q).filter(x=>!d.facts[x]);const pickQ=(n)=>shuffle(unknown.length?unknown:Object.keys(Q)).slice(0,n);
+  const qEx=n=>({opts:pickQ(n).map(x=>({say:Q[x].say,reply:Q[x].reply,fact:x}))});
+  if(d.lv===0)return [
+    {opts:[{say:[`السلام عليكم! أنا ${me}. ما اسمك؟`,`al-salamu ʿalaykum! ana ${meT}. ma ismu${G2("ka","ki")}?`,"Peace be upon you! I'm "+me+". What's your name?"],reply:[`وعليكم السلام! اسمي ${k.ar}. تشرّفنا! 😊`,`wa ʿalaykum al-salam! ismi ${k.tr}. tasharrafna!`,`I'm ${k.tr}. Nice to meet you!`],fact:"name"},
+           {say:[`مرحباً! اسمي ${me}، ${G2("وأنتَ","وأنتِ")}؟`,`marhaban! ismi ${meT}, wa ${G2("anta","anti")}?`,"Hi! I'm "+me+", and you?"],reply:[`أهلاً! أنا ${k.ar}. ${G2("سعيدٌ","سعيدةٌ")} بالتعرّف عليك!`,`ahlan! ana ${k.tr}. saʿid bil-taʿarruf ʿalayk!`,`Hi! I'm ${k.tr}. Happy to meet you!`],fact:"name"}]},
+    {ask:[`كم عمرك يا ${me}؟`,`kam ʿumru${GV("ka","ki")} ya ${meT}?`,"How old are you?"],opts:[7,8,9,10].map(a=>({say:[`عمري ${AGE_W[a][0]}.`,`ʿumri ${AGE_W[a][1]}.`,`I'm ${a}.`],reply:a===k.age?[`ما شاء الله! وأنا عمري ${AGE_W[k.age][0]} أيضاً! 🤝`,`ma sha'a allah! wa ana ʿumri ${AGE_W[k.age][1]} aydan!`,`Same as me!`]:[`ما شاء الله! أنا عمري ${AGE_W[k.age][0]}.`,`ma sha'a allah! ana ʿumri ${AGE_W[k.age][1]}.`,`I'm ${k.age}.`],fact:"age",heart:a===k.age}))},
+    qEx(3),
+    {ask:[`${GV("وأنتَ","وأنتِ")}، ماذا ${GV("تحبّ","تحبّين")}؟`,`wa ${GV("anta","anti")}, madha ${GV("tuhibb","tuhibbin")}?`,"And you, what do you like?"],opts:shuffle(MY_LIKES.slice()).slice(0,3).concat(MY_LIKES.filter(x=>x[0]===k.like[0])).filter((x,i,a)=>a.findIndex(y=>y[0]===x[0])===i).slice(0,4).map(l=>({say:[`أحبّ ${l[0]}! ${l[2]}`,`uhibbu ${l[1]}!`,"I like "+l[1]+"!"],reply:l[0]===k.like[0]?[`رائع! أنا أيضاً أحبّ ${l[0]}! نحن نحبّ نفس الشيء! 💛`,`ra'iʿ! ana aydan uhibbu ${l[1]}!`,"Awesome! I like that too!"]:[`جميل! أمّا أنا فأحبّ ${k.like[0]}.`,`jamil! amma ana fa-uhibbu ${k.like[1]}.`,`Nice! I like ${k.like[3]}.`],heart:l[0]===k.like[0]}))},
+    {opts:[{say:["هل نصبح أصدقاء؟ 🤝","hal nusbihu asdiqa'?","Shall we be friends?"],reply:[`نعم! صرنا أصدقاء! 💛`,`naʿam! sirna asdiqa'!`,"Yes! We're friends now!"],level:1},
+           {say:["سعدتُ بالتعرّف عليك!","saʿidtu bil-taʿarrufi ʿalayk!","Nice to meet you!"],reply:[`وأنا أيضاً! ${GV("تعال","تعالي")} نلعب مرّةً أخرى! 💛`,`wa ana aydan! ${GV("taʿala","taʿali")} nalʿabu marratan ukhra!`,"Me too! Come play again!"],level:1}]}];
+  if(d.lv===1)return [
+    {opts:[{say:[`السلام عليكم يا ${k.ar}! كيف حالك؟`,`al-salamu ʿalaykum ya ${k.tr}! kayfa haluk?`,`Hi ${k.tr}! How are you?`],reply:[`وعليكم السلام! بخير والحمد لله. ${G2("وأنتَ","وأنتِ")}؟`.replace(/وأنتِ؟|وأنتَ؟/,"وأنت؟"),"bi-khayr wal-hamdu lillah. wa ant?","Fine, praise be to Allah. And you?"]}]},
+    {opts:[{say:["بخير، الحمد لله!","bi-khayr, al-hamdu lillah!","Fine, praise be to Allah!"],reply:[`ماذا ${GV("فعلتَ","فعلتِ")} اليوم؟`,`madha ${GV("faʿalta","faʿalti")} al-yawm?`,"What did you do today?"]}]},
+    {opts:[{say:["ذهبتُ إلى المدرسة، ثمّ لعبتُ.","dhahabtu ila al-madrasa, thumma laʿibtu.","I went to school, then played."],reply:["وأنا كذلك! 😄","wa ana kadhalik!","Me too!"]},{say:["درستُ العربية مع معلّمتي.","darastu al-ʿarabiyya maʿa muʿallimati.","I studied Arabic with my teacher."],reply:["ممتاز! العربية لغةٌ جميلة.","mumtaz! al-ʿarabiyya lughatun jamila.","Great! Arabic is a beautiful language."],heart:true}]},
+    qEx(3),
+    qEx(3),
+    {opts:[{say:["إلى اللقاء! أراك غداً.","ila al-liqa'! araka ghadan.","Bye! See you tomorrow."],reply:["مع السلامة! في المرّة القادمة نلعب معاً! 💛","maʿa al-salama! fi al-marrati al-qadima nalʿabu maʿan!","Bye! Next time let's play together!"],level:2}]}];
+  return [
+    {opts:[{say:[`السلام عليكم يا ${k.ar}! صديقي العزيز!`.replace("صديقي العزيز",G2("صديقي العزيز","صديقتي العزيزة")),`al-salamu ʿalaykum ya ${k.tr}!`,`Hi ${k.tr}, my dear friend!`],reply:[`وعليكم السلام! اشتقتُ إليك! 😊`,`wa ʿalaykum al-salam! ishtaqtu ilayk!`,"I missed you!"]}]},
+    qEx(2),
+    {ask:[`هل ${GV("تريد","تريدين")} أن نلعب ${k.playAr[0]} في الحديقة؟ 🌳`,`hal ${GV("turidu","turidina")} an nalʿaba ${k.playAr[1]} fi al-hadiqa?`,`Do you want to play in the park?`],opts:[
+      {say:["نعم! هيّا بنا! 🏃","naʿam! hayya bina!","Yes! Let's go!"],reply:["رائع! هيّا إلى الحديقة!","ra'iʿ! hayya ila al-hadiqa!","Great! To the park!"],play:true},
+      {say:["ليس الآن، ربّما غداً إن شاء الله.","laysa al-an, rubbama ghadan in sha'a allah.","Not now, maybe tomorrow, insha'Allah."],reply:["حسناً! إلى اللقاء! 💛","hasanan! ila al-liqa'!","OK! Bye!"]}]}];
+}
+function openKidChat(id){const k=KIDS.find(x=>x.id===id);if(!k)return;const d=kidData(id);S.kidChat={id,ex:kidScript(k),i:0,log:[],done:false,lv0:d.lv};if(S.kidChat.ex[0].ask)S.kidChat.log.push({who:"kid",l:S.kidChat.ex[0].ask});knock();render();}
+function kidPick(o,typed){
+  const c=S.kidChat;if(!c||c.done)return;const k=KIDS.find(x=>x.id===c.id),d=kidData(c.id);
+  c.log.push({who:"me",l:typed?[typed,"",""]:o.say});addStars(1);
+  c.log.push({who:"kid",l:typed?[`${o.reply[0]}`,o.reply[1],o.reply[2]]:o.reply});
+  if(o.fact)d.facts[o.fact]=1;if(o.heart&&!typed){d.hearts=(d.hearts||0)+1;}
+  if(o.level){d.lv=Math.max(d.lv,o.level);d.hearts=(d.hearts||0)+1;}
+  if(c.ex[c.i+1]&&!o.play){c.i++;if(c.ex[c.i].ask)c.log.push({who:"kid",l:c.ex[c.i].ask});}
+  else{c.done=true;if(!o.play&&d.lv<=c.lv0&&c.lv0>=2)d.hearts=(d.hearts||0)+1;c.play=!!o.play;countOnce("kids");}
+  saveHome();tone(700,.06);tone(900,.08,.07);render();
+  if(o.level===1&&c.lv0===0)setTimeout(()=>{yay();confetti(30);pop(k.e,`صار ${k.ar} ${k.g==="f"?"صديقتك":"صديقك"}! 💛`);},300);
+  setTimeout(()=>{const b=document.getElementById("kidLog");if(b)b.scrollTop=b.scrollHeight;},30);
+}
+function playWithKid(id){
+  const k=KIDS.find(x=>x.id===id);const [f,s]=randApt();
+  beginMosque(f,s,"park");S.guest={f,s,r:kidRes(k)};layout();S.mosque.picked=true;S.phase="mosque";S.said={};S.park=null;render();
+}
+function kidsScene(){
+  const v=V();
+  return `<div class="kidsroom"><div class="ksign">👫 ${P("ساحة أطفال العمارة","sahat atfal al-ʿimara")}</div>
+    <div class="kballoons">🎈 🎈 🎈</div><div class="kmat"></div>
+    ${KIDS.map((k,i)=>{const d=kidData(k.id);return `<button class="pk kidst ${S.kidChat&&S.kidChat.id===k.id?"on":""}" data-kid="${k.id}" style="left:${4+i*19}%"><span class="khearts">${d.lv?"💛".repeat(Math.min(5,d.hearts||1)):"❔"}</span>${fig(k.e)}<span class="kprop">${k.like[2]}</span><span class="plbl">${d.facts.name?k.ar:"؟"}</span></button>`;}).join("")}
+    <div class="kme">${fig(v.e)}</div></div>`;
+}
+function kidsPanel(v){
+  const c=S.kidChat;
+  let h=`<div class="win">👫 ${P("تعرّف على أطفال العمارة وتكلّم معهم!","taʿarraf ʿala atfal al-ʿimara!")}</div>`;
+  if(!c){
+    h+=`<div class="hint center">👆 ${P("اضغط على طفلٍ لتبدأ الكلام معه.","idghat ʿala tiflin li-tabda'a al-kalam.")}</div>`+friendsList();
+    return h;
+  }
+  const k=KIDS.find(x=>x.id===c.id),d=kidData(k.id);
+  h+=`<div class="kchat"><div class="khead">${k.e} <b>${d.facts.name?k.ar:P("طفلٌ جديد","tiflun jadid")}</b> <span>${d.lv?"💛".repeat(Math.min(5,d.hearts||1)):""}</span><button id="kidBack">↩ ${P("رجوع","rujuʿ")}</button></div>
+    <div class="klog" id="kidLog">${c.log.map(m=>`<div class="kb ${m.who}"><b>${m.who==="me"?v.e:k.e}</b><div>${m.l[0]}${S.tr&&m.l[1]?`<small>${m.l[1]}</small>`:""}${S.en&&m.l[2]?`<em>${m.l[2]}</em>`:""}</div></div>`).join("")}</div>`;
+  if(!c.done){
+    const ex=c.ex[c.i];
+    h+=`<div class="hint">${P("اختر ردّك، أو اكتب ردّك بنفسك:","ikhtar raddak, aw uktub raddak bi-nafsik:")}</div>
+      <div class="kopts">${ex.opts.map((o,i)=>`<button data-kopt="${i}">${o.say[0]}${S.tr?`<small>${o.say[1]}</small>`:""}</button>`).join("")}</div>
+      <div class="kfree"><input id="kidIn" dir="rtl" lang="ar" placeholder="✍️ اكتب ردّك بالعربية…"><button id="kidSend">➤</button></div>`;
+  } else if(c.play){
+    h+=`<div class="tog center"><button class="big huge" id="kidPlay">🌳 ${P(`اذهب إلى الحديقة مع ${k.ar}`,`idhhab ila al-hadiqa maʿa ${k.tr}`)}</button></div>`;
+  } else {
+    h+=`<div class="win center">💛 ${P(`أحسنت! تكلّمتَ مع ${k.ar}.`,`ahsant! takallamta maʿa ${k.tr}.`)}</div>`+kidFacts(k)+`<div class="tog center"><button class="big" id="kidBack2">👫 ${P("تكلّم مع طفلٍ آخر","takallam maʿa tiflin akhar")}</button><button class="big" id="next">🚀 ${P("مهمة جديدة","mahamma jadida")}</button></div>`;
+  }
+  return h;
+}
+function kidFacts(k){
+  const d=kidData(k.id),F=d.facts,L=[];
+  if(F.age)L.push(`🎂 ${P(`عمر${k.g==="f"?"ها":"ه"} ${AGE_W[k.age][0]}`,AGE_W[k.age][1])}`);
+  if(F.like)L.push(`${k.like[2]} ${P(`${k.g==="f"?"تحبّ":"يحبّ"} ${k.like[0]}`,k.like[1])}`);
+  if(F.grade)L.push(`🏫 ${P(`في الصفّ ${k.grade[0]}`,k.grade[1])}`);
+  if(F.sib)L.push(`👨‍👩‍👧 ${P(k.sib[0],k.sib[1])}`);
+  if(F.food)L.push(`🍽️ ${P(`طعام${k.g==="f"?"ها":"ه"} المفضّل ${k.food[0]}`,k.food[1])}`);
+  if(F.color)L.push(`🎨 ${P(`لون${k.g==="f"?"ها":"ه"} المفضّل ${k.color[0]}`,k.color[1])}`);
+  return L.length?`<div class="kfacts">${L.map(x=>`<span>${x}</span>`).join("")}</div>`:"";
+}
+function friendsList(){
+  const met=KIDS.filter(k=>kidData(k.id).lv>0);
+  return `<div class="kfriends"><b>📒 ${P(`أصدقائي (${ar(met.length)}/${ar(KIDS.length)})`,"asdiqa'i")}</b>${met.length?met.map(k=>`<div class="kf"><span class="kfe">${k.e}</span><div><b>${k.ar}</b> ${"💛".repeat(Math.min(5,kidData(k.id).hearts||1))}${kidFacts(k)}</div></div>`).join(""):`<div class="hint">${P("لم تتعرّف على أحدٍ بعد.","lam tataʿarraf ʿala ahadin baʿd.")}</div>`}</div>`;
+}
+function bindKids(){
+  document.querySelectorAll("[data-kid]").forEach(b=>b.onclick=()=>openKidChat(b.dataset.kid));
+  const c=S.kidChat,on=(id,f)=>{const e=$(id);if(e)e.onclick=f;};
+  on("kidBack",()=>{S.kidChat=null;render();});on("kidBack2",()=>{S.kidChat=null;render();});
+  if(c&&!c.done){const ex=c.ex[c.i];
+    document.querySelectorAll("[data-kopt]").forEach(b=>b.onclick=()=>kidPick(ex.opts[+b.dataset.kopt]));
+    const send=()=>{const t=($("kidIn").value||"").trim();if(!t)return;kidPick(ex.opts[0],t);};
+    on("kidSend",send);const inp=$("kidIn");if(inp)inp.onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();send();}};}
+  if(c&&c.play)on("kidPlay",()=>playWithKid(c.id));
+}
+BADGES.push({id:"kids",e:"👫",ar:"صديق الأطفال",tr:"sadiq al-atfal",need:"تعرّف على ٣ أطفال",test:(c,p)=>KIDS.filter(k=>p.kids&&p.kids[k.id]&&p.kids[k.id].lv>0).length>=3});
 </script>
 </body></html>
