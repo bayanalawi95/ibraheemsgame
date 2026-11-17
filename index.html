@@ -616,6 +616,11 @@ button.tile:hover{border-color:var(--bld)}
 .aghost{position:fixed;z-index:9999;pointer-events:none;font-size:3.4rem;transform:translate(-50%,-60%) scale(1.2);background:none;border:0;filter:drop-shadow(0 6px 8px rgba(0,0,0,.35))}
 @keyframes dropPulse{50%{background:rgba(255,236,179,.5)}}@keyframes wiggle{25%{transform:rotate(-6deg)}75%{transform:rotate(6deg)}}
 .kb .kab{display:block;direction:rtl;color:#2e7d32;font-weight:700;margin-top:2px}
+.pinlock{font-weight:700}.lockbar{height:8px;background:#ffcdd2;border-radius:6px;margin-top:6px;overflow:hidden}.lockbar i{display:block;height:100%;background:#e53935;transition:width 1s linear}
+.pinpad2.locked{opacity:.4;filter:grayscale(1)}
+.apt .atrash{position:absolute;right:10px;top:50px;width:84px;height:84px;border-radius:50%;border:3px dashed #e53935;background:rgba(255,205,210,.85);font-size:2.2rem;display:none;align-items:center;justify-content:center;z-index:3;cursor:pointer}
+.apt.moving .atrash{display:flex}.apt .atrash.hov{background:#ef5350;transform:scale(1.15)}
+.delask{background:#fff3f3;border:2px solid #ef9a9a;border-radius:14px;padding:10px;margin:8px 0;text-align:center}.delask .ar{font-weight:800}
 .pincard{max-width:380px;text-align:center}.doorpic{position:relative;font-size:4rem;line-height:1;margin:4px 0}.doorpic .lock{position:absolute;font-size:1.6rem;left:50%;margin-left:6px;top:28px}
 .pinscr2{font-size:2rem;letter-spacing:10px;background:#263238;color:#80deea;border-radius:12px;padding:6px;margin:8px auto;max-width:220px;direction:ltr}.pinscr2.bad{animation:pshake .35s;color:#ef9a9a}
 .pinpad2{display:grid;grid-template-columns:repeat(3,72px);gap:10px;justify-content:center;margin:10px auto;direction:ltr}.pinpad2 button{height:64px;font-size:1.6rem;font-weight:800;border-radius:16px;background:#f5f5f5;border:2px solid #ddd;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}.pinpad2 button small{font-size:.65rem;color:#888;font-weight:400}.pinpad2 button[data-hp="✓"]{background:#e8f5e9;border-color:#66bb6a}
@@ -2758,8 +2763,8 @@ function weatherLine(){
 
 /* ================= counters, badges, weekly goal, daily streak ================= */
 var dayKey=(d=new Date())=>d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate();
-function weekKey(){const d=new Date(),t=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())),day=t.getUTCDay()||7;t.setUTCDate(t.getUTCDate()+4-day);const y=new Date(Date.UTC(t.getUTCFullYear(),0,1));return t.getUTCFullYear()+"-w"+Math.ceil(((t-y)/864e5+1)/7);}
-var WEEK_GOAL=50;
+function weekKey(){const d=new Date();return d.getFullYear()+"-d"+(d.getMonth()+1)+"-"+d.getDate();}
+var WEEK_GOAL=25;
 function weekStars(k){const w=PL[k].wk;return w&&w.key===weekKey()?w.stars||0:0;}
 var BADGES=[
  {id:"m5",e:"🎯",ar:"بطل المهمّات",tr:"batal al-mahammat",need:"أنجز ٥ مهمّات",test:c=>(c.all||0)>=5},
@@ -2772,7 +2777,7 @@ var BADGES=[
  {id:"souq",e:"🛒",ar:"المتسوّق الذكي",tr:"al-mutasawwiq al-dhakiyy",need:"اشترِ كلّ القائمة من السوق",test:c=>(c.souq||0)>=1},
  {id:"air",e:"✈️",ar:"المسافر",tr:"al-musafir",need:"سافر من المطار",test:c=>(c.airport||0)>=1},
  {id:"chef",e:"👨‍🍳",ar:"الطبّاخ الماهر",tr:"al-tabbakh al-mahir",need:"قدّم العشاء لضيف",test:c=>(c.dinner||0)>=1},
- {id:"boss",e:"⚡",ar:"بطل الكهرباء",tr:"batal al-kahraba'",need:"أنجز مهمّة الأسبوع",test:c=>(c.boss||0)>=1},
+ {id:"boss",e:"⚡",ar:"بطل الكهرباء",tr:"batal al-kahraba'",need:"أنجز مهمّة اليوم",test:c=>(c.boss||0)>=1},
  {id:"lost",e:"🐱",ar:"المحقّق الصغير",tr:"al-muhaqqiq al-saghir",need:"جِد شيئين ضائعين",test:c=>(c.lost||0)>=2},
  {id:"secret",e:"🕵️",ar:"صائد المختبئين",tr:"sa'id al-mukhtabi'in",need:"جِد اللاعب المختبئ",test:c=>(c.secret||0)>=1},
  {id:"dl",e:"🛵",ar:"عامل التوصيل السريع",tr:"ʿamil al-tawsil al-sariʿ",need:"وصّل ٣ طلبات",test:c=>(c.delivery||0)>=3},
@@ -2810,7 +2815,7 @@ function updateMeta(){
   const bn=$("badgeN");if(bn)bn.textContent=ar((p.badges||[]).length);
   const tot=weekStars("ib")+weekStars("by"),wg=$("weekGoal");
   if(wg)wg.innerHTML=tot>=WEEK_GOAL?`🌳 ${P("حديقة السطح جاهزة! بنيتماها معاً","hadiqat al-sath jahiza!")}`
-    :`🌱 ${P(`هدفكما هذا الأسبوع: حديقة السطح ${ar(tot)}/${ar(WEEK_GOAL)}`,`hadafukuma: ${tot}/${WEEK_GOAL}`)}<span class="wbar"><i style="width:${Math.min(100,tot/WEEK_GOAL*100)}%"></i></span>`;
+    :`🌱 ${P(`هدفكما اليوم: حديقة السطح ${ar(tot)}/${ar(WEEK_GOAL)}`,`hadafukuma al-yawm: ${tot}/${WEEK_GOAL}`)}<span class="wbar"><i style="width:${Math.min(100,tot/WEEK_GOAL*100)}%"></i></span>`;
 }
 function openBadges(){
   const o=$("advBox"),p=PL[CUR],got=p.badges||[];
@@ -2829,7 +2834,7 @@ function openAdv(){
       ${card("souq","🛒","السوبرماركت","al-subirmarkit","عربة، كاشير، بطاقة أو نقداً")}
       ${card("airport","✈️","المطار","al-matar","سافر إلى مدينة جديدة")}
       ${card("dinner","🍽️","عشاء في شقّتي","ʿasha' fi shaqqati","اطبخ وقدّم لضيفك")}
-      ${card("boss","⚡","مهمّة الأسبوع","muhimmat al-usbuʿ",bossDone?"✓ أنجزتها هذا الأسبوع":"انقطعت الكهرباء!",bossDone)}
+      ${card("boss","⚡","مهمّة اليوم","muhimmat al-yawm",bossDone?"✓ أنجزتها اليوم":"انقطعت الكهرباء!",bossDone)}
       ${card("cat","🐱","قطّة ضائعة","qitta daʾiʿa","ابحث واسأل الجيران")}
       ${card("key","🔑","مفتاح ضائع","miftah daʾiʿ","مَن وجد المفتاح؟")}
       ${card("secret","🕵️",`أين ${she?"تختبئ":"يختبئ"} ${oth.name}؟`,"ayna yakhtabi'?","اسأل أسئلة نعم/لا")}
@@ -2903,7 +2908,7 @@ var PLACES={
      salad:{e:"🥗",ar:"السلطة",tr:"al-salata",x:32,reply:()=>["وهل عندك سلطة؟","wa hal ʿindaka salata?","And do you have salad?"],say:()=>["نعم! سلطةٌ طازجة بالخيار والطماطم.","naʿam! salatatun tazaja bil-khiyari wal-tamatim.","Yes! Fresh salad with cucumber and tomato."]},
      soup:{e:"🍲",ar:"الشوربة",tr:"al-shurba",x:56,reply:()=>["أحبّ الشوربة كثيراً!","uhibbu al-shurbata kathiran!","I love soup!"],say:()=>{const t=T();return [`هذه شوربة عدس. ${G(t,"انتبه","انتبهي")}، إنّها ساخنة!`,`hadhihi shurbatu ʿadas. ${G(t,"intabih","intabihi")}, innaha sakhina!`,"This is lentil soup. Careful, it's hot!"];}},
      juice:{e:"🧃",ar:"العصير",tr:"al-ʿasir",x:80,reply:()=>["أريد عصيراً، من فضلك.","uridu ʿasiran, min fadlik.","I'd like juice, please."],say:()=>{const t=T();return [`${G(t,"تفضّل","تفضّلي")} عصير برتقالٍ بارد.`,`${G(t,"tafaddal","tafaddali")} ʿasira burtuqalin barid.`,"Here's cold orange juice."];}}}},
- boss:{e:"⚡",ar:"مهمّة الأسبوع: انقطعت الكهرباء!",tr:"inqataʿat al-kahraba'!",bg:"pl-boss",npc:()=>({e:"👷",ar:"الفنّي",tr:"al-fanni"}),
+ boss:{e:"⚡",ar:"مهمّة اليوم: انقطعت الكهرباء!",tr:"inqataʿat al-kahraba'!",bg:"pl-boss",npc:()=>({e:"👷",ar:"الفنّي",tr:"al-fanni"}),
    decor:`<div class="pipes"></div><div class="bulb">💡</div>`,
    intro:()=>[["انقطعت الكهرباء في العمارة! المصاعد متوقّفة. ساعدني!","inqataʿat al-kahraba'u fi al-ʿimara! al-masaʿidu mutawaqqifa. saʿidni!","The power is out in the building! The lifts have stopped. Help me!"],[`لا ${GV("تقلق","تقلق")}! أنا ${GV("بطل","بطلة")} العمارة. هيّا!`,`la taqlaq! ana ${GV("batal","batalat")} al-ʿimara. hayya!`,"Don't worry! I'm the building's hero. Let's go!"]],
    acts:{
@@ -3389,7 +3394,7 @@ function startMyHome(){
   askHomePin(enterMyHome);
 }
 function enterMyHome(){
-  newRound(true);S.phase="myhome";S.aptTap=null;S.aptMove=false;S.aptPick=null;S.aptSaid={};try{stopAdhan();}catch(e){}knock();render();
+  newRound(true);S.phase="myhome";S.aptTap=null;S.aptMove=false;S.aptPick=null;S.aptDel=null;S.aptSaid={};try{stopAdhan();}catch(e){}knock();render();
 }
 function myHomePanel(v){
   const items=HOME.items||[],pend=(PL[CUR].pend||[]).length,tap=S.aptTap!=null?items[S.aptTap]:null;
@@ -3523,20 +3528,23 @@ function bindKids(){
 /* ================= home door code ================= */
 function pinHash(p){let h=5381;for(const ch of "tower:"+CUR+":"+p)h=((h<<5)+h+ch.charCodeAt(0))>>>0;return "h"+h.toString(36);}
 function askHomePin(onOk){
-  const o=$("gameBox"),hasPin=!!PL[CUR].homePin;let mode=hasPin?"enter":"set",val="",first="",msg="",bad=false,tries=0;
+  const o=$("gameBox"),hasPin=!!PL[CUR].homePin;let mode=hasPin?"enter":"set",val="",first="",msg="",bad=false,tries=0,lockT=null;
+  const LK="tower-pinlock-"+CUR,getLock=()=>{try{return JSON.parse(localStorage.getItem(LK))||{n:0,until:0};}catch(e){return {n:0,until:0};}},setLock=v=>{try{localStorage.setItem(LK,JSON.stringify(v));}catch(e){}};
+  const lockLeft=()=>Math.max(0,Math.ceil((getLock().until-Date.now())/1000));
   const title={enter:["🔐 أدخل رمز باب شقّتك","adkhil ramza babi shaqqatik"],set:["🆕 اختر رمزاً سرّياً لباب شقّتك (٤ أرقام)","ikhtar ramzan sirriyyan li-babi shaqqatik"],confirm:["🔁 أدخل الرمز مرّة أخرى للتأكيد","adkhil al-ramza marratan ukhra lil-ta'kid"]};
   const draw=()=>{
     o.innerHTML=`<div class="gcard pincard">${gHead("🚪",title[mode][0],title[mode][1])}
       <div class="doorpic">🚪<span class="lock">${mode==="enter"?"🔒":"🔑"}</span></div>
       <div class="pinscr2 ${bad?"bad":""}">${"●".repeat(val.length)}${"○".repeat(4-val.length)}</div>
       ${msg?`<div class="${bad?"alert":"win"} center">${msg}</div>`:""}
-      <div class="pinpad2">${[1,2,3,4,5,6,7,8,9,"⌫",0,"✓"].map(k=>`<button data-hp="${k}" ${k==="✓"&&val.length<4?"disabled":""}>${typeof k==="number"?`${ar(k)}<small>${k}</small>`:k}</button>`).join("")}</div>
-      ${mode==="enter"&&tries>=2?`<div class="tog center"><button class="small" id="hpForgot">🤔 ${P("نسيتُ الرمز","nasitu al-ramz")}</button></div>`:""}</div>`;
+      ${lockLeft()?`<div class="alert center pinlock">🔒 ${P(`أخطأتَ ٥ مرّات! انتظر ${ar(lockLeft())} ثانية ثمّ حاول مرّة أخرى.`.replace("أخطأتَ",GV("أخطأتَ","أخطأتِ")).replace("انتظر",GV("انتظر","انتظري")),`akhta'ta khamsa marrat! intazir ${lockLeft()} thaniya.`)}<div class="lockbar"><i style="width:${lockLeft()/30*100}%"></i></div></div>`:""}
+      <div class="pinpad2 ${lockLeft()?"locked":""}">${[1,2,3,4,5,6,7,8,9,"⌫",0,"✓"].map(k=>`<button data-hp="${k}" ${(k==="✓"&&val.length<4)||lockLeft()?"disabled":""}>${typeof k==="number"?`${ar(k)}<small>${k}</small>`:k}</button>`).join("")}</div>
+      ${mode==="enter"&&tries>=2&&!lockLeft()?`<div class="tog center"><button class="small" id="hpForgot">🤔 ${P("نسيتُ الرمز","nasitu al-ramz")}</button></div>`:""}</div>`;
     o.hidden=false;gBind(o);
     o.querySelectorAll("[data-hp]").forEach(b=>b.onclick=()=>press(b.dataset.hp));
     const fg=o.querySelector("#hpForgot");if(fg)fg.onclick=()=>{PL[CUR].homePin=null;saveHome();mode="set";val="";msg=P("لا بأس! اختر رمزاً جديداً.","la ba's! ikhtar ramzan jadidan.");bad=false;draw();};
   };
-  const press=k=>{bad=false;
+  const press=k=>{if(lockLeft())return;bad=false;
     if(k==="⌫"){val=val.slice(0,-1);tone(500,.04);}
     else if(k==="✓"){if(val.length<4)return;submit();return;}
     else if(val.length<4){val+=k;tone(900,.04);}
@@ -3547,10 +3555,13 @@ function askHomePin(onOk){
       if(val===first){PL[CUR].homePin=pinHash(val);saveHome();tone(880,.1);tone(1320,.15,.12);msg=`✅ ${P("حُفظ الرمز! تذكّره جيّداً.","hufiza al-ramz! tadhakkarhu jayyidan.")}`;val="";draw();setTimeout(()=>{closeGame(false);onOk();},900);}
       else{bad=true;mode="set";val="";first="";msg=`❌ ${P("الرمزان مختلفان! اختر الرمز من جديد.","al-ramzani mukhtalifan!")}`;tone(160,.25,0,"square",.08);draw();}
       return;}
-    if(pinHash(val)===PL[CUR].homePin){tone(880,.1);tone(1320,.15,.12);msg=`🔓 ${P("الرمز صحيح! تفضّل بالدخول.","al-ramzu sahih! tafaddal bil-dukhul.")}`;val="";draw();setTimeout(()=>{closeGame(false);onOk();},700);}
-    else{tries++;bad=true;val="";msg=`❌ ${P("الرمز خطأ! حاول مرّة أخرى.","al-ramzu khata'! hawil marratan ukhra.")}`;tone(160,.25,0,"square",.08);draw();}
+    if(pinHash(val)===PL[CUR].homePin){setLock({n:0,until:0});tone(880,.1);tone(1320,.15,.12);msg=`🔓 ${P("الرمز صحيح! تفضّل بالدخول.","al-ramzu sahih! tafaddal bil-dukhul.")}`;val="";draw();setTimeout(()=>{closeGame(false);onOk();},700);}
+    else{tries++;bad=true;val="";const L=getLock();L.n=(L.n||0)+1;
+      if(L.n>=5){L.n=0;L.until=Date.now()+30000;setLock(L);msg="";tone(120,.4,0,"square",.08);startLockTimer();draw();return;}
+      setLock(L);msg=`❌ ${P("الرمز خطأ! حاول مرّة أخرى.","al-ramzu khata'! hawil marratan ukhra.")} <small>(${P(`بقي ${ar(5-L.n)} ${5-L.n>2?"محاولات":"محاولة"}`,`baqiya ${5-L.n}`)})</small>`;tone(160,.25,0,"square",.08);draw();}
   };
-  GAME={kind:"pin"};draw();
+  function startLockTimer(){clearInterval(lockT);lockT=setInterval(()=>{if(!GAME||GAME.kind!=="pin"||o.hidden){clearInterval(lockT);return;}if(!lockLeft()){clearInterval(lockT);msg=`🔓 ${P("يمكنك المحاولة الآن.","yumkinuka al-muhawala al-an.")}`;bad=false;tone(700,.08);}draw();},1000);}
+  GAME={kind:"pin"};if(lockLeft())startLockTimer();draw();
 }
 
 /* ================= rearrange furniture inside the apartment ================= */
@@ -4052,5 +4063,32 @@ document.addEventListener("paste",e=>{
 },true);
 document.addEventListener("dragover",e=>{if(document.getElementById("waIn")&&e.dataTransfer&&[...(e.dataTransfer.types||[])].includes("Files"))e.preventDefault();},true);
 document.addEventListener("drop",e=>{if(!document.getElementById("waIn"))return;const f=clipImage(e.dataTransfer);if(!f)return;e.preventDefault();sendPic(f);},true);
+
+/* ================= delete unwanted furniture ================= */
+var _aptScene4=aptScene;
+aptScene=function(k,visiting){let h=_aptScene4(k,visiting);if(S.phase==="myhome"&&S.aptMove&&!visiting)h=h.replace('<div class="afigs">',`<button class="atrash" data-adrop="-1" title="${P("احذف","ihdhif")}">🗑️</button><div class="afigs">`);return h;};
+var _aptDropAt4=aptDropAt;
+aptDropAt=function(x,y){const sc=$("scene"),t=sc&&sc.querySelector(".atrash");if(t){const r=t.getBoundingClientRect();if(x>=r.left-10&&x<=r.right+10&&y>=r.top-10&&y<=r.bottom+10)return t;}
+  const best=_aptDropAt4(x,y);if(best&&best.classList.contains("atrash")){let b2=null,bd=1e9;sc.querySelectorAll("[data-adrop]:not(.atrash)").forEach(d=>{const q=d.getBoundingClientRect(),dd=Math.hypot(x-q.left-q.width/2,y-q.top-q.height/2);if(dd<bd){bd=dd;b2=d;}});return b2;}return best;};
+var _aptMoveTo4=aptMoveTo;
+aptMoveTo=function(j,spot){if(spot===-1){S.aptDel=j;S.aptPick=null;tone(300,.08);render();return;}_aptMoveTo4(j,spot);};
+function aptDelete(j){const it=(HOME.items||[])[j];if(!it)return;const f=FURN[it.i];HOME.items.splice(j,1);S.aptDel=null;S.aptTap=null;S.aptPick=null;saveHome();tone(400,.08);tone(220,.12,.08);
+  pop("🗑️",P(`حُذف ${f?f[1]:""}`,`hudhifa ${f?f[2]:""}`));render();}
+var _myHomePanel4=myHomePanel;
+myHomePanel=function(v){
+  let h=_myHomePanel4(v);const items=HOME.items||[];
+  if(S.aptDel!=null&&items[S.aptDel]&&FURN[items[S.aptDel].i]){const f=FURN[items[S.aptDel].i];
+    return `<div class="delask"><div class="ar big">🗑️ ${P(`هل ${GV("تريد","تريدين")} أن ${GV("تحذف","تحذفي")} ${f[1]} ${f[0]}؟`,`hal ${GV("turidu an tahdhif","turidina an tahdhifi")} ${f[2]}?`)}</div>
+      <div class="hint">${P("لن يعود إلّا إذا ربحته مرّةً أخرى.","lan yaʿuda illa idha rabihtahu marratan ukhra.")}</div>
+      <div class="tog center"><button class="big" id="aptDelYes" style="background:#e53935;color:#fff">🗑️ ${P("نعم، احذف","naʿam, ihdhif")}</button><button class="big" id="aptDelNo">↩️ ${P("لا، أبقِه","la, abqihi")}</button></div></div>`;}
+  const sel=S.aptMove?S.aptPick:S.aptTap;
+  if(sel!=null&&items[sel]&&FURN[items[sel].i])h=h.replace(/(<div class="tog center">)(?![\s\S]*<div class="tog center">)/,`$1<button class="big" id="aptDelBtn">🗑️ ${P(`احذف ${FURN[items[sel].i][1]}`,"ihdhif")}</button>`);
+  if(S.aptMove&&items.length)h=h.replace(/(<div class="hint center">👆[^<]*)/,`$1 ${P("أو اسحبها إلى سلّة المهملات 🗑️ لحذفها.","aw ishabha ila sallat al-muhmalat.")}`);
+  return h;
+};
+var _bindApt4=bindApt;
+bindApt=function(){_bindApt4();const on=(id,f)=>{const e=$(id);if(e)e.onclick=f;};
+  on("aptDelBtn",()=>{S.aptDel=S.aptMove?S.aptPick:S.aptTap;tone(300,.08);render();});
+  on("aptDelYes",()=>aptDelete(S.aptDel));on("aptDelNo",()=>{S.aptDel=null;beep();render();});};
 </script>
 </body></html>
