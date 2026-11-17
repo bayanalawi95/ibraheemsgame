@@ -621,6 +621,7 @@ button.tile:hover{border-color:var(--bld)}
 .apt .atrash{position:absolute;right:10px;top:50px;width:84px;height:84px;border-radius:50%;border:3px dashed #e53935;background:rgba(255,205,210,.85);font-size:2.2rem;display:none;align-items:center;justify-content:center;z-index:3;cursor:pointer}
 .apt.moving .atrash{display:flex}.apt .atrash.hov{background:#ef5350;transform:scale(1.15)}
 .delask{background:#fff3f3;border:2px solid #ef9a9a;border-radius:14px;padding:10px;margin:8px 0;text-align:center}.delask .ar{font-weight:800}
+.apt .aexitdoor{background:none;border:0;cursor:pointer;display:flex;flex-direction:column;align-items:center;z-index:3;padding:0}.apt .aexitdoor span{font-size:.85rem;font-weight:800;background:#fff;border:2px solid #8d6e63;color:#5d4037;border-radius:10px;padding:1px 8px;margin-top:-6px;animation:dropPulse 1.6s infinite}.apt .aexitdoor:hover{transform:scale(1.08)}
 .pincard{max-width:380px;text-align:center}.doorpic{position:relative;font-size:4rem;line-height:1;margin:4px 0}.doorpic .lock{position:absolute;font-size:1.6rem;left:50%;margin-left:6px;top:28px}
 .pinscr2{font-size:2rem;letter-spacing:10px;background:#263238;color:#80deea;border-radius:12px;padding:6px;margin:8px auto;max-width:220px;direction:ltr}.pinscr2.bad{animation:pshake .35s;color:#ef9a9a}
 .pinpad2{display:grid;grid-template-columns:repeat(3,72px);gap:10px;justify-content:center;margin:10px auto;direction:ltr}.pinpad2 button{height:64px;font-size:1.6rem;font-weight:800;border-radius:16px;background:#f5f5f5;border:2px solid #ddd;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}.pinpad2 button small{font-size:.65rem;color:#888;font-weight:400}.pinpad2 button[data-hp="✓"]{background:#e8f5e9;border-color:#66bb6a}
@@ -4066,7 +4067,7 @@ document.addEventListener("drop",e=>{if(!document.getElementById("waIn"))return;
 
 /* ================= delete unwanted furniture ================= */
 var _aptScene4=aptScene;
-aptScene=function(k,visiting){let h=_aptScene4(k,visiting);if(S.phase==="myhome"&&S.aptMove&&!visiting)h=h.replace('<div class="afigs">',`<button class="atrash" data-adrop="-1" title="${P("احذف","ihdhif")}">🗑️</button><div class="afigs">`);return h;};
+aptScene=function(k,visiting){let h=_aptScene4(k,visiting);if(S.phase==="myhome"&&S.aptMove&&!visiting)h=h.replace('<div class="afigs">',`<button class="atrash" data-adrop="-1" title="احذف">🗑️</button><div class="afigs">`);return h;};
 var _aptDropAt4=aptDropAt;
 aptDropAt=function(x,y){const sc=$("scene"),t=sc&&sc.querySelector(".atrash");if(t){const r=t.getBoundingClientRect();if(x>=r.left-10&&x<=r.right+10&&y>=r.top-10&&y<=r.bottom+10)return t;}
   const best=_aptDropAt4(x,y);if(best&&best.classList.contains("atrash")){let b2=null,bd=1e9;sc.querySelectorAll("[data-adrop]:not(.atrash)").forEach(d=>{const q=d.getBoundingClientRect(),dd=Math.hypot(x-q.left-q.width/2,y-q.top-q.height/2);if(dd<bd){bd=dd;b2=d;}});return b2;}return best;};
@@ -4090,5 +4091,17 @@ var _bindApt4=bindApt;
 bindApt=function(){_bindApt4();const on=(id,f)=>{const e=$(id);if(e)e.onclick=f;};
   on("aptDelBtn",()=>{S.aptDel=S.aptMove?S.aptPick:S.aptTap;tone(300,.08);render();});
   on("aptDelYes",()=>aptDelete(S.aptDel));on("aptDelNo",()=>{S.aptDel=null;beep();render();});};
+
+/* ================= exit home ================= */
+function leaveHome(){S.aptMove=false;S.aptPick=null;S.aptDel=null;tone(500,.06);tone(350,.1,.08);pop("🔒",P(`${GV("أقفلتَ","أقفلتِ")} باب الشقّة. إلى اللقاء! 👋`,"aqfalta bab al-shaqqa."));S.rounds=(S.rounds||0)+1;newRound(false);}
+var _aptScene5=aptScene;
+aptScene=function(k,visiting){let h=_aptScene5(k,visiting);if(S.phase==="myhome"&&!visiting)h=h.replace('<div class="adoor">🚪</div>',`<button class="adoor aexitdoor" id="aptExitS" title="اخرج من البيت">🚪<span>${P("خروج","khuruj")}</span></button>`);return h;};
+var _myHomePanel5=myHomePanel;
+myHomePanel=function(v){let h=_myHomePanel5(v);
+  if(!h.includes('id="aptOut"')&&S.aptDel==null)h=h.replace(/(<\/div>)(?![\s\S]*<\/div>)/,`<div class="tog center"><button class="big" id="aptOut">🚪 ${P("اخرج من البيت","ukhruj min al-bayt")}</button></div>$1`);
+  return h.replace("اخرج إلى العمارة","اخرج من البيت").replace("ukhruj ila al-ʿimara","ukhruj min al-bayt");};
+var _bindApt5=bindApt;
+bindApt=function(){_bindApt5();const a=$("aptOut");if(a)a.onclick=leaveHome;};
+document.addEventListener("click",e=>{if(e.target.closest&&e.target.closest("#aptExitS")&&S.phase==="myhome")leaveHome();});
 </script>
 </body></html>
