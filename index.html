@@ -635,6 +635,11 @@ button.tile:hover{border-color:var(--bld)}
 .shopcounter{display:flex;gap:8px;align-items:flex-start;margin-top:8px}.shopcounter .cust{font-size:3rem;line-height:1}.shopcounter .phlog{flex:1;max-height:170px}
 .coins{display:flex;gap:10px;justify-content:center;margin:8px 0}.coin{width:64px;height:64px;border-radius:50%;font-size:1.4rem;font-weight:900;border:3px solid #b8860b;background:radial-gradient(#ffe082,#ffb300);cursor:pointer}.coin.c10{border-radius:10px;width:84px;background:linear-gradient(#a5d6a7,#66bb6a);border-color:#2e7d32}.coin.c5{border-radius:10px;width:78px;background:linear-gradient(#ce93d8,#ab47bc);border-color:#6a1b9a;color:#fff}
 .givebox{display:inline-block;background:#fff8e1;border:2px solid #ffca28;border-radius:10px;padding:3px 10px}
+.phwho{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:6px 0 10px}.phwho button{background:#fff;border:2px solid #e0e0e0;border-radius:12px;padding:4px;display:flex;flex-direction:column;align-items:center;cursor:pointer}.phwho button span{font-size:1.8rem}.phwho button small{font-weight:800;font-size:.75rem}.phwho button i{font-style:normal;font-size:.68rem;color:#777}.phwho button.on,.phreq button.on{border-color:#43a047;background:#e8f5e9;box-shadow:0 0 0 2px #a5d6a7}.phwho .more{background:#f3e5f5}.phwho button.on,.phwho button.on *,.phreq button.on,.phreq button.on *{color:#1b5e20!important}.phwho small .pa,.phwho small{font-size:.78rem!important;line-height:1.2}.phwho small .pr{font-size:.6rem!important}.phwho i .pa{font-size:.68rem!important}
+.phreq{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px;justify-content:center}.phreq button{background:#fff;border:2px solid #e0e0e0;border-radius:20px;padding:5px 12px;font-weight:700;cursor:pointer}
+.till{background:#eceff1;border-radius:12px;padding:8px;display:flex;gap:8px;flex-wrap:wrap}.tillscr{flex:1;min-width:180px;background:#102027;color:#a5d6a7;font-family:monospace;border-radius:8px;padding:6px 10px;min-height:70px}.tillscr div{display:flex;justify-content:space-between;gap:8px}.tillscr .hint{color:#78909c}.tilltot{border-top:1px dashed #a5d6a7;margin-top:4px;padding-top:4px;color:#fff59d;font-weight:900}
+.cbelt{flex:1;min-width:150px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center;background:repeating-linear-gradient(90deg,#455a64 0 18px,#546e7a 18px 36px);border-radius:8px;padding:6px;font-size:2rem}.bitem{font-size:2.1rem;background:#fff;border:0;border-radius:10px;width:56px;height:56px;cursor:pointer;box-shadow:0 2px 4px rgba(0,0,0,.3)}.bitem:not([disabled]){animation:dropPulse 1.2s infinite}
+.cardpay{text-align:center;font-size:2.4rem;margin:10px 0}.cardpay div{font-size:1rem;font-weight:800}
 .pincard{max-width:380px;text-align:center}.doorpic{position:relative;font-size:4rem;line-height:1;margin:4px 0}.doorpic .lock{position:absolute;font-size:1.6rem;left:50%;margin-left:6px;top:28px}
 .pinscr2{font-size:2rem;letter-spacing:10px;background:#263238;color:#80deea;border-radius:12px;padding:6px;margin:8px auto;max-width:220px;direction:ltr}.pinscr2.bad{animation:pshake .35s;color:#ef9a9a}
 .pinpad2{display:grid;grid-template-columns:repeat(3,72px);gap:10px;justify-content:center;margin:10px auto;direction:ltr}.pinpad2 button{height:64px;font-size:1.6rem;font-weight:800;border-radius:16px;background:#f5f5f5;border:2px solid #ddd;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}.pinpad2 button small{font-size:.65rem;color:#888;font-weight:400}.pinpad2 button[data-hp="✓"]{background:#e8f5e9;border-color:#66bb6a}
@@ -4159,9 +4164,9 @@ var CALLS=[
  {e:"☕",ask:()=>[`أنا وحدي اليوم… هل ${GV("تزورني","تزورينني")} ونشرب الشاي معاً؟`,`ana wahdi al-yawm… hal ${GV("tazuruni","tazurinani")}?`],why:{ar:"لأنّني أريد أن أزور{ه} ونشرب الشاي معاً",tr:"li'annani uridu an azura{h}",en:"because I want to visit {o} for tea"},m:["زُر","zur"]}
 ];
 var CALL_LAST=Date.now();
-function phoneRing(force){
+function phoneRing(force,pick){
   if(GAME||!$("gameBox")||(!force&&(S.phase!=="reception"||!$("gameBox").hidden)))return;
-  const fs=randApt([[HOME.f,HOME.s]]);if(!fs)return;const [f,s]=fs,r=S.res[f][s],req=CALLS[Math.floor(Math.random()*CALLS.length)],n=aptNo(f,s),fl=FL[f]?FL[f].ar:ar(f),me=PL_INFO[CUR].name;
+  const fs=pick&&pick.fs||randApt([[HOME.f,HOME.s]]);if(!fs)return;const [f,s]=fs,r=S.res[f][s],req=pick&&pick.req!=null?CALLS[pick.req]:CALLS[Math.floor(Math.random()*CALLS.length)],n=aptNo(f,s),fl=FL[f]?FL[f].ar:ar(f),me=PL_INFO[CUR].name;
   CALL_LAST=Date.now();const o=$("gameBox");let step=0,ringIv=null;GAME={kind:"phone"};
   const rG=(m,ff)=>r.g==="f"?ff:m;
   const opts=list=>`<div class="phopts">${list.map((x,i)=>`<button class="big" data-ph="${i}">${P(x[0],x[1])}</button>`).join("")}</div>`;
@@ -4258,7 +4263,97 @@ function startShop(){
 var _openAdv7=openAdv;
 openAdv=function(){_openAdv7();const g=document.querySelector("#advBox .advgrid");if(!g)return;
   g.insertAdjacentHTML("afterbegin",`<button class="advc" data-adv2="shop"><span class="ae">🏪</span><b>${P("دكّاني","dukkani")}</b><small>أنت البائع! رحّب، احسب، أعطِ الباقي</small></button><button class="advc" data-adv2="phone"><span class="ae">📞</span><b>${P("مكالمة من جار","mukalama min jar")}</b><small>ردّ على الهاتف ونفّذ الطلب</small></button>`);
-  g.querySelectorAll("[data-adv2]").forEach(b=>b.onclick=()=>{$("advBox").hidden=true;if(b.dataset.adv2==="shop")startShop();else{if(S.phase!=="reception")newRound(false);setTimeout(()=>phoneRing(true),300);}});};
+  g.querySelectorAll("[data-adv2]").forEach(b=>b.onclick=()=>{$("advBox").hidden=true;if(b.dataset.adv2==="shop")startShop();else phoneSetup();});};
 if(typeof BADGES!=="undefined")BADGES.push({id:"shop",e:"🏪",ar:"التاجر الصغير",tr:"al-tajir al-saghir",need:"افتح دكّانك ٣ مرّات",test:c=>(c.shop||0)>=3});
+
+/* ================= choose who calls and what they ask ================= */
+var CALL_LBL=[["خبز","khubz"],["حليب","halib"],["طرد","tard"],["مفتاح","miftah"],["مصحف","mushaf"],["طماطم","tamatim"],["زيارة وشاي","ziyara wa shay"]];
+function phoneSetup(){
+  const o=$("gameBox");GAME={kind:"phsetup"};let who=null,req=null,list=[];
+  const all=[];for(let f=1;f<=TOP;f++)for(let s=0;s<4;s++){const r=S.res[f]&&S.res[f][s];if(r&&!r.home&&!(f===HOME.f&&s===HOME.s)&&r!==RES_OF[other()])all.push([f,s]);}
+  const shuffleList=()=>{list=all.slice().sort(()=>Math.random()-.5).slice(0,8);if(who&&!list.some(x=>x[0]===who[0]&&x[1]===who[1]))list[0]=who;};shuffleList();
+  const draw=()=>{
+    o.innerHTML=`<div class="gcard phcard">${gHead("📞","اختر المكالمة","ikhtar al-mukalama")}
+      <b>${P("👤 مَن يتّصل؟","man yattasil?")}</b>
+      <div class="phwho">${list.map(([f,s])=>{const r=S.res[f][s];return `<button class="${who&&who[0]===f&&who[1]===s?"on":""}" data-pw="${f}:${s}"><span>${r.e}</span><small>${r.ar}</small><i>${P(`الشقّة ${aptNo(f,s)}`,"")}</i></button>`;}).join("")}
+        <button data-pw="more" class="more"><span>🔀</span><small>${P("جيران آخرون","jiran akharun")}</small></button></div>
+      <b>${P("📝 ماذا يطلب؟","madha yatlub?")}</b>
+      <div class="phreq">${CALLS.map((c,i)=>`<button class="${req===i?"on":""}" data-pr="${i}">${c.e} ${P(CALL_LBL[i][0],CALL_LBL[i][1])}</button>`).join("")}<button class="${req==="r"?"on":""}" data-pr="r">🎲 ${P("أيّ طلب","ayy talab")}</button></div>
+      <div class="tog center"><button class="big huge" id="phGo">📞 ${P("ابدأ المكالمة","ibda' al-mukalama")}</button><button class="big" id="phRnd">🎲 ${P("مفاجأة","mufaja'a")}</button></div></div>`;
+    o.hidden=false;gBind(o);
+    o.querySelectorAll("[data-pw]").forEach(b=>b.onclick=()=>{if(b.dataset.pw==="more"){shuffleList();}else{const [f,s]=b.dataset.pw.split(":").map(Number);who=[f,s];}beep();draw();});
+    o.querySelectorAll("[data-pr]").forEach(b=>b.onclick=()=>{req=b.dataset.pr==="r"?"r":+b.dataset.pr;beep();draw();});
+    const go=(rnd)=>{closeGame(false);if(S.phase!=="reception")newRound(false);setTimeout(()=>phoneRing(true,rnd?null:{fs:who,req:typeof req==="number"?req:null}),250);};
+    $("phGo").onclick=()=>go(false);$("phRnd").onclick=()=>go(true);};
+  draw();
+}
+
+/* ================= 🧾 supermarket cashier ================= */
+function startCashier(){
+  const o=$("gameBox"),keys=Object.keys(PRODS),N=4;GAME={kind:"cashier"};
+  let ci=0,good=0,earned=0,cust=null,step=0,give=0,msg="",log="";
+  const newCust=()=>{const fs=randApt([[HOME.f,HOME.s]]),r=fs?S.res[fs[0]][fs[1]]:{e:"🧔",ar:"زبون",tr:"zabun",g:"m"};
+    const n=2+Math.floor(Math.random()*3),items=keys.slice().sort(()=>Math.random()-.5).slice(0,n),tot=items.reduce((a,k)=>a+PRODS[k].p,0);
+    const card=Math.random()<.4,pay=[10,20,50,100].find(x=>x>=tot&&(x>tot||Math.random()<.3))||100;
+    cust={r,items,scanned:[],tot,card,pay,ok:true};step=0;give=0;msg="";log="";tone(1400,.1);tone(1800,.15,.1);};
+  const rG=(m,f)=>cust.r.g==="f"?f:m;
+  const bub=(who,a,t)=>{log+=`<div class="phb ${who}"><b>${who==="me"?"🧑‍💼":cust.r.e}</b><div>${P(a,t||"")}</div></div>`;};
+  const opts=list=>`<div class="phopts">${list.map(x=>`<button class="big" data-co="${x[2]}">${P(x[0],x[1])}</button>`).join("")}</div>`;
+  const wrong=t=>{cust.ok=false;msg=`🤔 ${t}`;tone(200,.15);};
+  const draw=body=>{
+    const sc=cust.scanned;
+    o.innerHTML=`<div class="gcard shopcard">${gHead("🧾","كاشير السوبرماركت","kashir al-subirmarkit")}
+      <div class="shopbar"><span>👥 ${ar(Math.min(ci+1,N))}/${ar(N)}</span><span>💰 ${riyalAr(earned)}</span></div>
+      <div class="till"><div class="tillscr">${sc.length?sc.map(k=>`<div><span>${PRODS[k].e} ${PRODS[k].ar}</span><b>${ar(PRODS[k].p)}</b></div>`).join(""):`<div class="hint">${P("الشاشة فارغة","al-shasha farigha")}</div>`}${step>=3?`<div class="tilltot"><span>${P("المجموع","al-majmuʿ")}</span><b>${ar(cust.tot)}</b></div>`:""}</div>
+        <div class="cbelt">${cust.items.filter(k=>!sc.includes(k)).map(k=>`<button class="bitem" data-co="s:${k}" ${step!==1?"disabled":""}>${PRODS[k].e}</button>`).join("")||"🛍️"}</div></div>
+      <div class="shopcounter"><div class="cust">${cust.r.e}🛒</div><div class="phlog">${log}</div></div>
+      ${msg?`<div class="${/🤔/.test(msg)?"alert":"win"} center">${msg}</div>`:""}${body}</div>`;
+    o.hidden=false;gBind(o);const lg=o.querySelector(".phlog");if(lg)lg.scrollTop=1e5;
+    o.querySelectorAll("[data-co]").forEach(b=>b.onclick=()=>act(b.dataset.co));};
+  const show=()=>{
+    if(step===0)draw(`<div class="hint center">${P("رحّب بالزبون!","rahhib bil-zabun!")}</div>`+opts([["السلام عليكم، أهلاً بك!".replace("بك",rG("بك","بكِ")),"al-salamu ʿalaykum, ahlan bik!","g"],["مع السلامة!","maʿa al-salama!","x"]]));
+    else if(step===1)draw(`<div class="hint center">📟 ${P("اضغط على كلّ منتج لتمرّره على الماسح!","idghat ʿala kulli muntaj li-tumarrirahu ʿala al-masih!")}</div>`);
+    else if(step===2){const t=cust.tot,c=[t,t+2,Math.max(1,t-3)].filter((v,i,a)=>a.indexOf(v)===i).sort(()=>Math.random()-.5);
+      draw(`<div class="hint center">🧮 ${P(`اجمع الأسعار: ${cust.scanned.map(k=>ar(PRODS[k].p)).join(" + ")} = ؟`,"ijmaʿ al-asʿar")}</div>`+opts(c.map(v=>[`المجموع ${riyalAr(v)}.`,`al-majmuʿ ${v}`,"t"+v])));}
+    else if(step===3)draw(opts([[`هل ${rG("تدفع","تدفعين")} نقداً أم بالبطاقة؟`,`hal ${rG("tadfaʿ","tadfaʿin")} naqdan am bil-bitaqa?`,"ask"],["أعطني كلّ نقودك!","aʿtini kulla nuqudik!","x"]]));
+    else if(step===4){if(cust.card)draw(`<div class="hint center">💳 ${P("شغّل جهاز البطاقة!","shaghghil jihaz al-bitaqa!")}</div>`+opts([["💳 جهاز البطاقة جاهز، تفضّل"+rG("","ي")+"!","jihaz al-bitaqa jahiz, tafaddal!","card"]]));
+      else{const ch=cust.pay-cust.tot;if(!ch)draw(opts([["شكراً! المبلغ مضبوط 👍","shukran! al-mablagh madbut","c0ok"]]));
+        else draw(`<div class="hint center">💵 ${P(`${rG("أعطاك","أعطتك")} ${riyalAr(cust.pay)}. كم الباقي؟`,`aʿtaka ${cust.pay}. kam al-baqi?`)}</div>
+          <div class="coins">${[20,10,5,1].map(v=>`<button data-co="m${v}" class="coin c${v>=10?10:v}">${ar(v)}</button>`).join("")}</div>
+          <div class="center"><b class="givebox">${P(`الباقي: ${riyalAr(give)}`,`al-baqi: ${give}`)}</b> <button class="small" data-co="m0">↩️</button></div>`+opts([[`تفضّل${rG("","ي")} الباقي!`,"tafaddal al-baqi!","give"]]));}}
+    else if(step===5)draw(`<div class="hint center">${P("أعطه الكيس وودّعه!","aʿtihi al-kis wa waddiʿhu!")}</div>`+opts([[`تفضّل${rG("","ي")} أغراضك، مع السلامة! 🛍️`,`tafaddal${rG("","i")} aghradak, maʿa al-salama!`,"bye"],["صباح الخير!","sabah al-khayr!","x"]]));
+  };
+  const act=a=>{msg="";
+    if(step===0){if(a==="x"){wrong(P("هذه للوداع! رحّب أوّلاً.",""));show();return;}bub("me","السلام عليكم، أهلاً بك!".replace("بك",rG("بك","بكِ")));bub("them","وعليكم السلام! أريد أن أدفع ثمن هذه الأغراض 🛒","wa ʿalaykum al-salam! uridu an adfaʿa thamana hadhihi al-aghrad.");step=1;show();return;}
+    if(step===1&&a.startsWith("s:")){const k=a.slice(2);if(!cust.scanned.includes(k)){cust.scanned.push(k);tone(1800,.07);}if(cust.scanned.length===cust.items.length){step=2;}show();return;}
+    if(step===2){const v=+a.slice(1);if(v!==cust.tot){wrong(P("اجمعها مرّة أخرى!",""));show();return;}bub("me",`المجموع ${riyalAr(v)}.`);step=3;tone(900,.06);show();return;}
+    if(step===3){if(a==="x"){wrong(P("هذا ليس مؤدّباً 😅 اسأل عن طريقة الدفع.",""));show();return;}
+      bub("me",`هل ${rG("تدفع","تدفعين")} نقداً أم بالبطاقة؟`);bub("them",cust.card?"بالبطاقة من فضلك 💳":`نقداً. تفضّل، هذه ${riyalAr(cust.pay)} 💵`,cust.card?"bil-bitaqa min fadlik":`naqdan. tafaddal, hadhihi ${cust.pay}`);step=4;show();return;}
+    if(step===4){
+      if(a==="card"){bub("me","جهاز البطاقة جاهز، تفضّل"+rG("","ي")+"!");draw(`<div class="cardpay">💳➡️📟<div>${P("يُدخل الزبون الرمز…","yudkhilu al-zabun al-ramz…")} ●●●●</div></div>`);
+        setTimeout(()=>{tone(1300,.1);tone(1700,.15,.12);bub("them","✅ تمّت العملية بنجاح!","tammat al-ʿamaliyya bi-najah!");earned+=cust.tot;step=5;show();},1400);return;}
+      const ch=cust.pay-cust.tot;
+      if(a[0]==="m"){const v=+a.slice(1);give=v?give+v:0;tone(v?1000:400,.04);show();return;}
+      if(a==="c0ok"||a==="give"){if(a==="give"&&give!==ch){wrong(P(give>ch?`كثير! الباقي ${riyalAr(ch)}.`:`قليل! ${ar(cust.pay)} − ${ar(cust.tot)} = ؟`,""));give=0;show();return;}
+        bub("me",ch?`تفضّل${rG("","ي")} الباقي: ${riyalAr(ch)}.`:"شكراً! المبلغ مضبوط 👍");bub("them","شكراً! 😊","shukran!");earned+=cust.tot;step=5;yay();show();return;}}
+    if(step===5){if(a==="x"){wrong(P("في الوداع نقول: مع السلامة!",""));show();return;}
+      bub("me",`تفضّل${rG("","ي")} أغراضك، مع السلامة! 🛍️`);bub("them","الله يسلّمك! 👋","allah yusallimak!");if(cust.ok)good++;ci++;draw("");
+      setTimeout(()=>{if(ci>=N)finish();else{newCust();show();}},1200);}
+  };
+  const finish=()=>{const stars=good+1;addStars(stars);countOnce("shop");confetti(40);yay();saveHome();
+    o.innerHTML=`<div class="gcard shopcard">${gHead("🧾","انتهت مناوبتك!","intahat munawabatuk!")}<div class="center" style="font-size:3rem">🧾💰</div>
+      <div class="win center">${P(`خدمتَ ${ar(N)} زبائن وجمعتَ ${riyalAr(earned)}!`.replace("خدمتَ",GV("خدمتَ","خدمتِ")).replace("جمعتَ",GV("جمعتَ","جمعتِ")),`khadamta ${N} zaba'in wa jamaʿta ${earned} riyal!`)}</div>
+      <div class="center">${"⭐".repeat(stars)} · ${P(`بدون أخطاء: ${ar(good)}/${ar(N)}`,`bidun akhta': ${good}/${N}`)}</div>
+      <div class="tog center"><button class="big" id="cashAgain">🔁 ${P("مناوبة جديدة","munawaba jadida")}</button><button class="big" id="cashClose">✅ ${P("انتهيت","intahaytu")}</button></div></div>`;
+    gBind(o);$("cashAgain").onclick=()=>{closeGame(false);startCashier();};$("cashClose").onclick=()=>closeGame(false);};
+  newCust();show();
+}
+var _openAdv8=openAdv;
+openAdv=function(){_openAdv8();const g=document.querySelector("#advBox .advgrid");if(!g)return;
+  const sq=g.querySelector('[data-adv="souq"]');if(sq){sq.onclick=null;sq.addEventListener("click",e=>{e.stopImmediatePropagation();
+    const box=$("advBox");box.innerHTML=`<div class="homecard advcard"><div class="homehead"><h2>🛒 ${P("السوبرماركت","al-subirmarkit")}</h2><button id="advX">✕</button></div>
+      <div class="advgrid"><button class="advc" id="sqShop"><span class="ae">🛒</span><b>${P("أنا المتسوّق","ana al-mutasawwiq")}</b><small>اشترِ ما في القائمة وادفع</small></button>
+      <button class="advc" id="sqCash"><span class="ae">🧾</span><b>${P("أنا الكاشير","ana al-kashir")}</b><small>امسح المنتجات، احسب، أعطِ الباقي</small></button></div></div>`;
+    $("advX").onclick=()=>{box.hidden=true;};$("sqShop").onclick=()=>{box.hidden=true;startSouq();};$("sqCash").onclick=()=>{box.hidden=true;startCashier();};},true);}};
 </script>
 </body></html>
