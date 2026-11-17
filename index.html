@@ -622,6 +622,19 @@ button.tile:hover{border-color:var(--bld)}
 .apt.moving .atrash{display:flex}.apt .atrash.hov{background:#ef5350;transform:scale(1.15)}
 .delask{background:#fff3f3;border:2px solid #ef9a9a;border-radius:14px;padding:10px;margin:8px 0;text-align:center}.delask .ar{font-weight:800}
 .apt .aexitdoor{background:none;border:0;cursor:pointer;display:flex;flex-direction:column;align-items:center;z-index:3;padding:0}.apt .aexitdoor span{font-size:.85rem;font-weight:800;background:#fff;border:2px solid #8d6e63;color:#5d4037;border-radius:10px;padding:1px 8px;margin-top:-6px;animation:dropPulse 1.6s infinite}.apt .aexitdoor:hover{transform:scale(1.08)}
+.strow{margin:8px 0}.strow>b{display:block;margin-bottom:4px}.stsw{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.sw{background:#fff;border:3px solid #e0e0e0;border-radius:14px;padding:4px;display:flex;flex-direction:column;align-items:center;width:78px;cursor:pointer}.sw.on{border-color:#ffb300;box-shadow:0 0 0 3px #ffe082}.sw i{display:flex;align-items:center;justify-content:center;width:62px;height:42px;border-radius:9px;font-style:normal;font-size:1.4rem;border:1px solid #ddd}.sw small{font-weight:700;font-size:.75rem;margin-top:2px}
+.phcard,.shopcard{max-width:560px;width:100%}.phlog{max-height:230px;overflow:auto;display:flex;flex-direction:column;gap:6px;margin:8px 0}
+.phb{display:flex;gap:6px;align-items:flex-end}.phb.me{flex-direction:row-reverse}.phb b{font-size:1.6rem}.phb div{background:#f1f1f1;border-radius:14px;padding:6px 10px;max-width:80%;font-weight:600}.phb.me div{background:#dcf8c6}
+.phopts{display:flex;flex-direction:column;gap:6px;margin-top:6px}.phopts .big{width:100%}
+.phring{text-align:center;font-size:4rem;animation:phshake .5s infinite}.phring div{font-size:1.1rem;font-weight:800}
+@keyframes phshake{0%,100%{transform:rotate(0)}25%{transform:rotate(-8deg)}75%{transform:rotate(8deg)}}
+.shopbar{display:flex;justify-content:space-between;font-weight:800;margin:4px 0}
+.shopshelf{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;background:linear-gradient(#a1887f,#8d6e63);padding:8px;border-radius:12px}
+.shopshelf .sp{background:#fff;border-radius:10px;padding:4px;text-align:center;display:flex;flex-direction:column;align-items:center}.shopshelf .sp span{font-size:1.8rem;line-height:1.1}.shopshelf .sp small{font-weight:700;font-size:.72rem}.shopshelf .sp b{background:#ffeb3b;border-radius:6px;padding:0 5px;font-size:.75rem}.shopshelf .sp.hl{box-shadow:0 0 0 3px #43a047}
+.shopcounter{display:flex;gap:8px;align-items:flex-start;margin-top:8px}.shopcounter .cust{font-size:3rem;line-height:1}.shopcounter .phlog{flex:1;max-height:170px}
+.coins{display:flex;gap:10px;justify-content:center;margin:8px 0}.coin{width:64px;height:64px;border-radius:50%;font-size:1.4rem;font-weight:900;border:3px solid #b8860b;background:radial-gradient(#ffe082,#ffb300);cursor:pointer}.coin.c10{border-radius:10px;width:84px;background:linear-gradient(#a5d6a7,#66bb6a);border-color:#2e7d32}.coin.c5{border-radius:10px;width:78px;background:linear-gradient(#ce93d8,#ab47bc);border-color:#6a1b9a;color:#fff}
+.givebox{display:inline-block;background:#fff8e1;border:2px solid #ffca28;border-radius:10px;padding:3px 10px}
 .pincard{max-width:380px;text-align:center}.doorpic{position:relative;font-size:4rem;line-height:1;margin:4px 0}.doorpic .lock{position:absolute;font-size:1.6rem;left:50%;margin-left:6px;top:28px}
 .pinscr2{font-size:2rem;letter-spacing:10px;background:#263238;color:#80deea;border-radius:12px;padding:6px;margin:8px auto;max-width:220px;direction:ltr}.pinscr2.bad{animation:pshake .35s;color:#ef9a9a}
 .pinpad2{display:grid;grid-template-columns:repeat(3,72px);gap:10px;justify-content:center;margin:10px auto;direction:ltr}.pinpad2 button{height:64px;font-size:1.6rem;font-weight:800;border-radius:16px;background:#f5f5f5;border:2px solid #ddd;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}.pinpad2 button small{font-size:.65rem;color:#888;font-weight:400}.pinpad2 button[data-hp="✓"]{background:#e8f5e9;border-color:#66bb6a}
@@ -1952,7 +1965,7 @@ const CLOSED=()=>`<div class="alert">🚪 ${P("أُغلق باب المصعد، 
 function renderPanel(){
   const p=$("panel"),v=V(),t=T(),w=W(),K=kid(),Tc=teach();
   const he=G(t,"يسكن","تسكن"), heT=G(t,"yaskunu","taskunu");
-  let h=`<div class="top"><span class="avatar">${v.e}</span><div style="flex:1;min-width:180px"><div class="mission">${S.phase==="myhome"?`🏠 ${P("شقّتي من الداخل","shaqqati min al-dakhil")}`:S.phase==="kids"?`👫 ${P("أطفال العمارة","atfal al-ʿimara")}`:S.phase==="souq"?`🛒 ${P("السوق: اشترِ كلّ ما في القائمة!","al-suq: ishtari kulla ma fi al-qa'ima!")}`:S.lost?`${S.lost.kind==="cat"?"🐱":"🔑"} ${P(`ابحث عن ${S.lost.kind==="cat"?"قطّة":"مفتاح"} ${S.lost.owner.ar}`,`ibhath ʿan ${S.lost.kind==="cat"?"qittat":"miftah"} ${S.lost.owner.tr}`)}`:S.secret?`🕵️ ${P(`أين ${other()==="by"?"تختبئ":"يختبئ"} ${PL_INFO[other()].name}؟`,`ayna ${other()==="by"?"takhtabi'":"yakhtabi'"} ${PL_INFO[other()].tr}?`)}`:S.phase==="place"?`${PLACES[S.place].e} ${P(PLACES[S.place].ar,PLACES[S.place].tr)}`:S.mosque?(outKind()==="mosque"?`🕌 ${P("خذ","khudh")} <b>${t.e} ${P(t.ar,t.tr)}</b> ${P(`إلى المسجد لصلاة ${S.mosque.p.ar}`,`ila al-masjid li-salat ${S.mosque.p.tr}`)}`:`${OK().e} ${P("خذ","khudh")} <b>${t.e} ${P(t.ar,t.tr)}</b> ${P(`إلى ${OK().ar}`,`ila ${OK().tr}`)}`):(v.id==="dl"&&!S.goHome?(S.dlChosen?`📦 ${P("وصّل الطلب إلى","wassil al-talab ila")} <b>${t.e} ${P(t.ar,t.tr)}</b> · ${P(`الشقّة ${aptNo(S.t,S.side)}`,`al-shaqqa ${(S.t-1)*4+S.side+1}`)}`:`🛵 ${P("اختر شقّة لتوصل إليها الطلب","ikhtar shaqqa")}`):`🎯 ${S.goHome?P("اذهب إلى","idhhab ila"):P("زُر","zur")} <b>${t.e} ${P(t.ar,t.tr)}</b>`)}</div>
+  let h=`<div class="top"><span class="avatar">${v.e}</span><div style="flex:1;min-width:180px"><div class="mission">${S.phase==="myhome"?`🏠 ${P("شقّتي من الداخل","shaqqati min al-dakhil")}`:S.phase==="kids"?`👫 ${P("أطفال العمارة","atfal al-ʿimara")}`:S.phase==="souq"?`🛒 ${P("السوق: اشترِ كلّ ما في القائمة!","al-suq: ishtari kulla ma fi al-qa'ima!")}`:S.lost?`${S.lost.kind==="cat"?"🐱":"🔑"} ${P(`ابحث عن ${S.lost.kind==="cat"?"قطّة":"مفتاح"} ${S.lost.owner.ar}`,`ibhath ʿan ${S.lost.kind==="cat"?"qittat":"miftah"} ${S.lost.owner.tr}`)}`:S.secret?`🕵️ ${P(`أين ${other()==="by"?"تختبئ":"يختبئ"} ${PL_INFO[other()].name}؟`,`ayna ${other()==="by"?"takhtabi'":"yakhtabi'"} ${PL_INFO[other()].tr}?`)}`:S.phase==="place"?`${PLACES[S.place].e} ${P(PLACES[S.place].ar,PLACES[S.place].tr)}`:S.mosque?(outKind()==="mosque"?`🕌 ${P("خذ","khudh")} <b>${t.e} ${P(t.ar,t.tr)}</b> ${P(`إلى المسجد لصلاة ${S.mosque.p.ar}`,`ila al-masjid li-salat ${S.mosque.p.tr}`)}`:`${OK().e} ${P("خذ","khudh")} <b>${t.e} ${P(t.ar,t.tr)}</b> ${P(`إلى ${OK().ar}`,`ila ${OK().tr}`)}`):(v.id==="dl"&&!S.goHome?(S.dlChosen?`📦 ${P("وصّل الطلب إلى","wassil al-talab ila")} <b>${t.e} ${P(t.ar,t.tr)}</b> · ${P(`الشقّة ${aptNo(S.t,S.side)}`,`al-shaqqa ${(S.t-1)*4+S.side+1}`)}`:`🛵 ${P("اختر شقّة لتوصل إليها الطلب","ikhtar shaqqa")}`):`${S.call?`📞 ${P(S.call.m[0],S.call.m[1])}`:`🎯 ${S.goHome?P("اذهب إلى","idhhab ila"):P("زُر","zur")}`} <b>${t.e} ${P(t.ar,t.tr)}</b>`)}</div>
     ${S.en?`<div class="en">Visit ${t.en}.</div>`:""}</div>${steps()}</div>`;
 
   if(S.phase==="reception"&&S.mosque){
@@ -3395,7 +3408,7 @@ function startMyHome(){
   askHomePin(enterMyHome);
 }
 function enterMyHome(){
-  newRound(true);S.phase="myhome";S.aptTap=null;S.aptMove=false;S.aptPick=null;S.aptDel=null;S.aptSaid={};try{stopAdhan();}catch(e){}knock();render();
+  newRound(true);S.phase="myhome";S.aptTap=null;S.aptMove=false;S.aptPick=null;S.aptDel=null;S.aptStyle=false;S.styleSay=null;S.aptSaid={};try{stopAdhan();}catch(e){}knock();render();
 }
 function myHomePanel(v){
   const items=HOME.items||[],pend=(PL[CUR].pend||[]).length,tap=S.aptTap!=null?items[S.aptTap]:null;
@@ -4103,5 +4116,149 @@ myHomePanel=function(v){let h=_myHomePanel5(v);
 var _bindApt5=bindApt;
 bindApt=function(){_bindApt5();const a=$("aptOut");if(a)a.onclick=leaveHome;};
 document.addEventListener("click",e=>{if(e.target.closest&&e.target.closest("#aptExitS")&&S.phase==="myhome")leaveHome();});
+
+/* ================= 🎨 home style ================= */
+var HSTYLE={
+ wall:[["بيج","bij","repeating-linear-gradient(90deg,#f7e3c4 0 40px,#f3dbb6 40px 80px)"],["أزرق","azraq","repeating-linear-gradient(90deg,#cfe8fc 0 40px,#bfdcf7 40px 80px)"],["أخضر","akhdar","repeating-linear-gradient(90deg,#d7f0d2 0 40px,#c8e8c2 40px 80px)"],["ورديّ","wardi","repeating-linear-gradient(90deg,#fde0ea 0 40px,#f9d0de 40px 80px)"],["أصفر","asfar","repeating-linear-gradient(90deg,#fff3c4 0 40px,#ffecaa 40px 80px)"],["بنفسجيّ","banafsaji","repeating-linear-gradient(90deg,#e8ddf7 0 40px,#dccdf2 40px 80px)"],["أبيض","abyad","repeating-linear-gradient(90deg,#ffffff 0 40px,#f5f5f5 40px 80px)"]],
+ floor:[["خشب","khashab","repeating-linear-gradient(90deg,#c8915a 0 60px,#bd8650 60px 120px)"],["بلاط","balat","repeating-conic-gradient(#eceff1 0 25%,#cfd8dc 0 50%) 0 0/60px 60px"],["رخام","rukham","linear-gradient(135deg,#f5f5f5,#e0e0e0 40%,#fafafa 60%,#dcdcdc)"],["سجّاد","sajjad","repeating-linear-gradient(45deg,#8d2b2b 0 14px,#a33a3a 14px 28px)"],["عشب صناعيّ","ʿushb sinaʿi","repeating-linear-gradient(90deg,#66bb6a 0 6px,#5cae60 6px 12px)"]],
+ win:[["الشمس","al-shams","☀️","linear-gradient(#9fdcff,#d9f2ff)"],["البحر","al-bahr","🌊","linear-gradient(#9fdcff 55%,#1e88e5 55%)"],["الجبال","al-jibal","🏔️","linear-gradient(#bfe6ff,#e3f4ff)"],["الحديقة","al-hadiqa","🌳","linear-gradient(#bfe6ff 60%,#81c784 60%)"],["المدينة","al-madina","🏙️","linear-gradient(#ffd59e,#ffb3c1)"],["الصحراء","al-sahra'","🐪","linear-gradient(#ffe0a3 0 55%,#f4c06a 55%)"]]};
+function homeStyle(k){const h=PL[k].home||{};return Object.assign({wall:0,floor:0,win:0},h.style||{});}
+var _aptScene6=aptScene;
+aptScene=function(k,visiting){
+  let h=_aptScene6(k,visiting);const st=homeStyle(k),W=HSTYLE.wall[st.wall]||HSTYLE.wall[0],F=HSTYLE.floor[st.floor]||HSTYLE.floor[0],N=HSTYLE.win[st.win]||HSTYLE.win[0];
+  h=h.replace('<div class="wall"></div>',`<div class="wall" style="background:${W[2]}"></div>`).replace('<div class="floor"></div>',`<div class="floor" style="background:${F[2]}"></div>`);
+  if(st.win)h=h.replace(/<div class="hwin"><span>[^<]*<\/span><\/div>/,`<div class="hwin" style="background:${N[3]}"><span>${isNight()&&st.win!==4?"🌙":N[2]}</span></div>`);
+  return h;
+};
+var _myHomePanel6=myHomePanel;
+myHomePanel=function(v){
+  if(!S.aptStyle){let h=_myHomePanel6(v);if(!S.aptMove&&S.aptDel==null)h=h.replace(/(<button class="big" id="aptMove">)/,`<button class="big" id="aptStyleB">🎨 ${P("غيّر شكل البيت","ghayyir shakla al-bayt")}</button>$1`);return h;}
+  const st=homeStyle(CUR),row=(key,title,tr)=>`<div class="strow"><b>${P(title,tr)}</b><div class="stsw">${HSTYLE[key].map((o,i)=>`<button class="sw ${st[key]===i?"on":""}" data-st="${key}:${i}" title="${o[0]}"><i style="background:${key==="win"?o[3]:o[2]}">${key==="win"?o[2]:""}</i><small>${o[0]}</small></button>`).join("")}</div></div>`;
+  let h=`<div class="win">🎨 ${P("اختر شكل بيتك!","ikhtar shakla baytik!")}</div>${row("wall","🧱 لون الجدار","lawn al-jidar")}${row("floor","🟫 الأرضيّة","al-ardiyya")}${row("win","🪟 المنظر من النافذة","al-manzar min al-nafidha")}`;
+  if(S.styleSay){const l=S.styleSay;h+=`<div class="now me"><div class="nowwho"><b>${v.e}</b><span>${P("قُل:","qul:")}</span></div><div class="ar big">${l[0]}</div>${S.tr?`<div class="tr">${l[1]}</div>`:""}${S.aptSaid["st"+l[0]]?`<div class="hint center">✓ ⭐</div>`:`<button class="say" id="stSay">🗣️ ${P("قالها","qalaha")} ⭐</button>`}</div>`;}
+  h+=`<div class="tog center"><button class="big huge" id="stDone">✅ ${P("انتهيت","intahaytu")}</button></div>`;
+  return h;
+};
+var _bindApt6=bindApt;
+bindApt=function(){_bindApt6();const on=(id,f)=>{const e=$(id);if(e)e.onclick=f;};
+  on("aptStyleB",()=>{S.aptStyle=true;S.styleSay=null;beep();render();});
+  on("stDone",()=>{S.aptStyle=false;S.styleSay=null;yay();render();});
+  on("stSay",()=>{const k="st"+S.styleSay[0];if(S.aptSaid[k])return;S.aptSaid[k]=1;if(Object.keys(S.aptSaid).filter(x=>x.startsWith("st")).length<=6)addStars(1);yay();render();});
+  document.querySelectorAll("[data-st]").forEach(b=>b.onclick=()=>{const [key,i]=b.dataset.st.split(":");HOME.style=Object.assign(homeStyle(CUR),{[key]:+i});saveHome();tone(800,.06);
+    const o=HSTYLE[key][+i];S.styleSay=key==="wall"?[`جدارُ بيتي ${o[0]}.`,`jidaru bayti ${o[1]}.`]:key==="floor"?[`أرضيّةُ بيتي من ال${o[0].replace(/^ال/,"")}.`.replace("من العشب صناعيّ","عشبٌ صناعيّ"),`ardiyyatu bayti min al-${o[1]}.`]:[`أرى ${o[0]} من النافذة.`,`ara ${o[1]} min al-nafidha.`];render();});
+};
+
+/* ================= 📞 phone calls from neighbours ================= */
+var CALLS=[
+ {e:"🍞",ask:()=>[`هل ${GV("تستطيع","تستطيعين")} أن ${GV("تُحضر","تُحضري")} لي خبزاً من السوق؟`,`hal ${GV("tastatiʿ an tuhdira","tastatiʿina an tuhdiri")} li khubzan min al-suq?`],why:{ar:"لأنّ معي الخبزَ من السوق",tr:"li'anna maʿi al-khubza min al-suq",en:"because I have the bread from the market"},m:["أحضر الخبز إلى","ahdir al-khubz ila"]},
+ {e:"🥛",ask:()=>[`نفد الحليب عندي! هل ${GV("تُحضر","تُحضرين")} لي علبة حليب؟`,`nafida al-halib! hal ${GV("tuhdir","tuhdirin")} li ʿulbat halib?`],why:{ar:"لأنّ معي علبةَ الحليب",tr:"li'anna maʿi ʿulbata al-halib",en:"because I have the milk"},m:["أحضر الحليب إلى","ahdir al-halib ila"]},
+ {e:"📦",ask:()=>[`وصلني طردٌ عند المحاسب. هل ${GV("تُحضره","تُحضرينه")} لي من فضلك؟`,`wasalani tardun ʿinda al-muhasib. hal ${GV("tuhdiruhu","tuhdirinahu")} li?`],why:{ar:"لأنّ معي طردَ{ه} من المحاسب",tr:"li'anna maʿi tarda{h} min al-muhasib",en:"because I have {p} parcel from the accountant"},m:["أوصل الطرد إلى","awsil al-tard ila"]},
+ {e:"🔑",ask:()=>[`سقط مفتاحي في المصعد! هل ${GV("تبحث","تبحثين")} عنه وتُحضره لي؟`,`saqata miftahi fi al-misʿad! hal ${GV("tabhath","tabhathin")} ʿanhu?`],why:{ar:"لأنّ معي مفتاحَ{ه}",tr:"li'anna maʿi miftaha{h}",en:"because I have {p} key"},m:["أرجع المفتاح إلى","arjiʿ al-miftah ila"]},
+ {e:"📖",ask:()=>[`نسيتُ مصحفي في المسجد. هل ${GV("تُحضره","تُحضرينه")} لي؟`,`nasitu mushafi fi al-masjid. hal ${GV("tuhdiruhu","tuhdirinahu")} li?`],why:{ar:"لأنّ معي مصحفَ{ه} من المسجد",tr:"li'anna maʿi mushafa{h} min al-masjid",en:"because I have {p} Quran from the mosque"},m:["أحضر المصحف إلى","ahdir al-mushaf ila"]},
+ {e:"🍅",ask:()=>[`أطبخ الغداء ونسيتُ الطماطم! هل ${GV("تشتري","تشترين")} لي بعض الطماطم؟`,`atbukhu al-ghada' wa nasitu al-tamatim! hal ${GV("tashtari","tashtarin")} li?`],why:{ar:"لأنّ معي الطماطمَ من السوق",tr:"li'anna maʿi al-tamatima min al-suq",en:"because I have the tomatoes"},m:["أحضر الطماطم إلى","ahdir al-tamatim ila"]},
+ {e:"☕",ask:()=>[`أنا وحدي اليوم… هل ${GV("تزورني","تزورينني")} ونشرب الشاي معاً؟`,`ana wahdi al-yawm… hal ${GV("tazuruni","tazurinani")}?`],why:{ar:"لأنّني أريد أن أزور{ه} ونشرب الشاي معاً",tr:"li'annani uridu an azura{h}",en:"because I want to visit {o} for tea"},m:["زُر","zur"]}
+];
+var CALL_LAST=Date.now();
+function phoneRing(force){
+  if(GAME||!$("gameBox")||(!force&&(S.phase!=="reception"||!$("gameBox").hidden)))return;
+  const fs=randApt([[HOME.f,HOME.s]]);if(!fs)return;const [f,s]=fs,r=S.res[f][s],req=CALLS[Math.floor(Math.random()*CALLS.length)],n=aptNo(f,s),fl=FL[f]?FL[f].ar:ar(f),me=PL_INFO[CUR].name;
+  CALL_LAST=Date.now();const o=$("gameBox");let step=0,ringIv=null;GAME={kind:"phone"};
+  const rG=(m,ff)=>r.g==="f"?ff:m;
+  const opts=list=>`<div class="phopts">${list.map((x,i)=>`<button class="big" data-ph="${i}">${P(x[0],x[1])}</button>`).join("")}</div>`;
+  const bub=(who,a,t)=>`<div class="phb ${who}"><b>${who==="me"?V().e:r.e}</b><div>${P(a,t)}</div></div>`;
+  let log="";
+  const draw=(body)=>{o.innerHTML=`<div class="gcard phcard">${gHead("📞",step?`مكالمة مع ${r.ar}`:"يرنّ الهاتف!",step?`mukalama maʿa ${r.tr}`:"yarinnu al-hatif!")}<div class="phlog">${log}</div>${body}</div>`;o.hidden=false;gBind(o);
+    const lg=o.querySelector(".phlog");if(lg)lg.scrollTop=1e5;o.querySelectorAll("[data-ph]").forEach(b=>b.onclick=()=>next(+b.dataset.ph));};
+  const ring=()=>{draw(`<div class="phring">📱<div>${r.e} ${P(`${r.ar} — الشقّة ${n}`,`${r.tr} — al-shaqqa ${(f-1)*4+s+1}`)}</div></div>`+opts([["📞 ردّ","rudd"],["🔕 لاحقاً","lahiqan"]]));};
+  const end=(start)=>{clearInterval(ringIv);setTimeout(()=>{closeGame(false);if(start){newRound(false);S.t=f;S.side=s;S.why=req.why;S.call={e:req.e,m:req.m,f,s};S.callPaid=false;render();pop(req.e,P(`${req.m[0]} ${r.ar}`,""));}},start?1300:600);};
+  const next=i=>{
+    if(step===0){if(i===1){clearInterval(ringIv);closeGame(false);return;}clearInterval(ringIv);step=1;tone(700,.05);
+      draw(`<div class="hint center">${P("ماذا تقول عندما تردّ على الهاتف؟","madha taqulu ʿindama taruddu ʿala al-hatif?")}</div>`+opts([["ألو، السلام عليكم!","alu, al-salamu ʿalaykum!"],["مع السلامة!","maʿa al-salama!"],["ألو، مَن معي؟","alu, man maʿi?"]]));return;}
+    if(step===1){if(i===1){draw(`<div class="alert center">🤔 ${P("هذه نقولها في النهاية! جرّب مرّة أخرى.","hadhihi naquluha fi al-nihaya!")}</div>`+opts([["ألو، السلام عليكم!","alu, al-salamu ʿalaykum!"],["مع السلامة!","maʿa al-salama!"],["ألو، مَن معي؟","alu, man maʿi?"]]));tone(200,.15);return;}
+      const said=i===0?["ألو، السلام عليكم!","alu, al-salamu ʿalaykum!"]:["ألو، مَن معي؟","alu, man maʿi?"];log+=bub("me",said[0],said[1]);
+      const a=req.ask();log+=bub("them",`${i===0?"وعليكم السلام":"أهلاً"} يا ${me}! أنا ${r.ar} ${rG("جارُك","جارتُك")} من الشقّة ${n} في ${fl}. 😊`,`${i===0?"wa ʿalaykum al-salam":"ahlan"} ya ${PL_INFO[CUR].tr}! ana ${r.tr} min al-shaqqa ${(f-1)*4+s+1}.`)+bub("them",`${req.e} ${a[0]}`,a[1]);
+      step=2;addStars(1);tone(880,.06);
+      draw(opts([[`حاضر! ${GV("سأُحضره","سأُحضره")} الآن إن شاء الله.`.replace("سأُحضره الآن",req.e==="☕"?"سآتي إليك الآن":"سأُحضره الآن"),"hadir! in sha'a allah."],[`طبعاً يا ${rG("عمّي","خالتي")}، أنا قادم${GV("","ة")}!`,`tabʿan, ana qadim${GV("","a")}!`],["آسف، لا أستطيع الآن.","asif, la astatiʿu al-an."]]));return;}
+    if(step===2){const ok=i<2;const said=[[`حاضر! إن شاء الله.`,"hadir! in sha'a allah."],[`طبعاً، أنا قادم${GV("","ة")}!`,"tabʿan, ana qadim!"],["آسف، لا أستطيع الآن.","asif, la astatiʿu al-an."]][i];log+=bub("me",said[0],said[1]);
+      log+=ok?bub("them",`جزاك الله خيراً يا ${me}! 💛 أنا في الشقّة ${n}، ${fl}.`,`jazaka allahu khayran! ana fi al-shaqqa ${(f-1)*4+s+1}.`):bub("them","لا بأس يا حبيبي، شكراً على كلّ حال 😊".replace("حبيبي",GV("حبيبي","حبيبتي")),"la ba's, shukran ʿala kulli hal.");
+      step=ok?3:4;draw(`<div class="hint center">${P("كيف تُنهي المكالمة؟","kayfa tunhi al-mukalama?")}</div>`+opts([["وإيّاكم! مع السلامة 👋","wa iyyakum! maʿa al-salama"],["صباح الخير!","sabah al-khayr!"]]));return;}
+    if(step>=3){if(i===1){tone(200,.15);draw(`<div class="alert center">🤔 ${P("في نهاية المكالمة نقول: مع السلامة!","fi nihayat al-mukalama naqulu: maʿa al-salama!")}</div>`+opts([["وإيّاكم! مع السلامة 👋","wa iyyakum! maʿa al-salama"],["صباح الخير!","sabah al-khayr!"]]));return;}
+      log+=bub("me","مع السلامة 👋","maʿa al-salama")+bub("them","في أمان الله! 👋","fi amani allah!");const go=step===3;step=9;addStars(1);yay();
+      draw(go?`<div class="win center">📞 ${P(`مهمّتك: ${req.m[0]} ${r.ar} — الشقّة ${n}`,`${req.m[1]} ${r.tr}`)}</div>`:"");end(go);}
+  };
+  ring();ringIv=setInterval(()=>{if(!GAME||GAME.kind!=="phone"){clearInterval(ringIv);return;}if(step===0){tone(1200,.08);tone(1500,.08,.12);tone(1200,.08,.24);}},1400);tone(1200,.08);tone(1500,.08,.12);
+}
+setInterval(()=>{if(S.phase==="reception"&&!GAME&&$("gameBox")&&$("gameBox").hidden&&Date.now()-CALL_LAST>4*60*1000&&Math.random()<0.4)phoneRing(false);},20000);
+var _newRound7=newRound;
+newRound=function(keep){S.call=null;S.callPaid=false;return _newRound7(keep);};
+var _knockDoor7=knockDoor;
+knockDoor=function(s){_knockDoor7(s);if(S.call&&!S.callPaid&&s===S.side&&S.pos===S.t){S.callPaid=true;setTimeout(()=>{addStars(2);confetti(25);pop(S.call.e,P("شكراً! أوصلتَ الطلب ⭐⭐".replace("أوصلتَ",GV("أوصلتَ","أوصلتِ")),"shukran!"));},500);}};
+
+/* ================= 🏪 my own shop ================= */
+function startShop(){
+  const o=$("gameBox"),keys=Object.keys(PRODS),shelf=keys.sort(()=>Math.random()-.5).slice(0,8),me=PL_INFO[CUR].name;
+  GAME={kind:"shop"};let ci=0,earned=0,good=0,cust=null,step=0,give=0,msg="",log="";const N=4;
+  const newCust=()=>{const fs=randApt([[HOME.f,HOME.s]]),r=fs?S.res[fs[0]][fs[1]]:{e:"🧔",ar:"زبون",tr:"zabun",g:"m"};
+    const inStock=Math.random()<0.8,item=inStock?shelf[Math.floor(Math.random()*shelf.length)]:keys.filter(k=>!shelf.includes(k))[0]||shelf[0],qty=1+Math.floor(Math.random()*3);
+    const tot=PRODS[item].p*qty,pay=[5,10,20,50].find(x=>x>=tot&&(x>tot||Math.random()<.3))||50;
+    cust={r,item,qty,tot,pay,inStock,ok:true};step=0;give=0;msg="";log="";tone(1400,.1);tone(1800,.15,.1);};
+  const rG=(m,f)=>cust.r.g==="f"?f:m;
+  const bub=(who,a,t)=>{log+=`<div class="phb ${who}"><b>${who==="me"?"🧑‍💼":cust.r.e}</b><div>${P(a,t)}</div></div>`;};
+  const qtyAr=(q,it)=>q===1?`${PRODS[it].ar}`:q===2?`اثنين ${PRODS[it].ar}`:`ثلاثة ${PRODS[it].ar}`;
+  const draw=(body)=>{
+    o.innerHTML=`<div class="gcard shopcard">${gHead("🏪",`دكّان ${me}`,`dukkan ${PL_INFO[CUR].tr}`)}
+      <div class="shopbar"><span>👥 ${ar(Math.min(ci+1,N))}/${ar(N)}</span><span>💰 ${riyalAr(earned)}</span></div>
+      <div class="shopshelf">${shelf.map(k=>`<div class="sp ${cust&&cust.item===k&&step>=2?"hl":""}"><span>${PRODS[k].e}</span><small>${PRODS[k].ar}</small><b>${ar(PRODS[k].p)} ر</b></div>`).join("")}</div>
+      <div class="shopcounter"><div class="cust">${cust?cust.r.e:""}</div><div class="phlog">${log}</div></div>
+      ${msg?`<div class="${/❌|🤔/.test(msg)?"alert":"win"} center">${msg}</div>`:""}${body}</div>`;
+    o.hidden=false;gBind(o);const lg=o.querySelector(".phlog");if(lg)lg.scrollTop=1e5;
+    o.querySelectorAll("[data-so]").forEach(b=>b.onclick=()=>act(b.dataset.so));};
+  const opts=list=>`<div class="phopts">${list.map(x=>`<button class="big" data-so="${x[2]}">${P(x[0],x[1])}</button>`).join("")}</div>`;
+  const wrong=t=>{cust.ok=false;msg=`🤔 ${t}`;tone(200,.15);};
+  const show=()=>{
+    if(step===0){bub("them",`🔔 ${P("السلام عليكم!","al-salamu ʿalaykum!")}`,"");draw(`<div class="hint center">${P("رحّب بالزبون!","rahhib bil-zabun!")}</div>`+opts([["السلام عليكم، أهلاً وسهلاً!","al-salamu ʿalaykum, ahlan wa sahlan!","g1"],["مع السلامة!","maʿa al-salama!","gx"],["مرحباً، تفضّل"+rG("","ي")+"!","marhaban, tafaddal"+rG("","i")+"!","g2"]]));}
+    else if(step===1){const p=PRODS[cust.item];draw(opts([[`نعم، تفضّل${rG("","ي")}! عندنا ${p.ar}.`,`naʿam, tafaddal${rG("","i")}!`,"y"],[`لا، للأسف ليس عندنا ${p.ar}.`,"la, lil-asaf.","n"]]));}
+    else if(step===2){const t=cust.tot,c=[t,t+PRODS[cust.item].p,Math.max(1,t-PRODS[cust.item].p)].filter((v,i,a)=>a.indexOf(v)===i).sort(()=>Math.random()-.5);
+      draw(`<div class="hint center">🧮 ${P(`${ar(cust.qty)} × ${ar(PRODS[cust.item].p)} = ؟`,"")}</div>`+opts(c.map(v=>[`المجموع ${riyalAr(v)}.`,`al-majmuʿ ${v}`,"p"+v])));}
+    else if(step===3){const ch=cust.pay-cust.tot;
+      if(!ch){draw(opts([["شكراً! المبلغ مضبوط 👍","shukran! al-mablagh madbut","x0"],["هذا قليل!","hadha qalil!","xbad"]]));}
+      else draw(`<div class="hint center">💵 ${P(`أعطاك ${riyalAr(cust.pay)}. كم الباقي؟ اضغط على النقود:`.replace("أعطاك",rG("أعطاك","أعطتك")),`aʿtaka ${cust.pay}. kam al-baqi?`)}</div>
+        <div class="coins">${[10,5,1].map(v=>`<button data-so="c${v}" class="coin c${v}">${ar(v)}</button>`).join("")}</div>
+        <div class="center"><b class="givebox">${P(`الباقي: ${riyalAr(give)}`,`al-baqi: ${give}`)}</b> <button class="small" data-so="c0">↩️</button></div>`+opts([[`تفضّل${rG("","ي")} الباقي!`,`tafaddal${rG("","i")} al-baqi!`,"give"]]));}
+    else if(step===4)draw(`<div class="hint center">${P("ودّع الزبون!","waddiʿ al-zabun!")}</div>`+opts([["مع السلامة، نوّرتَ الدكّان!".replace("نوّرتَ",rG("نوّرتَ","نوّرتِ")),"maʿa al-salama, nawwarta al-dukkan!","b1"],["صباح الخير!","sabah al-khayr!","bx"]]));
+  };
+  const act=a=>{msg="";
+    if(step===0){if(a==="gx"){wrong(P("هذه للوداع! رحّب به أوّلاً.","hadhihi lil-wadaʿ!"));show();return;}
+      bub("me",a==="g1"?"السلام عليكم، أهلاً وسهلاً!":"مرحباً، تفضّل"+rG("","ي")+"!","");const p=PRODS[cust.item];
+      bub("them",`${a==="g1"?"وعليكم السلام!":"أهلاً!"} هل عندك ${p.ar}؟ ${p.e}`,`hal ʿindaka ${p.tr}?`);step=1;tone(800,.05);show();return;}
+    if(step===1){const right=(a==="y")===cust.inStock;if(!right){wrong(cust.inStock?P(`انظر إلى الرفّ! ${PRODS[cust.item].e} موجود.`,""):P(`انظر جيّداً… ${PRODS[cust.item].e} ليس على الرفّ!`,""));show();return;}
+      const p=PRODS[cust.item];
+      if(!cust.inStock){bub("me",`لا، للأسف ليس عندنا ${p.ar}.`,"");bub("them","لا بأس، شكراً! 😊","la ba's, shukran!");step=4;show();return;}
+      bub("me",`نعم، تفضّل${rG("","ي")}! عندنا ${p.ar}.`,"");bub("them",`أريد ${qtyAr(cust.qty,cust.item)} من فضلك. بكم؟`,`urid ${cust.qty} ${p.tr} min fadlik. bikam?`);step=2;show();return;}
+    if(step===2){const v=+a.slice(1);if(v!==cust.tot){wrong(P(`احسبها: ${ar(cust.qty)} × ${ar(PRODS[cust.item].p)}`,""));show();return;}
+      bub("me",`المجموع ${riyalAr(v)}.`,"");bub("them",`تفضّل، هذه ${riyalAr(cust.pay)}. 💵`,`tafaddal, hadhihi ${cust.pay} riyal.`);step=3;give=0;tone(900,.05);show();return;}
+    if(step===3){const ch=cust.pay-cust.tot;
+      if(a==="xbad"){wrong(P("المبلغ مضبوط تماماً!",""));show();return;}
+      if(a[0]==="c"){const v=+a.slice(1);give=v?give+v:0;tone(v?1000:400,.04);show();return;}
+      if(a==="x0"||a==="give"){if(a==="give"&&give!==ch){wrong(P(give>ch?`كثير! الباقي ${riyalAr(ch)} فقط.`:`قليل! ${ar(cust.pay)} − ${ar(cust.tot)} = ؟`,""));give=0;show();return;}
+        bub("me",ch?`تفضّل${rG("","ي")} الباقي: ${riyalAr(ch)}.`:"شكراً! المبلغ مضبوط 👍","");bub("them","شكراً جزيلاً! 😊","shukran jazilan!");earned+=cust.tot;step=4;yay();show();return;}}
+    if(step===4){if(a==="bx"){wrong(P("في الوداع نقول: مع السلامة!",""));show();return;}
+      bub("me","مع السلامة، نوّرتَ الدكّان!".replace("نوّرتَ",rG("نوّرتَ","نوّرتِ")),"");bub("them","الله يسلّمك! 👋","allah yusallimak!");if(cust.ok)good++;ci++;
+      draw("");setTimeout(()=>{if(ci>=N)finish();else{newCust();show();}},1200);}
+  };
+  const finish=()=>{const stars=good+1;addStars(stars);countOnce&&countOnce("shop");confetti(40);yay();PL[CUR].shopBest=Math.max(PL[CUR].shopBest||0,earned);saveHome();
+    o.innerHTML=`<div class="gcard shopcard">${gHead("🏪","أغلقنا الدكّان!","aghlaqna al-dukkan!")}<div class="center" style="font-size:3rem">🏪💰</div>
+      <div class="win center">${P(`بعتَ لـ ${ar(N)} زبائن وربحتَ ${riyalAr(earned)}!`.replace("بعتَ",GV("بعتَ","بعتِ")).replace("ربحتَ",GV("ربحتَ","ربحتِ")),`biʿta li ${N} zaba'in wa rabihta ${earned} riyal!`)}</div>
+      <div class="center">${"⭐".repeat(stars)} · ${P(`بدون أخطاء: ${ar(good)}/${ar(N)}`,`bidun akhta': ${good}/${N}`)}</div>
+      <div class="tog center"><button class="big" id="shopAgain">🔁 ${P("افتح الدكّان مرّة أخرى","iftah al-dukkan marratan ukhra")}</button><button class="big" id="shopClose">✅ ${P("انتهيت","intahaytu")}</button></div></div>`;
+    gBind(o);$("shopAgain").onclick=()=>{closeGame(false);startShop();};$("shopClose").onclick=()=>closeGame(false);};
+  newCust();show();
+}
+// add both to the adventures menu
+var _openAdv7=openAdv;
+openAdv=function(){_openAdv7();const g=document.querySelector("#advBox .advgrid");if(!g)return;
+  g.insertAdjacentHTML("afterbegin",`<button class="advc" data-adv2="shop"><span class="ae">🏪</span><b>${P("دكّاني","dukkani")}</b><small>أنت البائع! رحّب، احسب، أعطِ الباقي</small></button><button class="advc" data-adv2="phone"><span class="ae">📞</span><b>${P("مكالمة من جار","mukalama min jar")}</b><small>ردّ على الهاتف ونفّذ الطلب</small></button>`);
+  g.querySelectorAll("[data-adv2]").forEach(b=>b.onclick=()=>{$("advBox").hidden=true;if(b.dataset.adv2==="shop")startShop();else{if(S.phase!=="reception")newRound(false);setTimeout(()=>phoneRing(true),300);}});};
+if(typeof BADGES!=="undefined")BADGES.push({id:"shop",e:"🏪",ar:"التاجر الصغير",tr:"al-tajir al-saghir",need:"افتح دكّانك ٣ مرّات",test:c=>(c.shop||0)>=3});
 </script>
 </body></html>
