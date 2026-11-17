@@ -2700,7 +2700,7 @@ $("tEn").onclick=()=>{S.en=!S.en;$("tEn").classList.toggle("on",S.en);render();}
 S.detOn=PL[CUR].cfg.det;S.stars=PL[CUR].stars;S.vi=VIS.findIndex(v=>v.id===PL_INFO[CUR].vis);$("detB").classList.toggle("on",S.detOn);
 $("detB").onclick=()=>{S.detOn=!S.detOn;PL[CUR].cfg.det=S.detOn;saveHome();$("detB").classList.toggle("on",S.detOn);render();};
 $("homeB").onclick=startMyHome;
-$("advB").onclick=openAdv;
+$("advB").onclick=()=>openAdv();
 $("badgeB").onclick=openBadges;
 $("adhanB").onclick=openAdhanSet;
 $("adhanStop").onclick=stopAdhan;
