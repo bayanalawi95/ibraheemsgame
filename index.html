@@ -645,6 +645,7 @@ button.tile:hover{border-color:var(--bld)}
 .addrow{display:flex;align-items:center;gap:8px;margin:6px 0;justify-content:center}.addrow .bigem{font-size:2.4rem}.addrow input{flex:1;font-size:1.1rem;padding:8px;border-radius:10px;border:2px solid #c5e1a5;font-family:inherit}
 .shopshelf{grid-template-columns:repeat(4,1fr)}
 .errtask{background:#fff3e0;border:2px dashed #ffb74d;border-radius:12px;padding:5px 10px;font-weight:700;text-align:center;margin:4px 0}.errnpc{text-align:center;font-size:3rem;line-height:1.1}
+.mpprev{color:#2e7d32;font-weight:700;min-height:1.4em}.mpprev .mpar{font-size:1.3rem}
 .pincard{max-width:380px;text-align:center}.doorpic{position:relative;font-size:4rem;line-height:1;margin:4px 0}.doorpic .lock{position:absolute;font-size:1.6rem;left:50%;margin-left:6px;top:28px}
 .pinscr2{font-size:2rem;letter-spacing:10px;background:#263238;color:#80deea;border-radius:12px;padding:6px;margin:8px auto;max-width:220px;direction:ltr}.pinscr2.bad{animation:pshake .35s;color:#ef9a9a}
 .pinpad2{display:grid;grid-template-columns:repeat(3,72px);gap:10px;justify-content:center;margin:10px auto;direction:ltr}.pinpad2 button{height:64px;font-size:1.6rem;font-weight:800;border-radius:16px;background:#f5f5f5;border:2px solid #ddd;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}.pinpad2 button small{font-size:.65rem;color:#888;font-weight:400}.pinpad2 button[data-hp="✓"]{background:#e8f5e9;border-color:#66bb6a}
@@ -4375,7 +4376,7 @@ startShop=function(){
       <div class="mylist">${L.length?L.map(m=>`<div class="myp"><span>${m.e}</span><b>${esc(m.ar)}</b><i>${riyalAr(m.p)}</i><button data-mpdel="${m.id}" title="احذف">🗑️</button></div>`).join(""):`<div class="hint center">${P("لا توجد منتجات بعد. أضف منتجك الأوّل!","la tujadu muntajat baʿd.")}</div>`}</div>
       ${adding?`<div class="addp">
         <div class="emgrid">${MYP_EMO.map(e=>`<button class="${e===em?"on":""}" data-mpe="${e}">${e}</button>`).join("")}</div>
-        <div class="addrow"><span class="bigem">${em}</span><input id="mpName" dir="rtl" lang="ar" maxlength="20" placeholder="✍️ اسم المنتج بالعربية" value="${esc(nm)}"></div>
+        <div class="addrow"><span class="bigem">${em}</span><input id="mpName" dir="rtl" lang="ar" maxlength="20" placeholder="✍️ اسم المنتج (عربي أو بحروف إنجليزية: pizza, khubz…)" value="${esc(nm)}"></div><div class="mpprev center" id="mpPrev">${mpPreview(nm)}</div>
         <div class="addrow center"><b>${P("السعر:","al-siʿr:")}</b><button class="small" data-mpp="-1">➖</button><b class="givebox">${riyalAr(pr)}</b><button class="small" data-mpp="1">➕</button></div>
         ${err?`<div class="alert center">${err}</div>`:""}
         <div class="tog center"><button class="big" id="mpSave">✅ ${P("أضف إلى الرفّ","adif ila al-raff")}</button><button class="big" id="mpCancel">✕ ${P("إلغاء","ilgha'")}</button></div></div>`
@@ -4383,7 +4384,7 @@ startShop=function(){
       <div class="tog center"><button class="big huge" id="mpOpen">🏪 ${P("افتح الدكّان!","iftah al-dukkan!")}</button></div></div>`;
     o.hidden=false;gBind(o);
     const on=(id,f)=>{const e=$(id);if(e)e.onclick=f;};
-    const inp=$("mpName");if(inp){inp.oninput=()=>{nm=inp.value;};inp.onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();save();}};}
+    const inp=$("mpName");if(inp){inp.oninput=()=>{nm=inp.value;const pv=$("mpPrev");if(pv)pv.innerHTML=mpPreview(nm);};inp.onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();save();}};}
     on("mpAdd",()=>{adding=true;err="";draw();const i=$("mpName");if(i)i.focus();});
     on("mpCancel",()=>{adding=false;draw();});
     on("mpSave",()=>save());
@@ -4394,7 +4395,7 @@ startShop=function(){
   };
   const save=()=>{nm=(($("mpName")||{}).value||nm).trim();
     if(!nm){err=P("اكتب اسم المنتج أوّلاً ✍️","uktub ism al-muntaj");draw();return;}
-    if(!/[؀-ۿ]/.test(nm)){err=P("اكتب الاسم بالحروف العربية 🙂","uktub al-ism bil-huruf al-ʿarabiyya");draw();return;}
+    nm=mpArabic(nm);if(!/[؀-ۿ]/.test(nm)){err=P("لم أستطع تحويل الاسم 🙂 جرّب كتابة أخرى.","");draw();return;}
     if(myProds().length>=12){err=P("الرفّ ممتلئ! احذف منتجاً أوّلاً.","al-raff mumtali'!");draw();return;}
     myProds().push({id:Date.now().toString(36),e:em,ar:nm,p:pr});saveHome();yay();addStars(1);adding=false;nm="";err="";draw();};
   draw();
@@ -4438,5 +4439,18 @@ function errandRun(req,r,n,done){
   };
   show();
 }
+
+/* product names typed in English letters become Arabic */
+var MP_EN={pizza:"بيتزا",burger:"برجر",chips:"شيبس",chocolate:"شوكولاتة",choclate:"شوكولاتة",cake:"كيك",juice:"عصير",milk:"حليب",bread:"خبز",water:"ماء",apple:"تفاح",banana:"موز",orange:"برتقال",tea:"شاي",coffee:"قهوة",candy:"حلوى",icecream:"آيس كريم",donut:"دونات",cookie:"كوكيز",cookies:"كوكيز",sandwich:"سندويش",pepsi:"بيبسي",cola:"كولا",ball:"كرة",toy:"لعبة",teddy:"دبدوب",pen:"قلم",pencil:"قلم رصاص",book:"كتاب",soap:"صابون",egg:"بيض",eggs:"بيض",cheese:"جبن",rice:"أرز",chicken:"دجاج",fish:"سمك",dates:"تمر",honey:"عسل",popcorn:"فشار",lollipop:"مصّاصة",cupcake:"كب كيك",watermelon:"بطيخ",grapes:"عنب",strawberry:"فراولة",mango:"مانجو",lemon:"ليمون",tomato:"طماطم",potato:"بطاطس",carrot:"جزر",flower:"وردة",rose:"وردة",balloon:"بالون",candle:"شمعة"};
+(()=>{const add=(ar,ws)=>ws.split(" ").forEach(w=>MP_EN[w]=ar);
+add("خبز","khubz khobz khbz 5obz 5ubz");add("عصير","3asir 3aseer asir aseer 3sir 3aser");add("كبسة","kabsa kabsah kabsa2");add("حليب","halib 7alib haleeb 7aleeb");add("موز","mooz mouz moz mawz");add("تفاح","tuffa7 tofa7 tuffah tofah toffa7");
+add("شوكولاتة","shokolata shokolatah shukulata chocolata shoklata");add("ماء","ma2 mai moya mayya mooya");add("حلوى","halawa 7alawa 7alwa halwa");add("كعك","kaak ka3k");add("كعكة","ka3ka kaaka");add("سمبوسة","samboosa sambosa sambusa");
+add("فول","ful fool");add("فلافل","falafel falafil");add("شاورما","shawarma shawerma");add("مندي","mandi mendi");add("لبن","laban");add("تمر","tamr tamer tamar");add("عسل","3asal asal");add("جبن","jibn jubn jebn");add("بيض","bayd baid beed bed");
+add("أرز","ruz roz aruz riz");add("دجاج","dajaj dijaj djaj dejaj");add("سمك","samak");add("لحم","lahm la7m la7am");add("بطاطس","batata batates patates");add("طماطم","tamatim tamatem tmatm tamata");add("خيار","khiyar 5yar khyar");
+add("برتقال","burtuqal bortoqal bortogal");add("عنب","3inab enab 3enab");add("بطيخ","batikh bateekh ba6ee5 batee5");add("فراولة","frawla farawla fraula");add("مانجو","manga manjo mango");add("ليمون","leymoon laymon lemon limon");
+add("قهوة","qahwa gahwa 9ahwa ahwa kahwa");add("شاي","shay shai chai");add("لعبة","lu3ba lo3ba lou3ba");add("قلم","qalam galam");add("كتاب","kitab ktab ketab");add("دبدوب","dabdoob dabdub");add("وردة","warda wardah");add("كيك","keek kek");add("بسكويت","biscuit baskawit biskot");add("آيس كريم","icecream aiskrim ayskrim");add("مصاصة","massasa msasa");})();
+function mpArabic(t){t=String(t).trim();if(!/[a-zA-Z]/.test(t))return t;t=t.replace(/\b(ice|ais|ays)\s*(cream|krim|kreem)\b/gi,"icecream");
+  return t.replace(/[a-zA-Z0-9'’\-]+(\s+[a-zA-Z0-9'’\-]+)*/g,m=>m.split(/\s+/).map(w=>{const k=w.toLowerCase().replace(/[^a-z0-9]/g,"");if(MP_EN[k])return MP_EN[k];let a=typeof arabizi==="function"?arabizi(w):w;if(/[^a]a$/i.test(k)&&k.length>3&&/ا$/.test(a))a=a.replace(/ا$/,"ة");return a;}).join(" "));}
+function mpPreview(t){if(!t||!/[a-zA-Z]/.test(t))return "";return `✍️ ${P("بالعربي:","bil-ʿarabi:")} <b class="mpar">${esc(mpArabic(t))}</b>`;}
 </script>
 </body></html>
