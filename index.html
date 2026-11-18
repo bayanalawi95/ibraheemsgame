@@ -642,7 +642,7 @@ button.tile:hover{border-color:var(--bld)}
 .cardpay{text-align:center;font-size:2.4rem;margin:10px 0}.cardpay div{font-size:1rem;font-weight:800}
 .mylist{display:flex;flex-direction:column;gap:5px;margin:6px 0;max-height:190px;overflow:auto}.myp{display:flex;align-items:center;gap:8px;background:#fffde7;border:2px solid #fff59d;border-radius:12px;padding:4px 8px}.myp span{font-size:1.8rem}.myp b{flex:1}.myp .myab{display:block;font-size:.75rem;color:#2e7d32;font-weight:700}.shopshelf .sp small .arz{display:block;font-style:normal;font-size:.62rem;color:#2e7d32}.myp i{font-style:normal;font-weight:700;color:#6d4c41}.myp button{background:none;border:0;font-size:1.3rem;cursor:pointer}
 .addp{background:#f1f8e9;border:2px dashed #9ccc65;border-radius:14px;padding:8px;margin:6px 0}.emgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(40px,1fr));gap:4px;max-height:130px;overflow:auto;margin-bottom:6px}.emgrid button{font-size:1.5rem;background:#fff;border:2px solid #e0e0e0;border-radius:10px;cursor:pointer;padding:2px}.emgrid button.on{border-color:#43a047;background:#c8e6c9}
-.addrow{display:flex;align-items:center;gap:8px;margin:6px 0;justify-content:center}.addrow .bigem{font-size:2.4rem}.addrow input{flex:1;font-size:1.1rem;padding:8px;border-radius:10px;border:2px solid #c5e1a5;font-family:inherit}
+.addrow{display:flex;align-items:center;gap:8px;margin:6px 0;justify-content:center}.addrow .bigem{font-size:2.4rem}.mpprice{width:110px;font-size:1.3rem;font-weight:800;text-align:center;padding:6px;border-radius:10px;border:2px solid #ffca28;font-family:inherit}.addrow input{flex:1;font-size:1.1rem;padding:8px;border-radius:10px;border:2px solid #c5e1a5;font-family:inherit}
 .shopshelf{grid-template-columns:repeat(4,1fr)}
 .errtask{background:#fff3e0;border:2px dashed #ffb74d;border-radius:12px;padding:5px 10px;font-weight:700;text-align:center;margin:4px 0}.errnpc{text-align:center;font-size:3rem;line-height:1.1}
 .mpprev{color:#2e7d32;font-weight:700;min-height:1.4em}.mpprev .mpar{font-size:1.3rem}
@@ -653,6 +653,22 @@ button.tile:hover{border-color:var(--bld)}
 .scanner{background:#263238;border-radius:10px;padding:5px;width:84px;box-shadow:0 2px 5px rgba(0,0,0,.3);position:relative}.scanner .scscr{background:#c5e1a5;color:#1b5e20;font-family:monospace;font-weight:900;border-radius:5px;text-align:center;padding:3px 2px;font-size:1rem;direction:ltr;white-space:nowrap}
 .scanner i{display:block;height:4px;margin:4px auto 0;width:60%;background:#e53935;border-radius:2px}.scanner.beep i{animation:scanbeep .45s}@keyframes scanbeep{0%{box-shadow:0 0 12px 4px #ff1744}100%{box-shadow:none}}
 @media (max-width:820px){.cdisp{left:auto;right:2%;top:auto;bottom:10px;width:180px;font-size:.72rem;padding:4px 7px;border-width:4px}.cdisp .cdrows{max-height:62px}.checkout .pos,.checkout .tray{display:none}}
+.lifecard{max-width:600px}.lifesit{background:#fff8e1;border:2px dashed #ffca28;border-radius:12px;padding:6px 10px;font-weight:700;text-align:center;margin:4px 0}.lifesit .menu{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin-bottom:6px;font-weight:600;font-size:.82rem}.lifesit .menu span{background:#fff;border-radius:8px;padding:1px 6px;border:1px solid #ffe082}.lifesit .menu b{color:#e65100}
+.emsit{font-size:2.6rem;animation:phshake .5s infinite}.ltimer{text-align:center;font-weight:800;color:#c62828}
+.picopts{flex-direction:row!important;justify-content:center;flex-wrap:wrap}.picopts .big{width:auto!important;min-width:110px}.picopts .pic{font-size:2.2rem;letter-spacing:2px}
+.learned{margin:6px 0;display:flex;flex-wrap:wrap;gap:5px;align-items:center}.learned span{background:#e8f5e9;border-radius:10px;padding:2px 8px;font-weight:700;font-size:.85rem}
+.rankchip{display:inline-flex;align-items:center;gap:5px;background:#ede7f6;border:2px solid #b39ddb;border-radius:20px;padding:2px 10px;font-size:.85rem;vertical-align:middle}.rankchip b{font-weight:800}.rankchip i{display:inline-block;width:44px;height:6px;background:#d1c4e9;border-radius:4px;overflow:hidden}.rankchip u{display:block;height:100%;background:#7e57c2;text-decoration:none}
+#rankChip{display:inline-flex;align-items:center}
+.wch{background:#fffde7;border:2px solid #fff176;border-radius:12px;padding:6px 10px;font-size:.85rem}.wch .wrow{display:flex;align-items:center;gap:8px;margin-top:4px}.wch .wrow span{min-width:80px;font-weight:700}.wch .wrow i{flex:1;height:10px;background:#eee;border-radius:6px;overflow:hidden}.wch .wrow u{display:block;height:100%;background:linear-gradient(90deg,#ffb300,#f57c00);text-decoration:none}
+.advsec{grid-column:1/-1;font-weight:900;font-size:1.05rem;display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:4px}.advsec.wide{display:block;font-weight:600;font-size:.9rem}
+.advc.locked{opacity:.55;filter:grayscale(.6)}
+.atrophy{position:absolute;right:12px;top:54px;font-size:2rem;background:#fff8e1;border:2px solid #ffca28;border-radius:14px;padding:2px 8px;z-index:2}.atrophy b{font-size:1rem}
+.tgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;background:#90a4ae;padding:4px;border-radius:10px;max-width:330px;margin:6px auto;direction:ltr}.tc{background:#cfd8dc;aspect-ratio:1;border-radius:6px;position:relative;display:flex;align-items:center;justify-content:center}.tc.dest{background:#c8e6c9;box-shadow:inset 0 0 0 3px #43a047}.tc .tl{display:flex;flex-direction:column;align-items:center;font-size:1.3rem;line-height:1}.tc .tl small{font-size:.55rem;font-weight:700}.tc .tcar{position:absolute;font-size:1.7rem;transition:transform .25s}
+.tpad{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px}.tpad button{font-size:1rem;font-weight:800;padding:10px 4px;border-radius:12px;border:2px solid #ffca28;background:#fff8e1;cursor:pointer}.tpad .stop{grid-column:1/-1;background:#ffebee;border-color:#ef5350}
+.repcard{max-width:640px;max-height:88vh;overflow:auto}.reptabs{display:flex;gap:6px;justify-content:center;margin:4px 0}.reptabs button{border-radius:20px;padding:4px 14px;border:2px solid #ddd;background:#fff;font-weight:700;cursor:pointer}.reptabs button.on{border-color:#7e57c2;background:#ede7f6}
+.repgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:6px 0}.repgrid>div{background:#f5f5f5;border-radius:10px;padding:6px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:2px}.repgrid>div>b{font-size:1.4rem}.repgrid .rankchip{font-size:.8rem}.reptabs button.on,.reptabs button.on *{color:#4527a0!important}.repgrid small{font-size:.7rem;color:#555}
+.repcard h4{margin:10px 0 4px}.repacts,.repok{display:flex;flex-wrap:wrap;gap:5px}.repacts span,.repok span{background:#e3f2fd;border-radius:10px;padding:2px 8px;font-size:.85rem}.repok span{background:#e8f5e9}.repbad div,.reptyped div{padding:2px 0;font-size:.88rem}.repbad s{color:#c62828}.reptip{margin-top:8px;background:#fff3e0;border-radius:10px;padding:6px 10px;font-weight:700}
+@media (max-width:600px){.repgrid{grid-template-columns:repeat(2,1fr)}}
 .pincard{max-width:380px;text-align:center}.doorpic{position:relative;font-size:4rem;line-height:1;margin:4px 0}.doorpic .lock{position:absolute;font-size:1.6rem;left:50%;margin-left:6px;top:28px}
 .pinscr2{font-size:2rem;letter-spacing:10px;background:#263238;color:#80deea;border-radius:12px;padding:6px;margin:8px auto;max-width:220px;direction:ltr}.pinscr2.bad{animation:pshake .35s;color:#ef9a9a}
 .pinpad2{display:grid;grid-template-columns:repeat(3,72px);gap:10px;justify-content:center;margin:10px auto;direction:ltr}.pinpad2 button{height:64px;font-size:1.6rem;font-weight:800;border-radius:16px;background:#f5f5f5;border:2px solid #ddd;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}.pinpad2 button small{font-size:.65rem;color:#888;font-weight:400}.pinpad2 button[data-hp="✓"]{background:#e8f5e9;border-color:#66bb6a}
@@ -3599,7 +3615,15 @@ function askHomePin(onOk){
       setLock(L);msg=`❌ ${P("الرمز خطأ! حاول مرّة أخرى.","al-ramzu khata'! hawil marratan ukhra.")} <small>(${P(`بقي ${ar(5-L.n)} ${5-L.n>2?"محاولات":"محاولة"}`,`baqiya ${5-L.n}`)})</small>`;tone(160,.25,0,"square",.08);draw();}
   };
   function startLockTimer(){clearInterval(lockT);lockT=setInterval(()=>{if(!GAME||GAME.kind!=="pin"||o.hidden){clearInterval(lockT);return;}if(!lockLeft()){clearInterval(lockT);msg=`🔓 ${P("يمكنك المحاولة الآن.","yumkinuka al-muhawala al-an.")}`;bad=false;tone(700,.08);}draw();},1000);}
-  GAME={kind:"pin"};if(lockLeft())startLockTimer();draw();
+  GAME={kind:"pin"};
+  GAME.key=e=>{if(!GAME||GAME.kind!=="pin")return;if(e.target&&/INPUT|TEXTAREA/.test(e.target.tagName))return;
+    let k=e.key;const ai="٠١٢٣٤٥٦٧٨٩".indexOf(k);if(ai>=0)k=String(ai);
+    if(/^[0-9]$/.test(k)){e.preventDefault();press(k);}
+    else if(k==="Backspace"||k==="Delete"){e.preventDefault();press("⌫");}
+    else if(k==="Enter"){e.preventDefault();press("✓");}
+    else if(k==="Escape"){e.preventDefault();closeGame(false);}};
+  document.addEventListener("keydown",GAME.key);
+  if(lockLeft())startLockTimer();draw();
 }
 
 /* ================= rearrange furniture inside the apartment ================= */
@@ -4224,7 +4248,7 @@ function startShop(){
   GAME={kind:"shop"};let ci=0,earned=0,good=0,cust=null,step=0,give=0,msg="",log="";const N=4;
   const newCust=()=>{const fs=randApt([[HOME.f,HOME.s]]),r=fs?S.res[fs[0]][fs[1]]:{e:"🧔",ar:"زبون",tr:"zabun",g:"m"};
     const inStock=Math.random()<0.8,item=inStock?shelf[Math.floor(Math.random()*shelf.length)]:keys.filter(k=>!shelf.includes(k))[0]||shelf[0],qty=1+Math.floor(Math.random()*3);
-    const tot=PRODS[item].p*qty,pay=[5,10,20,50].find(x=>x>=tot&&(x>tot||Math.random()<.3))||50;
+    const tot=PRODS[item].p*qty,pay=[5,10,20,50,100,200,500,1000].find(x=>x>=tot&&(x>tot||Math.random()<.3))||Math.ceil((tot+1)/500)*500;
     cust={r,item,qty,tot,pay,inStock,ok:true};step=0;give=0;msg="";log="";tone(1400,.1);tone(1800,.15,.1);};
   const rG=(m,f)=>cust.r.g==="f"?f:m;
   const bub=(who,a,t)=>{log+=`<div class="phb ${who}"><b>${who==="me"?"🧑‍💼":cust.r.e}</b><div>${P(a,t)}</div></div>`;};
@@ -4247,7 +4271,7 @@ function startShop(){
     else if(step===3){const ch=cust.pay-cust.tot;
       if(!ch){draw(opts([["شكراً! المبلغ مضبوط 👍","shukran! al-mablagh madbut","x0"],["هذا قليل!","hadha qalil!","xbad"]]));}
       else draw(`<div class="hint center">💵 ${P(`أعطاك ${riyalAr(cust.pay)}. كم الباقي؟ اضغط على النقود:`.replace("أعطاك",rG("أعطاك","أعطتك")),`aʿtaka ${cust.pay}. kam al-baqi?`)}</div>
-        <div class="coins">${[10,5,1].map(v=>`<button data-so="c${v}" class="coin c${v}">${ar(v)}</button>`).join("")}</div>
+        <div class="coins">${(cust.pay-cust.tot>=50?[100,50,10,5,1]:[10,5,1]).map(v=>`<button data-so="c${v}" class="coin c${v>=10?10:v}">${ar(v)}</button>`).join("")}</div>
         <div class="center"><b class="givebox">${P(`الباقي: ${riyalAr(give)}`,`al-baqi: ${give}`)}</b> <button class="small" data-so="c0">↩️</button></div>`+opts([[`تفضّل${rG("","ي")} الباقي!`,`tafaddal${rG("","i")} al-baqi!`,"give"]]));}
     else if(step===4)draw(`<div class="hint center">${P("ودّع الزبون!","waddiʿ al-zabun!")}</div>`+opts([["مع السلامة، نوّرتَ الدكّان!".replace("نوّرتَ",rG("نوّرتَ","نوّرتِ")),"maʿa al-salama, nawwarta al-dukkan!","b1"],["صباح الخير!","sabah al-khayr!","bx"]]));
   };
@@ -4390,7 +4414,7 @@ startShop=function(){
       ${adding?`<div class="addp">
         <div class="emgrid">${MYP_EMO.map(e=>`<button class="${e===em?"on":""}" data-mpe="${e}">${e}</button>`).join("")}</div>
         <div class="addrow"><span class="bigem">${em}</span><input id="mpName" dir="rtl" lang="ar" maxlength="20" placeholder="✍️ اسم المنتج (عربي أو بحروف إنجليزية: pizza, khubz…)" value="${esc(nm)}"></div><div class="mpprev center" id="mpPrev">${mpPreview(nm)}</div>
-        <div class="addrow center"><b>${P("السعر:","al-siʿr:")}</b><button class="small" data-mpp="-1">➖</button><b class="givebox">${riyalAr(pr)}</b><button class="small" data-mpp="1">➕</button></div>
+        <div class="addrow center"><b>${P("السعر:","al-siʿr:")}</b><button class="small" data-mpp="-1">➖</button><input id="mpPrice" type="number" inputmode="numeric" min="1" step="1" value="${pr}" class="mpprice"><b>ريال</b><button class="small" data-mpp="1">➕</button></div>
         ${err?`<div class="alert center">${err}</div>`:""}
         <div class="tog center"><button class="big" id="mpSave">✅ ${P("أضف إلى الرفّ","adif ila al-raff")}</button><button class="big" id="mpCancel">✕ ${P("إلغاء","ilgha'")}</button></div></div>`
       :`<div class="tog center"><button class="big" id="mpAdd">➕ ${P("أضف منتجاً جديداً","adif muntajan jadidan")}</button></div>`}
@@ -4402,11 +4426,11 @@ startShop=function(){
     on("mpCancel",()=>{adding=false;draw();});
     on("mpSave",()=>save());
     on("mpOpen",()=>{closeGame(false);_startShopRun();});
-    o.querySelectorAll("[data-mpe]").forEach(b=>b.onclick=()=>{nm=($("mpName")||{}).value||nm;em=b.dataset.mpe;tone(900,.04);draw();});
-    o.querySelectorAll("[data-mpp]").forEach(b=>b.onclick=()=>{nm=($("mpName")||{}).value||nm;pr=Math.max(1,Math.min(50,pr+ +b.dataset.mpp));tone(700,.04);draw();});
+    o.querySelectorAll("[data-mpe]").forEach(b=>b.onclick=()=>{nm=($("mpName")||{}).value||nm;pr=parseInt(($("mpPrice")||{}).value)||pr;em=b.dataset.mpe;tone(900,.04);draw();});
+    o.querySelectorAll("[data-mpp]").forEach(b=>b.onclick=()=>{nm=($("mpName")||{}).value||nm;pr=Math.max(1,(parseInt(($("mpPrice")||{}).value)||pr)+ +b.dataset.mpp);tone(700,.04);draw();});
     o.querySelectorAll("[data-mpdel]").forEach(b=>b.onclick=()=>{const L2=myProds(),i=L2.findIndex(m=>m.id===b.dataset.mpdel);if(i>=0){const m=L2.splice(i,1)[0];delete PRODS["my_"+m.id];saveHome();tone(300,.08);}draw();});
   };
-  const save=()=>{nm=(($("mpName")||{}).value||nm).trim();
+  const save=()=>{nm=(($("mpName")||{}).value||nm).trim();{const v=parseInt((($("mpPrice")||{}).value||"").replace(/[٠-٩]/g,d=>"٠١٢٣٤٥٦٧٨٩".indexOf(d)));if(!(v>0)){err=P("اكتب سعراً أكبر من صفر 🙂","");draw();return;}pr=v;}
     if(!nm){err=P("اكتب اسم المنتج أوّلاً ✍️","uktub ism al-muntaj");draw();return;}
     if(!/[؀-ۿa-zA-Z]/.test(nm)){err=P("اكتب اسماً فيه حروف 🙂","uktub isman fihi huruf");draw();return;}const arz=/[a-zA-Z]/.test(nm)?mpArabic(nm):"";
     if(myProds().length>=12){err=P("الرفّ ممتلئ! احذف منتجاً أوّلاً.","al-raff mumtali'!");draw();return;}
@@ -4467,5 +4491,289 @@ function mpArabic(t){t=String(t).trim();if(!/[a-zA-Z]/.test(t))return t;t=t.repl
 function mpPreview(t){if(!t||!/[a-zA-Z]/.test(t))return "";return `✍️ ${P("بالعربي:","bil-ʿarabi:")} <b class="mpar">${esc(mpArabic(t))}</b>`;}
 
 
+
+/* =====================================================================
+   🌟 حياتي اليومية — daily-life situations, ranks, weekly challenge, report
+   ===================================================================== */
+function isoWeek(){const d=new Date(),t=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())),day=t.getUTCDay()||7;t.setUTCDate(t.getUTCDate()+4-day);const y=new Date(Date.UTC(t.getUTCFullYear(),0,1));return t.getUTCFullYear()+"-w"+Math.ceil(((t-y)/864e5+1)/7);}
+function dayKey(){const d=new Date();return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate();}
+function lpick(a){return a[Math.floor(Math.random()*a.length)];}
+function lshuf(a){return a.slice().sort(()=>Math.random()-.5);}
+function logAct(kind,data,k){const p=PL[k||CUR];p.log=p.log||[];p.log.push(Object.assign({k:kind,t:Date.now(),w:isoWeek()},data||{}));if(p.log.length>220)p.log=p.log.slice(-220);saveHome();}
+var LIFE_KINDS={doctor:["👨‍⚕️","عند الطبيب"],pharmacy:["💊","الصيدليّة"],barber:["💈","الحلّاق"],restaurant:["🍽️","المطعم"],taxi:["🚕","التاكسي"],emergency:["🚨","طوارئ"],occasion:["🎁","مناسبة جار"],recipe:["👵","وصفة الجدّة"]};
+var ACT_LBL=Object.assign({kids:["👫","أطفال العمارة"],shop:["🏪","دكّاني / الكاشير"],mosque:["🕌","المسجد"],rent:["🔑","تأجير شقّة"],boss:["⚡","مهمّة اليوم"],chat:["💬","دردشة"]},LIFE_KINDS);
+
+/* ---------- 🏅 ranks ---------- */
+var RANKS=[[0,"🏠","ساكن جديد","sakin jadid"],[40,"🤝","جار طيّب","jar tayyib"],[120,"🧰","مساعد العمارة","musaʿid al-ʿimara"],[250,"🛡️","حارس العمارة","haris al-ʿimara"],[450,"🏢","مدير العمارة","mudir al-ʿimara"],[700,"👑","عمدة العمارة","ʿumdat al-ʿimara"],[1000,"🌟","أسطورة العمارة","ustura al-ʿimara"]];
+function plXp(k){const p=PL[k];if(p.xp==null)p.xp=Math.max(0,p.stars||0);return p.xp;}
+function rankIdx(k){const x=plXp(k);let i=0;RANKS.forEach((r,j)=>{if(x>=r[0])i=j;});return i;}
+function rankChip(k){const i=rankIdx(k),r=RANKS[i],nx=RANKS[i+1],x=plXp(k);return `<span class="rankchip" title="${r[2]}">${r[1]} <b>${r[2]}</b>${nx?`<i><u style="width:${Math.min(100,(x-r[0])/(nx[0]-r[0])*100)}%"></u></i>`:""}</span>`;}
+var _addStarsL=addStars;
+addStars=function(n){const before=rankIdx(CUR);_addStarsL(n);
+  if(n>0){PL[CUR].xp=plXp(CUR)+n;const wk=isoWeek(),w=PL[CUR].wkS;PL[CUR].wkS=w&&w.w===wk?{w:wk,n:w.n+n}:{w:wk,n};saveHome();
+    const after=rankIdx(CUR);if(after>before){const r=RANKS[after];setTimeout(()=>{confetti(60);yay();pop(r[1],P(`رتبة جديدة: ${r[2]}!`,`rutba jadida: ${r[3]}!`));},600);}}
+  paintRank();};
+function paintRank(){let c=$("rankChip");const bar=$("players");if(!bar)return;if(!c){bar.insertAdjacentHTML("afterend",`<span id="rankChip"></span>`);c=$("rankChip");}c.innerHTML=rankChip(CUR);}
+setTimeout(paintRank,800);setInterval(paintRank,5000);
+var _countOnceL=countOnce;
+countOnce=function(key){const had=S.counted&&S.counted[key];_countOnceL(key);if(!had&&!LIFE_KINDS[key])logAct(key,{});};
+
+/* ---------- 🏆 weekly challenge with the other player ---------- */
+var WCH_GOAL=8;
+function wch(k){const p=PL[k],w=isoWeek();if(!p.wch||p.wch.w!==w)p.wch={w,n:0,done:0};return p.wch;}
+function wchAdd(){const me=wch(CUR),ot=wch(other());me.n++;
+  if(me.n>=WCH_GOAL&&!me.done){me.done=Date.now();const first=!(ot.done&&ot.done<me.done);if(first){PL[CUR].trophies=(PL[CUR].trophies||0)+1;setTimeout(()=>{confetti(80);yay();pop("🏆",P(`${GV("فزتَ","فزتِ")} بتحدّي الأسبوع!`,"fuzta bi-tahaddi al-usbuʿ!"));},900);}
+    else setTimeout(()=>pop("🥈",P(`${GV("أنهيتَ","أنهيتِ")} التحدّي! ${PL_INFO[other()].name} ${other()==="by"?"سبقتك":"سبقك"} هذه المرّة.`,"")),900);}
+  saveHome();}
+function wchHtml(){const row=k=>{const w=wch(k),pc=Math.min(100,w.n/WCH_GOAL*100);return `<div class="wrow"><span>${PL_INFO[k].e||""} ${PL_INFO[k].name}</span><i><u style="width:${pc}%"></u></i><b>${ar(Math.min(w.n,WCH_GOAL))}/${ar(WCH_GOAL)}${w.done?" ✅":""}</b></div>`;};
+  return `<div class="wch"><b>🏆 ${P(`تحدّي الأسبوع: أنجز ${ar(WCH_GOAL)} مواقف من «حياتي اليومية» قبل ${PL_INFO[other()].name}!`,"tahaddi al-usbuʿ")}</b>${row(CUR)}${row(other())}</div>`;}
+
+/* ---------- 🎭 scene engine ---------- */
+function runScene(def){
+  const o=$("gameBox"),me=PL_INFO[CUR].name;GAME={kind:def.kind};let i=0,log="",msg="",miss=0,okLines=[],bad=[],t0=Date.now(),tiv=null,locked=false;
+  const npc=def.npc;
+  const bub=(who,a,t,e)=>{log+=`<div class="phb ${who}"><b>${who==="me"?V().e:(e||npc.e)}</b><div>${P(a,t||"")}</div></div>`;};
+  const step=()=>def.steps[i];
+  const draw=()=>{const st=step();
+    o.innerHTML=`<div class="gcard phcard lifecard">${gHead(def.icon,def.title[0],def.title[1])}
+      ${def.timer?`<div class="ltimer">⏱️ <b id="ltT">${ar(Math.floor((Date.now()-t0)/1000))}</b> ${P("ثانية","thaniya")}</div>`:""}
+      ${def.sit?`<div class="lifesit">${typeof def.sit==="function"?def.sit():def.sit}</div>`:""}
+      ${def.extra?def.extra():""}
+      <div class="phlog">${log}</div>${msg?`<div class="alert center">${msg}</div>`:""}
+      ${st&&st._o&&!locked?`${st.hint0?`<div class="hint center">${P(st.hint0[0],st.hint0[1]||"")}</div>`:""}<div class="phopts ${st.pics?"picopts":""}">${st._o.map((x,j)=>`<button class="big" data-lo="${j}">${st.pics?`<span class="pic">${x.pic}</span>`:P(x.t[0],x.t[1]||"")}</button>`).join("")}</div>`:""}</div>`;
+    o.hidden=false;gBind(o);const lg=o.querySelector(".phlog");if(lg)lg.scrollTop=1e5;
+    o.querySelectorAll("[data-lo]").forEach(b=>b.onclick=()=>choose(+b.dataset.lo));};
+  const enter=()=>{const st=step();if(!st){finish();return;}
+    const say=typeof st.say==="function"?st.say():st.say;if(say)bub("them",say[0],say[1],st.e);
+    st._o=st.keep?st.opts.slice():lshuf(st.opts);msg="";draw();};
+  const choose=j=>{if(locked)return;const st=step(),x=st._o[j];
+    if(!x.ok){miss++;bad.push({said:x.t?x.t[0]:x.pic,right:(st._o.find(y=>y.ok)||{t:[""]}).t[0]});msg=`🤔 ${x.hint||st.hint||"حاول مرّة أخرى!"}`;tone(200,.15);draw();return;}
+    const said=x.me||x.t;if(said)bub("me",said[0],said[1]);if(x.t&&!st.noLog)okLines.push(x.t[0]);
+    if(x.reply)bub("them",x.reply[0],x.reply[1],st.e);
+    if(st.after)st.after(x);tone(880,.05);i++;locked=true;msg="";draw();setTimeout(()=>{locked=false;enter();},450);};
+  const finish=()=>{clearInterval(tiv);const secs=Math.floor((Date.now()-t0)/1000);
+    let stars=miss===0?3:miss<=2?2:1;if(def.timer&&secs>def.timer)stars=Math.max(1,stars-1);
+    addStars(stars);logAct(def.kind,{ok:okLines.slice(0,8),bad:bad.slice(0,6),s:stars});wchAdd();countOnce(def.kind);yay();confetti(30);
+    if(def.onWin)def.onWin();
+    o.innerHTML=`<div class="gcard phcard lifecard">${gHead(def.icon,def.title[0],def.title[1])}<div class="phlog">${log}</div>
+      <div class="win center">${def.winMsg?def.winMsg():P("أحسنت! 👏","ahsant!")} ${"⭐".repeat(stars)}${def.timer?` · ⏱️ ${ar(secs)} ${P("ثانية","")}`:""}</div>
+      ${okLines.length?`<div class="learned"><b>${P("🗣️ جمل قلتَها:","jumal qultaha:")}</b>${okLines.slice(0,6).map(l=>`<span>${l}</span>`).join("")}</div>`:""}
+      <div class="tog center"><button class="big" id="lAgain">🔁 ${P("مرّة أخرى","marra ukhra")}</button><button class="big" id="lDone">✅ ${P("انتهيت","intahaytu")}</button></div></div>`;
+    gBind(o);$("lAgain").onclick=()=>{closeGame(false);LIFE_START[def.kind]();};$("lDone").onclick=()=>closeGame(false);};
+  if(def.timer)tiv=setInterval(()=>{if(!GAME||GAME.kind!==def.kind){clearInterval(tiv);return;}const e=$("ltT");if(e)e.textContent=ar(Math.floor((Date.now()-t0)/1000));},1000);
+  GAME.iv=tiv;enter();
+}
+var LOK=(t,me,extra)=>Object.assign({t,ok:true},me?{me}:{},extra||{});
+var LNO=(t,hint)=>({t,ok:false,hint});
+var LT=(a,b)=>[a,b||""];
+
+/* ---------- 👨‍⚕️ doctor ---------- */
+function scDoctor(){
+  const sym=lshuf([{e:"🤕",p:"رأسي يؤلمني",tr:"ra'si yu'limuni"},{e:"🤢",p:"بطني يؤلمني",tr:"batni yu'limuni"},{e:"😷",p:"حلقي يؤلمني",tr:"halqi yu'limuni"},{e:"🦷",p:"سنّي يؤلمني",tr:"sinni yu'limuni"},{e:"🦵",p:"رجلي تؤلمني",tr:"rijli tu'limuni"}]),S1=sym[0];
+  const sinceA=lshuf([["منذ أمس","mundhu ams"],["منذ يومين","mundhu yawmayn"],["منذ الصباح","mundhu al-sabah"]]),since=sinceA[0],fever=Math.random()<.5;
+  const timesA=lshuf([["مرّتين في اليوم","marratayn fi al-yawm"],["ثلاث مرّات في اليوم","thalath marrat fi al-yawm"],["مرّة واحدة في اليوم","marra wahida fi al-yawm"]]),times=timesA[0];
+  const doc=Math.random()<.5?{e:"👨‍⚕️",voc:"يا دكتور"}:{e:"👩‍⚕️",voc:"يا دكتورة"};
+  runScene({kind:"doctor",icon:"🏥",title:LT("عند الطبيب","ʿinda al-tabib"),npc:doc,
+    sit:`🤒 ${P("حالتك:","halatuk:")} ${S1.e} <b>${S1.p}</b> ${since[0]}، ${fever?"وعندك حرارة 🌡️":"وليس عندك حرارة"}.`,
+    steps:[
+      {say:LT(`السلام عليكم! ${GV("تفضّل اجلس","تفضّلي اجلسي")}. ممّ ${GV("تشكو","تشكين")}؟`,`mimma ${GV("tashku","tashkin")}?`),hint:"انظر إلى حالتك في الأعلى 👆",
+        opts:[LOK(LT(S1.p+".",S1.tr)),LNO(LT(sym[1].p+".",sym[1].tr)),LNO(LT(sym[2].p+".",sym[2].tr))]},
+      {say:LT("منذ متى؟","mundhu mata?"),hint:"انظر إلى حالتك 👆",opts:[LOK(LT(since[0]+".",since[1])),LNO(LT(sinceA[1][0]+".",sinceA[1][1])),LNO(LT(sinceA[2][0]+".",sinceA[2][1]))]},
+      {say:LT("هل عندك حرارة؟ 🌡️","hal ʿindaka harara?"),hint:"انظر إلى حالتك 👆",opts:[{t:LT("نعم، عندي حرارة.","naʿam, ʿindi harara."),ok:fever},{t:LT("لا، ليس عندي حرارة.","la, laysa ʿindi harara."),ok:!fever}]},
+      {say:LT(`سأكتب لك دواءً 💊 ${GV("خذه","خذيه")} ${times[0]} بعد الأكل، ${GV("واشرب","واشربي")} ماءً كثيراً. سلامتك!`,`khudhhu ${times[1]} baʿda al-akl.`),
+        opts:[LOK(LT(`شكراً ${doc.voc}، الله يعافيك.`,"shukran, allah yuʿafik.")),LNO(LT("لا أحبّ الدواء! 😝",""),"قل شكراً للطبيب 😊")]},
+      {e:"🧠",say:LT("سؤال: كم مرّة ستأخذ الدواء؟","kam marra sata'khudh al-dawa'?"),hint:"تذكّر ماذا قال الطبيب 👂",noLog:true,
+        opts:[LOK(LT(times[0],times[1])),LNO(LT(timesA[1][0],timesA[1][1])),LNO(LT(timesA[2][0],timesA[2][1]))]}
+    ],winMsg:()=>P("سلامتك! فهمتَ كلام الطبيب 👏","salamatak!")});
+}
+/* ---------- 💊 pharmacy ---------- */
+function scPharmacy(){
+  const med=lpick([["دواء للصداع","dawa' lil-sudaʿ"],["شراب للكحّة","sharab lil-kuhha"],["مرهم للجرح","marham lil-jurh"]]),price=6+Math.floor(Math.random()*10);
+  runScene({kind:"pharmacy",icon:"💊",title:LT("الصيدليّة","al-saydaliyya"),npc:{e:"🧑‍⚕️"},
+    sit:`📝 ${P("معك وصفة من الطبيب:","maʿaka wasfa:")} <b>${med[0]}</b>`,
+    steps:[
+      {say:LT("أهلاً وسهلاً! كيف أساعدك؟","kayfa usaʿiduk?"),opts:[LOK(LT(`عندي وصفة من الطبيب، ${GV("تفضّل","تفضّل")}.`,"ʿindi wasfa min al-tabib.")),LNO(LT("أريد لعبة 🧸",""),"نحن في الصيدليّة 😄"),LNO(LT("أين المصعد؟",""),"أعطه الوصفة 📝")]},
+      {say:LT(`هذا ${med[0]} 💊 الثمن ${riyalAr(price)}.`,`al-thaman ${price}.`),hint:"ادفع الثمن الصحيح 💵",opts:[LOK(LT(`${GV("تفضّل","تفضّل")}، هذه ${riyalAr(price)}.`,"")),LNO(LT(`${GV("تفضّل","تفضّل")}، هذه ${riyalAr(price+3)}.`,"")),LNO(LT(`${GV("تفضّل","تفضّل")}، هذه ${riyalAr(Math.max(1,price-2))}.`,""))]},
+      {say:LT(`هل ${GV("تريد","تريدين")} كيساً؟ 🛍️`,"hal turidu kisan?"),opts:[LOK(LT("نعم، من فضلك.","naʿam, min fadlik.")),LOK(LT("لا، شكراً.","la, shukran."))]},
+      {say:LT("تفضّل. سلامتك! 💚","tafaddal. salamatak!"),opts:[LOK(LT("الله يسلّمك، مع السلامة.","allah yusallimak.")),LNO(LT("صباح الخير!",""),"في النهاية نقول: مع السلامة")]}
+    ]});
+}
+/* ---------- 💈 barber ---------- */
+function scBarber(){
+  const f=GV(false,true),styles=lshuf(f?[["أريده قصيراً قليلاً","uriduhu qasiran qalilan"],["أريد ضفيرة","uridu dafira"],["أريده مربوطاً","uriduhu marbutan"]]:[["أريده قصيراً من الجوانب","uriduhu qasiran min al-jawanib"],["أريده قصيراً جداً","uriduhu qasiran jiddan"],["أريد أن أقصّه قليلاً فقط","uridu an aqussahu qalilan faqat"]]),st=styles[0],price=15+Math.floor(Math.random()*15);
+  runScene({kind:"barber",icon:"💈",title:LT(f?"صالون الشعر":"عند الحلّاق",f?"salun al-shaʿr":"ʿinda al-hallaq"),npc:{e:f?"💇‍♀️":"💈"},
+    sit:`✂️ ${P(GV("تريد","تريدين")+" شعرك هكذا:","turidu shaʿraka hakadha:")} <b>${st[0].replace(/^أريده? ?(أن )?/,"")}</b>`,
+    steps:[
+      {say:LT(`أهلاً وسهلاً! ${GV("تفضّل","تفضّلي")} على الكرسي 💺 كيف ${GV("تريد","تريدين")} شعرك؟`,"kayfa turidu shaʿrak?"),hint:"انظر في الأعلى 👆",
+        opts:[LOK(LT(st[0]+" من فضلك.",st[1])),LNO(LT(styles[1][0]+" من فضلك.",styles[1][1])),LNO(LT(styles[2][0]+" من فضلك.",styles[2][1]))]},
+      {say:LT("هل أغسل شعرك أوّلاً؟ 🚿","hal aghsilu shaʿrak awwalan?"),opts:[LOK(LT("نعم، من فضلك.","naʿam, min fadlik.")),LOK(LT("لا، شكراً.","la, shukran."))]},
+      {say:LT(`✂️✂️✂️ … انتهيت! ${GV("انظر","انظري")} في المرآة 🪞 هل أعجبك؟`,"hal aʿjabak?"),opts:[LOK(LT("نعم، جميل جداً! شكراً.","naʿam, jamil jiddan!")),LNO(LT("أين الحليب؟ 🥛",""),"هل أعجبك شعرك؟ 😄")]},
+      {say:LT(`الحساب ${riyalAr(price)}.`,`al-hisab ${price}.`),hint:"ادفع الثمن الصحيح 💵",opts:[LOK(LT(`تفضّل، هذه ${riyalAr(price)}.`,"")),LNO(LT(`تفضّل، هذه ${riyalAr(price+5)}.`,"")),LNO(LT(`تفضّل، هذه ${riyalAr(price-4)}.`,""))]},
+      {say:LT("نعيماً! 😊","naʿiman!"),hint:"عندما يقولون «نعيماً» نردّ: أنعم الله عليك",opts:[LOK(LT("أنعم الله عليك.","anʿama allahu ʿalayk.")),LNO(LT("وعليكم السلام.",""),"«نعيماً» نردّ عليها: أنعم الله عليك"),LNO(LT("صباح النور.",""),"«نعيماً» نردّ عليها: أنعم الله عليك")]}
+    ],winMsg:()=>P("شكلك رائع! ✨ وتعلّمتَ: نعيماً ← أنعم الله عليك","")});
+}
+/* ---------- 🍽️ restaurant ---------- */
+var MENU_M=[{e:"🍔",ar:"برجر",tr:"burgir",p:12},{e:"🍕",ar:"بيتزا",tr:"bitza",p:15},{e:"🍗",ar:"دجاج مشويّ",tr:"dajaj mashwi",p:18},{e:"🥙",ar:"شاورما",tr:"shawarma",p:9},{e:"🍝",ar:"معكرونة",tr:"maʿkaruna",p:14},{e:"🍚",ar:"كبسة",tr:"kabsa",p:20}];
+var MENU_D=[{e:"🧃",ar:"عصير برتقال",tr:"ʿasir burtuqal",p:4},{e:"🍋",ar:"عصير ليمون",tr:"ʿasir laymun",p:5},{e:"🥛",ar:"لبن",tr:"laban",p:3},{e:"💧",ar:"ماء",tr:"ma'",p:1}];
+function scRestaurant(){
+  const ms=lshuf(MENU_M),ds=lshuf(MENU_D),m=ms[0],d=ds[0],tot=m.p+d.p,ord=(a,b)=>LT(`أريد ${a.ar} و${b.ar} من فضلك.`,`uridu ${a.tr} wa ${b.tr} min fadlik.`);
+  runScene({kind:"restaurant",icon:"🍽️",title:LT("المطعم","al-matʿam"),npc:{e:"🤵"},
+    sit:`<div class="menu">${MENU_M.concat(MENU_D).map(x=>`<span>${x.e} ${x.ar} <b>${ar(x.p)}</b></span>`).join("")}</div>📝 ${P("طلبك:","talabuk:")} <b>${m.e} ${m.ar} + ${d.e} ${d.ar}</b>`,
+    steps:[
+      {say:LT(`أهلاً وسهلاً! ${GV("تفضّل","تفضّلي")} على الطاولة. ماذا ${GV("تطلب","تطلبين")}؟`,"madha tatlub?"),hint:"انظر إلى طلبك 👆",opts:[LOK(ord(m,d)),LNO(ord(ms[1],d)),LNO(ord(m,ds[1]))]},
+      {say:LT(`هل ${GV("تريد","تريدين")} شيئاً آخر؟`,"hal turidu shay'an akhar?"),opts:[LOK(LT("لا، شكراً.","la, shukran.")),LNO(LT("نعم، أريد فيلاً! 🐘",""),"😂 لا يوجد فيل في المطعم!")]},
+      {say:LT(`${GV("تفضّل","تفضّلي")} طلبك ${m.e}${d.e} بالهناء والشفاء!`,"bil-hana' wal-shifa'!"),opts:[LOK(LT("شكراً جزيلاً!","shukran jazilan!")),LNO(LT("مع السلامة!",""),"ما زلتَ في المطعم! قل شكراً 😊")]},
+      {e:"😋",say:LT("… انتهيتَ من الأكل. ماذا تقول للنادل؟","madha taqulu lil-nadil?"),opts:[LOK(LT("الحساب من فضلك.","al-hisab min fadlik.")),LNO(LT("أريد أن أنام 😴",""),"اطلب الحساب 🧾")]},
+      {say:LT("🧾 كم المجموع؟",""),e:"🤵",hint:`احسب: ${ar(m.p)} + ${ar(d.p)}`,opts:[LOK(LT(`المجموع ${riyalAr(tot)}، ${GV("تفضّل","تفضّل")}.`,"")),LNO(LT(`المجموع ${riyalAr(tot+3)}، تفضّل.`,"")),LNO(LT(`المجموع ${riyalAr(Math.max(1,tot-2))}، تفضّل.`,""))]},
+      {say:LT("شكراً لزيارتكم! نوّرتونا 🌟","shukran li-ziyaratikum!"),opts:[LOK(LT("الله يسلّمك، الأكل كان لذيذاً!","al-akl kana ladhidhan!")),LNO(LT("لا!",""),"ردّ بلطف 😊")]}
+    ]});
+}
+/* ---------- 🎁 neighbour occasions ---------- */
+function scOccasion(){
+  const fs=randApt([[HOME.f,HOME.s]]),r=fs?S.res[fs[0]][fs[1]]:{e:"🧔",ar:"جارنا",g:"m"},g=(m,f)=>r.g==="f"?f:m,n=fs?aptNo(fs[0],fs[1]):"";
+  const EV=[
+    {e:"🕋",news:`${g("رجع","رجعت")} من الحجّ`,ok:"حجٌّ مبرور وذنبٌ مغفور! حمداً لله على السلامة.",okTr:"hajjun mabrur!",rep:"جزاك الله خيراً، الله يسلّمك!",gifts:["🌹 ورداً","🍫 حلوى","🍯 عسلاً"]},
+    {e:"👶",news:`${g("عنده","عندها")} مولود جديد`,ok:"مبروك! الله يحفظه ويجعله من الصالحين.",okTr:"mabruk! allah yahfazuhu.",rep:"الله يبارك فيك!",gifts:["🧸 دبدوباً","🍼 رضّاعة","🎈 بالوناً"]},
+    {e:"🎓",news:`${g("نجح","نجحت")} في الاختبارات`,ok:"مبروك النجاح! الله يوفّقك دائماً.",okTr:"mabruk al-najah!",rep:"شكراً، الله يبارك فيك!",gifts:["📚 كتاباً","✏️ أقلاماً","🍫 حلوى"]},
+    {e:"🤒",news:`${g("مريض","مريضة")} في البيت`,ok:"سلامتك! شفاك الله وعافاك.",okTr:"salamatak! shafaka allah.",rep:"الله يسلّمك، شكراً على الزيارة!",gifts:["🍲 شوربة","🌹 ورداً","🍊 برتقالاً"]},
+    {e:"✈️",news:`${g("رجع","رجعت")} من السفر`,ok:"حمداً لله على السلامة!",okTr:"hamdan lillah ʿala al-salama!",rep:"الله يسلّمك!",gifts:["🍰 كعكة","☕ قهوة وتمراً","🌹 ورداً"]},
+    {e:"🏠",news:`${g("انتقل","انتقلت")} إلى شقّة جديدة في عمارتنا`,ok:"مبروك البيت الجديد! الله يبارك لكم فيه.",okTr:"mabruk al-bayt al-jadid!",rep:"الله يبارك فيك، تفضّل!",gifts:["🪴 نبتة","🍞 خبزاً وملحاً","🍯 عسلاً"]}
+  ];
+  const ev=lshuf(EV),E=ev[0];
+  runScene({kind:"occasion",icon:"🎁",title:LT("مناسبة جار","munasabat jar"),npc:{e:r.e},
+    sit:`📢 ${P("خبر:","khabar:")} ${E.e} <b>${r.ar}</b> ${P(`(الشقّة ${n})`,"")} ${E.news}!`,
+    steps:[
+      {e:"🎁",say:LT("ماذا تأخذ معك هديّةً؟","madha ta'khudhu maʿak?"),opts:E.gifts.map(x=>LOK(LT(`سآخذ ${x}.`,""))),noLog:true},
+      {say:LT(`أهلاً يا ${PL_INFO[CUR].name}! ${GV("تفضّل","تفضّلي")} 😊`,"ahlan! tafaddal."),hint:"",opts:[LOK(LT(E.ok,E.okTr)),LNO(LT(ev[1].ok,""),"هذه العبارة لمناسبةٍ أخرى 🙂 اقرأ الخبر في الأعلى"),LNO(LT(ev[2].ok,""),"هذه العبارة لمناسبةٍ أخرى 🙂 اقرأ الخبر في الأعلى")]},
+      {say:LT(`${E.rep} وهذه الهديّة؟ ما أجملها! شكراً 💛`,""),opts:[LOK(LT("العفو، هديّة بسيطة.","al-ʿafw, hadiyya basita.")),LNO(LT("أعطني إيّاها! 😠",""),"الهديّة لجارك 😄")]},
+      {say:LT(`هل ${GV("تشرب","تشربين")} الشاي معنا؟ ☕`,"hal tashrabu al-shay maʿana?"),opts:[LOK(LT("نعم، شكراً.","naʿam, shukran.")),LOK(LT("لا شكراً، يجب أن أذهب. مع السلامة.","la shukran, yajibu an adhhab."))]}
+    ],winMsg:()=>P(`${g("فرح","فرحت")} ${r.ar} بزيارتك! 💛`,"")});
+}
+/* ---------- 👵 grandma's recipe ---------- */
+var RECIPES=[
+ {e:"🥗",ar:"سلطة",steps:[["اغسل الطماطم","اغسلي الطماطم","🚿🍅","غسلتُ الطماطم"],["قطّع الخيار","قطّعي الخيار","🔪🥒","قطّعتُ الخيار"],["ضع ملعقةً من الملح","ضعي ملعقةً من الملح","🥄🧂","وضعتُ ملعقةً من الملح"],["اعصر الليمون","اعصري الليمون","✊🍋","عصرتُ الليمون"],["اخلط كلّ شيء","اخلطي كلّ شيء","🥣🔄","خلطتُ كلّ شيء"]]},
+ {e:"☕",ar:"شاي",steps:[["اغلِ الماء","اغلي الماء","🔥💧","غليتُ الماء"],["ضع الشاي في الإبريق","ضعي الشاي في الإبريق","🍃🫖","وضعتُ الشاي في الإبريق"],["ضع ملعقتين من السكّر","ضعي ملعقتين من السكّر","🥄🥄🍬","وضعتُ ملعقتين من السكّر"],["صبّ الشاي في الكوب","صبّي الشاي في الكوب","🫖➡️☕","صببتُ الشاي في الكوب"]]},
+ {e:"🥪",ar:"سندويش جبن",steps:[["خذ قطعتين من الخبز","خذي قطعتين من الخبز","🍞🍞","أخذتُ قطعتين من الخبز"],["ضع الجبن","ضعي الجبن","🧀","وضعتُ الجبن"],["أضف الطماطم","أضيفي الطماطم","➕🍅","أضفتُ الطماطم"],["سخّن السندويش","سخّني السندويش","🔥🥪","سخّنتُ السندويش"]]},
+ {e:"🍊",ar:"عصير برتقال",steps:[["اغسل البرتقال","اغسلي البرتقال","🚿🍊","غسلتُ البرتقال"],["قطّع البرتقال نصفين","قطّعي البرتقال نصفين","🔪🍊","قطّعتُ البرتقال"],["اعصر البرتقال","اعصري البرتقال","✊🍊","عصرتُ البرتقال"],["ضع ثلاث قطع ثلج","ضعي ثلاث قطع ثلج","🧊🧊🧊","وضعتُ الثلج"],["صبّ العصير في الكوب","صبّي العصير في الكوب","🥤","صببتُ العصير"]]}
+];
+function scRecipe(){
+  const R=lpick(RECIPES),pics=R.steps.map(s=>s[2]);
+  const extraPics=["🧊","🧊🧊🧊","🥄","🥄🥄🍬","🔪🍅","🚿🥒","🍳","🧈"];
+  const steps=[{say:LT(`تعال يا ${PL_INFO[CUR].name}! سنصنع اليوم ${R.ar} ${R.e} معاً. ${GV("اسمع","اسمعي")} كلامي جيّداً 👂`.replace("تعال",GV("تعال","تعالي")),""),opts:[LOK(LT("حاضر يا جدّتي! 😊","hadir ya jaddati!"))]}]
+    .concat(R.steps.map((s,i)=>{const wrong=lshuf(pics.filter(p=>p!==s[2]).concat(extraPics.filter(p=>p!==s[2]))).slice(0,2);
+      return {say:LT(GV(s[0],s[1])+"."),pics:true,hint:"اسمع الجدّة جيّداً وانظر إلى الصور 👀",opts:[{pic:s[2],ok:true,t:LT(s[3]+" ✓"),me:LT(s[3]+" ✓")},{pic:wrong[0],ok:false,hint:`الجدّة قالت: «${GV(s[0],s[1])}» 🤔`},{pic:wrong[1],ok:false,hint:`الجدّة قالت: «${GV(s[0],s[1])}» 🤔`}]};}))
+    .concat([{say:LT(`ما شاء الله! صار عندنا ${R.ar} لذيذ ${R.e} بالهناء والشفاء!`,""),hint:"عندما يطبخ لك أحد نقول: سلمت يداك",opts:[LOK(LT("سلمت يداكِ يا جدّتي! 💛","salimat yadaki ya jaddati!")),LNO(LT("أين التلفاز؟ 📺",""),"قل شيئاً لطيفاً للجدّة: سلمت يداكِ")]}]);
+  runScene({kind:"recipe",icon:"👵",title:LT(`وصفة الجدّة: ${R.ar}`,"wasfat al-jadda"),npc:{e:"👵"},sit:`${R.e} ${P(`نصنع ${R.ar} مع الجدّة`,"")}`,steps,winMsg:()=>P(`صنعتَ ${R.ar} ${R.e} مع الجدّة!`.replace("صنعتَ",GV("صنعتَ","صنعتِ")),"")});
+}
+/* ---------- 🚨 emergencies ---------- */
+var SVC={civil:["🚒","الدفاع المدني","٩٩٨"],amb:["🚑","الإسعاف","٩٩٧"],police:["🚓","الشرطة","٩٩٩"],plumber:["🔧","السبّاك",""],tech:["👷","فنّي المصعد",""],guard:["💂","حارس العمارة",""]};
+function scEmergency(auto){
+  const fs=randApt([[HOME.f,HOME.s]])||[3,1],f=fs[0],n=aptNo(fs[0],fs[1]),fl=FL[f]?FL[f].ar:ar(f);
+  const EM=[
+    {e:"🔥",sit:`دخانٌ يخرج من مطبخ الشقّة ${n}!`,svc:"civil",d:"يوجد حريق في المطبخ!",dTr:"yujadu hariq fi al-matbakh!",hurt:false},
+    {e:"💧",sit:`الماء يتسرّب من سقف الحمّام في الشقّة ${n}!`,svc:"plumber",d:"يوجد تسرّب ماء في الحمّام!",dTr:"yujadu tasarrub ma'!",hurt:null},
+    {e:"🚑",sit:`جارك في الشقّة ${n} سقط على الأرض ولا يتكلّم!`,svc:"amb",d:"جاري سقط على الأرض ولا يتكلّم!",dTr:"jari saqata ʿala al-ard!",hurt:true},
+    {e:"🛗",sit:"المصعد توقّف بين الطوابق وفيه ناس!",svc:"tech",d:"المصعد توقّف وفيه ناس!",dTr:"al-misʿad tawaqqafa!",hurt:null},
+    {e:"🐱",sit:"قطّة صغيرة عالقة على سطح العمارة!",svc:"guard",d:"توجد قطّة عالقة على السطح!",dTr:"tujadu qitta ʿaliqa!",hurt:null}
+  ];
+  const all=lshuf(EM),E=all[0],sv=SVC[E.svc],others=lshuf(Object.keys(SVC).filter(k=>k!==E.svc)).slice(0,2);
+  const flA=lshuf([f,Math.max(1,f-2),Math.min(TOP,f+3)].filter((v,i,a)=>a.indexOf(v)===i));
+  if(auto)alarm();
+  const steps=[
+    {e:"🚨",say:LT(`🚨 طوارئ! ${E.e} ${E.sit} مَن تتّصل به؟`,""),hint:"فكّر: مَن يساعد في هذه المشكلة؟",
+      opts:[LOK(LT(`${sv[0]} ${sv[1]} ${sv[2]}`),LT(`📞 ${sv[2]?"أتّصل بـ"+sv[1]+" ("+sv[2]+")":"أتّصل بـ"+sv[1]}`)),...others.map(k=>LNO(LT(`${SVC[k][0]} ${SVC[k][1]} ${SVC[k][2]}`),"هل هذا هو الشخص المناسب لهذه المشكلة؟ 🤔"))]},
+    {e:sv[0],say:LT(`${sv[1]}، ما المشكلة؟`,"ma al-mushkila?"),hint:"صف المشكلة بالضبط 👆",opts:[LOK(LT(E.d,E.dTr)),LNO(LT(all[1].d),"هذه ليست مشكلتنا! اقرأ في الأعلى 👆"),LNO(LT(all[2].d),"هذه ليست مشكلتنا! اقرأ في الأعلى 👆")]},
+    {e:sv[0],say:LT("أين بالضبط؟","ayna bil-dabt?"),hint:`المشكلة في الشقّة ${n}`,opts:flA.map(x=>({t:LT(`في ${FL[x]?FL[x].ar:"الطابق "+ar(x)}، ${x===f?`الشقّة ${n}`:`الشقّة ${aptNo(x,fs[1])}`}.`),ok:x===f,hint:`انظر: المشكلة في الشقّة ${n} 👆`}))}
+  ];
+  if(E.hurt!==null)steps.push({e:sv[0],say:LT("هل يوجد أحد مصاب؟","hal yujadu ahadun musab?"),opts:[{t:LT("نعم، يوجد شخص مصاب.","naʿam."),ok:E.hurt,hint:"هل سقط أحد؟ اقرأ في الأعلى 👆"},{t:LT("لا، لا يوجد أحد مصاب.","la."),ok:!E.hurt,hint:"هل سقط أحد؟ اقرأ في الأعلى 👆"}]});
+  else steps.push({e:sv[0],say:LT("ما اسمك؟","ma ismuk?"),opts:[LOK(LT(`اسمي ${PL_INFO[CUR].name}.`,`ismi ${PL_INFO[CUR].tr}.`)),LNO(LT("لا أعرف! 😵",""),"قل اسمك بهدوء 🙂")]});
+  steps.push({e:sv[0],say:LT(`نحن قادمون الآن! ${GV("ابقَ هادئاً وابتعد","ابقي هادئةً وابتعدي")} عن الخطر.`,"nahnu qadimun al-an!"),opts:[LOK(LT("شكراً، أسرعوا من فضلك!","shukran, asriʿu min fadlikum!")),LNO(LT("لا تأتوا! 😝",""),"نحتاج المساعدة! قل: أسرعوا من فضلك")]});
+  runScene({kind:"emergency",icon:"🚨",title:LT("طوارئ في العمارة!","tawari' fi al-ʿimara!"),npc:{e:sv[0]},timer:45,
+    sit:`<div class="emsit">${E.e}</div>${P(E.sit,"")} <small>${P(`(${fl})`,"")}</small>`,steps,
+    winMsg:()=>P(`${sv[0]} وصل ${sv[1]}! أنت بطل العمارة 🦸`.replace("أنت",GV("أنتَ","أنتِ")),"")});
+}
+setInterval(()=>{try{if(S.phase==="reception"&&!GAME&&$("gameBox")&&$("gameBox").hidden&&PL[CUR].emDay!==dayKey()&&Date.now()-(window._loadT||0)>120000&&Math.random()<0.15){PL[CUR].emDay=dayKey();saveHome();scEmergency(true);}}catch(e){}},20000);
+window._loadT=Date.now();
+
+/* ---------- 🚕 taxi & directions ---------- */
+var TAXI_SPOTS=[{e:"🕌",ar:"المسجد",x:0,y:0},{e:"🏥",ar:"المستشفى",x:4,y:0},{e:"🏫",ar:"المدرسة",x:2,y:0},{e:"🛒",ar:"السوق",x:0,y:2},{e:"🌳",ar:"الحديقة",x:4,y:2},{e:"🏖️",ar:"الشاطئ",x:0,y:4},{e:"✈️",ar:"المطار",x:4,y:4}];
+function scTaxi(){
+  const o=$("gameBox"),dest=lpick(TAXI_SPOTS),wrongs=lshuf(TAXI_SPOTS.filter(s=>s!==dest)).slice(0,2);GAME={kind:"taxi"};
+  let car={x:2,y:4,h:0},step=0,moves=0,miss=0,log="",msg="",okLines=[],bad=[];
+  const DIRS=[[0,-1],[1,0],[0,1],[-1,0]],ROT=[0,90,180,270];
+  const bub=(who,a,t)=>{log+=`<div class="phb ${who}"><b>${who==="me"?V().e:"👨‍✈️"}</b><div>${P(a,t||"")}</div></div>`;};
+  const grid=()=>{let h=`<div class="tgrid">`;for(let y=0;y<5;y++)for(let x=0;x<5;x++){const s=TAXI_SPOTS.find(q=>q.x===x&&q.y===y),home=x===2&&y===4,isCar=car.x===x&&car.y===y;
+      h+=`<div class="tc ${s===dest&&step>=1?"dest":""}">${s?`<span class="tl">${s.e}<small>${s.ar}</small></span>`:home?`<span class="tl">🏢<small>العمارة</small></span>`:""}${isCar?`<span class="tcar" style="transform:rotate(${ROT[car.h]}deg)">🚕</span>`:""}</div>`;}
+    return h+`</div>`;};
+  const draw=body=>{o.innerHTML=`<div class="gcard phcard lifecard">${gHead("🚕","التاكسي","al-taksi")}${step>=1?`<div class="lifesit">🎯 ${P(`أوصل التاكسي إلى ${dest.e} ${dest.ar}`,"")} · 🧭 ${P("السيّارة تنظر إلى الأمام حيث يشير السهم","")}</div>`:""}${grid()}<div class="phlog">${log}</div>${msg?`<div class="alert center">${msg}</div>`:""}${body}</div>`;
+    o.hidden=false;gBind(o);const lg=o.querySelector(".phlog");if(lg)lg.scrollTop=1e5;o.querySelectorAll("[data-tx]").forEach(b=>b.onclick=()=>act(b.dataset.tx));};
+  const opts=list=>`<div class="phopts">${list.map(x=>`<button class="big" data-tx="${x[2]}">${P(x[0],x[1])}</button>`).join("")}</div>`;
+  const pad=()=>`<div class="tpad"><button data-tx="L">⬅️ ${P("يساراً","yasaran")}</button><button data-tx="F">⬆️ ${P("إلى الأمام","ila al-amam")}</button><button data-tx="R">➡️ ${P("يميناً","yaminan")}</button><button data-tx="S" class="stop">✋ ${P("توقّف هنا","tawaqqaf huna")}</button></div>`;
+  const fare=()=>3+moves;
+  const show=()=>{msg=msg||"";
+    if(step===0){draw(opts(lshuf([[`إلى ${dest.ar} من فضلك.`,"","ok"],[`إلى ${wrongs[0].ar} من فضلك.`,"","w"],[`إلى ${wrongs[1].ar} من فضلك.`,"","w"]])));}
+    else if(step===1)draw(pad());
+    else if(step===2){const f=fare();draw(opts(lshuf([[`تفضّل، هذه ${riyalAr(f)}.`,"","p"+f],[`تفضّل، هذه ${riyalAr(f+4)}.`,"","p"+(f+4)],[`تفضّل، هذه ${riyalAr(Math.max(1,f-2))}.`,"","p"+Math.max(1,f-2)]])));}
+    else if(step===3)draw(opts([["شكراً، مع السلامة! 👋","shukran, maʿa al-salama!","bye"]]));};
+  const act=a=>{msg="";
+    if(step===0){if(a!=="ok"){miss++;bad.push({said:"وجهة خطأ",right:`إلى ${dest.ar}`});msg=`🤔 ${P(`أنت تريد الذهاب إلى ${dest.e} ${dest.ar}!`,"")}`;tone(200,.15);show();return;}
+      bub("me",`إلى ${dest.ar} من فضلك.`);okLines.push(`إلى ${dest.ar} من فضلك.`);bub("them",`حاضر! ${GV("قُل","قولي")} لي: يميناً، يساراً، أو إلى الأمام 🧭`,"hadir!");step=1;show();return;}
+    if(step===1){
+      if(a==="L"||a==="R"){car.h=(car.h+(a==="R"?1:3))%4;const w=a==="R"?"يميناً":"يساراً";bub("me",w);bub("them",`حسناً، ${w}!`);tone(600,.05);if(!okLines.includes(w))okLines.push(w);}
+      else if(a==="F"){const nx=car.x+DIRS[car.h][0],ny=car.y+DIRS[car.h][1];if(nx<0||ny<0||nx>4||ny>4){bub("me","إلى الأمام");bub("them","لا يوجد طريق هنا! 🚧");miss++;tone(200,.15);}else{car.x=nx;car.y=ny;moves++;bub("me","إلى الأمام");tone(500,.05);if(!okLines.includes("إلى الأمام"))okLines.push("إلى الأمام");}}
+      else if(a==="S"){bub("me","توقّف هنا من فضلك.");if(car.x===dest.x&&car.y===dest.y){okLines.push("توقّف هنا من فضلك.");bub("them",`وصلنا إلى ${dest.ar} ${dest.e}! الأجرة ${riyalAr(fare())}.`,"wasalna!");yay();step=2;}else{miss++;bad.push({said:"توقّف في المكان الخطأ",right:`${dest.ar}`});bub("them",`هنا؟ لا أرى ${dest.ar} 🤔`);tone(200,.15);}}
+      show();return;}
+    if(step===2){const v=+a.slice(1);if(v!==fare()){miss++;msg=`🤔 ${P(`الأجرة ${riyalAr(fare())}!`,"")}`;tone(200,.15);show();return;}bub("me",`تفضّل، هذه ${riyalAr(v)}.`);bub("them","شكراً! في أمان الله 🚕");step=3;show();return;}
+    if(step===3){bub("me","شكراً، مع السلامة! 👋");const stars=miss===0?3:miss<=2?2:1;addStars(stars);logAct("taxi",{ok:okLines.slice(0,8),bad,s:stars});wchAdd();countOnce("taxi");confetti(30);
+      draw(`<div class="win center">${P(`وصلتَ إلى ${dest.ar}! 🧭`.replace("وصلتَ",GV("وصلتَ","وصلتِ")),"")} ${"⭐".repeat(stars)}</div><div class="tog center"><button class="big" id="lAgain">🔁 ${P("مشوار آخر","mishwar akhar")}</button><button class="big" id="lDone">✅ ${P("انتهيت","intahaytu")}</button></div>`);
+      $("lAgain").onclick=()=>{closeGame(false);scTaxi();};$("lDone").onclick=()=>closeGame(false);}
+  };
+  bub("them","السلام عليكم! إلى أين؟ 🚕","al-salamu ʿalaykum! ila ayna?");show();
+}
+var LIFE_START={doctor:scDoctor,pharmacy:scPharmacy,barber:scBarber,restaurant:scRestaurant,taxi:scTaxi,emergency:()=>scEmergency(false),occasion:scOccasion,recipe:scRecipe};
+var LIFE_LOCK={restaurant:1,emergency:1,taxi:2};
+
+/* ---------- 📊 lesson report ---------- */
+function openReport(k){
+  k=k||(CUR==="by"?"ib":CUR);const p=PL[k],wk=isoWeek(),L=(p.log||[]).filter(x=>x.w===wk),o=$("gameBox");GAME={kind:"report"};
+  const cnt={};L.forEach(x=>{cnt[x.k]=(cnt[x.k]||0)+1;});
+  const okP=[...new Set(L.flatMap(x=>x.ok||[]))].slice(-16),bad=L.flatMap(x=>(x.bad||[]).map(b=>Object.assign({k:x.k},b))).slice(-10),typed=L.filter(x=>x.k==="kids"&&x.said).slice(-10);
+  const badBy={};bad.forEach(b=>{badBy[b.k]=(badBy[b.k]||0)+1;});const weak=Object.entries(badBy).sort((a,b)=>b[1]-a[1])[0];
+  const life=L.filter(x=>LIFE_KINDS[x.k]),avg=life.length?(life.reduce((a,x)=>a+(x.s||0),0)/life.length):0;
+  o.innerHTML=`<div class="gcard phcard repcard">${gHead("📊","تقرير الدرس","taqrir al-dars")}
+    <div class="reptabs">${["ib","by"].map(x=>`<button class="${x===k?"on":""}" data-rk="${x}">${PL_INFO[x].e||""} ${PL_INFO[x].name}</button>`).join("")}</div>
+    <div class="repgrid"><div><b>${ar((p.wkS&&p.wkS.w===wk)?p.wkS.n:0)}</b><small>⭐ نجوم هذا الأسبوع</small></div><div><b>${ar(L.filter(x=>x.k!=="kids").length)}</b><small>🎯 نشاطات</small></div><div><b>${life.length?ar(avg.toFixed(1)):"-"}</b><small>📈 متوسّط النجوم في المواقف</small></div><div>${rankChip(k)}<small>🏅 الرتبة · ${ar(plXp(k))} نقطة</small></div></div>
+    ${wchHtml()}
+    <h4>🎯 ماذا لعب هذا الأسبوع؟</h4><div class="repacts">${Object.keys(cnt).length?Object.entries(cnt).sort((a,b)=>b[1]-a[1]).map(([kk,v])=>`<span>${(ACT_LBL[kk]||["•",kk])[0]} ${(ACT_LBL[kk]||["",kk])[1]} <b>×${ar(v)}</b></span>`).join(""):`<i>لا نشاط بعد هذا الأسبوع</i>`}</div>
+    <h4>✅ جمل استعملها بشكل صحيح</h4><div class="repok">${okP.length?okP.map(x=>`<span>${x}</span>`).join(""):"<i>—</i>"}</div>
+    <h4>❌ أخطاء تحتاج مراجعة</h4><div class="repbad">${bad.length?bad.reverse().map(b=>`<div>${(ACT_LBL[b.k]||["•"])[0]} <s>${b.said}</s> ← <b>${b.right}</b></div>`).join(""):"<i>لا أخطاء 👏</i>"}</div>
+    <h4>✍️ ماذا كتب للأطفال؟</h4><div class="reptyped">${typed.length?typed.reverse().map(x=>`<div>«${esc(x.said)}»</div>`).join(""):"<i>—</i>"}</div>
+    ${weak?`<div class="reptip">💡 اقتراح للدرس القادم: ركّزي على موقف <b>${(ACT_LBL[weak[0]]||["",weak[0]])[1]}</b> (${ar(weak[1])} أخطاء هذا الأسبوع).</div>`:""}
+  </div>`;
+  o.hidden=false;gBind(o);o.querySelectorAll("[data-rk]").forEach(b=>b.onclick=()=>{closeGame(false);openReport(b.dataset.rk);});
+}
+// log what he types to the kids
+var _kidSendL=kidSend;
+kidSend=function(text){const c=S.kidChat;if(c&&!c.typing&&!c.done&&String(text).trim())logAct("kids",{said:String(text).trim().slice(0,80)});return _kidSendL(text);};
+
+/* ---------- menu ---------- */
+var _openAdv9=openAdv;
+openAdv=function(){_openAdv9();const g=document.querySelector("#advBox .advgrid");if(!g)return;const ri=rankIdx(CUR);
+  const card=(id,e,a,tr,sub)=>{const need=LIFE_LOCK[id]||0,lock=ri<need;return `<button class="advc ${lock?"locked":""}" data-life="${id}" ${lock?"disabled":""}><span class="ae">${lock?"🔒":e}</span><b>${P(a,tr)}</b><small>${lock?`تُفتح برتبة ${RANKS[need][1]} ${RANKS[need][2]}`:sub}</small></button>`;};
+  g.insertAdjacentHTML("afterbegin",`<div class="advsec">🌟 ${P("حياتي اليومية","hayati al-yawmiyya")} ${rankChip(CUR)}</div><div class="advsec wide">${wchHtml()}</div>
+    ${card("emergency","🚨","طوارئ!","tawari'","اتّصل بالمساعدة واشرح المشكلة بسرعة")}
+    ${card("doctor","👨‍⚕️","عند الطبيب","ʿinda al-tabib","صف ما يؤلمك وافهم الدواء")}
+    ${card("pharmacy","💊","الصيدليّة","al-saydaliyya","أعطِ الوصفة وادفع")}
+    ${card("barber","💈",GV("الحلّاق","صالون الشعر"),"al-hallaq","كيف تريد شعرك؟ نعيماً!")}
+    ${card("restaurant","🍽️","المطعم","al-matʿam","اطلب من القائمة واطلب الحساب")}
+    ${card("taxi","🚕","التاكسي","al-taksi","وجّه السائق: يميناً، يساراً…")}
+    ${card("occasion","🎁","مناسبة جار","munasabat jar","مبروك، سلامتك، حمداً لله على السلامة")}
+    ${card("recipe","👵","وصفة الجدّة","wasfat al-jadda","افهم الأوامر واطبخ معها")}
+    <button class="advc" data-life="report"><span class="ae">📊</span><b>${P("تقرير الدرس","taqrir al-dars")}</b><small>كلماته وأخطاؤه هذا الأسبوع</small></button>
+    <div class="advsec">🎒 ${P("مغامرات أخرى","mughamarat ukhra")}</div>`);
+  g.querySelectorAll("[data-life]").forEach(b=>b.onclick=()=>{$("advBox").hidden=true;const k=b.dataset.life;if(k==="report")openReport();else LIFE_START[k]();});};
+// trophies shown inside the apartment
+var _aptSceneL=aptScene;
+aptScene=function(k,visiting){let h=_aptSceneL(k,visiting);const t=PL[k].trophies||0;if(t)h=h.replace('<div class="afigs">',`<div class="atrophy" title="كؤوس تحدّي الأسبوع">🏆<b>${ar(t)}</b></div><div class="afigs">`);return h;};
 </script>
 </body></html>
