@@ -646,6 +646,13 @@ button.tile:hover{border-color:var(--bld)}
 .shopshelf{grid-template-columns:repeat(4,1fr)}
 .errtask{background:#fff3e0;border:2px dashed #ffb74d;border-radius:12px;padding:5px 10px;font-weight:700;text-align:center;margin:4px 0}.errnpc{text-align:center;font-size:3rem;line-height:1.1}
 .mpprev{color:#2e7d32;font-weight:700;min-height:1.4em}.mpprev .mpar{font-size:1.3rem}
+.cdisp{position:absolute;left:2%;top:8px;width:240px;background:#102027;color:#e0f2f1;border:6px solid #37474f;border-radius:14px;padding:6px 10px;font-size:.85rem;z-index:2;box-shadow:0 4px 10px rgba(0,0,0,.3)}
+.cdisp .cdh{font-weight:800;color:#80cbc4;border-bottom:1px solid #37474f;margin-bottom:4px}.cdisp .cdrows{max-height:96px;overflow:auto}.cdisp .cdrows div{display:flex;justify-content:space-between;gap:6px}.cdisp .cdrows b{color:#a5d6a7;font-family:monospace}.cdisp .cdempty{color:#78909c}
+.cdisp .cdtot{display:flex;justify-content:space-between;border-top:1px dashed #607d8b;margin-top:4px;padding-top:3px;font-weight:900;color:#fff59d;font-size:1.05rem}
+.cdisp .cdst{margin-top:5px;border-radius:8px;padding:3px 6px;text-align:center;font-weight:800;background:#37474f}.cdisp .cdst.scan{background:#1565c0}.cdisp .cdst.wait{background:#ef6c00}.cdisp .cdst.ok,.cdisp .cdst.ok2{background:#2e7d32}
+.scanner{background:#263238;border-radius:10px;padding:5px;width:84px;box-shadow:0 2px 5px rgba(0,0,0,.3);position:relative}.scanner .scscr{background:#c5e1a5;color:#1b5e20;font-family:monospace;font-weight:900;border-radius:5px;text-align:center;padding:3px 2px;font-size:1rem;direction:ltr;white-space:nowrap}
+.scanner i{display:block;height:4px;margin:4px auto 0;width:60%;background:#e53935;border-radius:2px}.scanner.beep i{animation:scanbeep .45s}@keyframes scanbeep{0%{box-shadow:0 0 12px 4px #ff1744}100%{box-shadow:none}}
+@media (max-width:820px){.cdisp{left:auto;right:2%;top:auto;bottom:10px;width:180px;font-size:.72rem;padding:4px 7px;border-width:4px}.cdisp .cdrows{max-height:62px}.checkout .pos,.checkout .tray{display:none}}
 .pincard{max-width:380px;text-align:center}.doorpic{position:relative;font-size:4rem;line-height:1;margin:4px 0}.doorpic .lock{position:absolute;font-size:1.6rem;left:50%;margin-left:6px;top:28px}
 .pinscr2{font-size:2rem;letter-spacing:10px;background:#263238;color:#80deea;border-radius:12px;padding:6px;margin:8px auto;max-width:220px;direction:ltr}.pinscr2.bad{animation:pshake .35s;color:#ef9a9a}
 .pinpad2{display:grid;grid-template-columns:repeat(3,72px);gap:10px;justify-content:center;margin:10px auto;direction:ltr}.pinpad2 button{height:64px;font-size:1.6rem;font-weight:800;border-radius:16px;background:#f5f5f5;border:2px solid #ddd;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}.pinpad2 button small{font-size:.65rem;color:#888;font-weight:400}.pinpad2 button[data-hp="✓"]{background:#e8f5e9;border-color:#66bb6a}
@@ -3093,9 +3100,15 @@ function souqScene(){
   const scanned=items.slice(0,m.scan);
   return `<div class="market checkout">
     <div class="mksign">🧾 ${P("الكاشير","al-kashir")}</div>
-    <div class="register"><span class="rscr">${ar(scanned.reduce((a,id)=>a+PRODS[id].p,0))} ر.س</span></div>
+    ${(()=>{const sub=scanned.reduce((a,id)=>a+PRODS[id].p,0),tot=items.reduce((a,id)=>a+PRODS[id].p,0),done=m.scan>=items.length,g=mkGiven();
+      const rows=Object.entries(scanned.reduce((o,id)=>(o[id]=(o[id]||0)+1,o),{}));
+      const st=m.paid?(m.method==="card"?["✅ تمّ الدفع بالبطاقة","ok"]:["✅ تمّ الدفع نقداً","ok"]):!done?["📟 جارٍ المسح…","scan"]:m.step==="card"?[m.pin.length?`💳 يُدخل الرمز ${"●".repeat(m.pin.length)}`:"💳 أدخل البطاقة والرمز","wait"]:m.step==="cash"?[`💵 المدفوع: ${ar(g)} ر.س${g>=tot?` · الباقي: ${ar(g-tot)}`:` · بقي: ${ar(tot-g)}`}`,g>=tot?"ok2":"wait"]:["⏳ بانتظار الدفع","wait"];
+      return `<div class="cdisp"><div class="cdh">🧾 ${P("شاشة الكاشير","shashat al-kashir")}</div>
+        <div class="cdrows">${rows.length?rows.map(([id,q])=>`<div><span>${PRODS[id].e} ${esc(PRODS[id].ar)}${q>1?` × ${ar(q)}`:""}</span><b>${ar(PRODS[id].p*q)}</b></div>`).join(""):`<div class="cdempty">${P("في انتظار المنتجات…","fi intizar al-muntajat…")}</div>`}</div>
+        <div class="cdtot"><span>${P("المجموع","al-majmuʿ")}</span><b>${ar(done?tot:sub)} ر.س</b></div>
+        <div class="cdst ${st[1]}">${st[0]}</div></div>`;})()}
     <div class="belt">${items.map((id,i)=>`<span class="bi ${i<m.scan?"done":""}">${PRODS[id].e}</span>`).join("")}</div>
-    <div class="cashier">${fig("🧕")}<b>📟</b></div>
+    <div class="cashier">${fig("🧕")}${(()=>{const last=scanned[scanned.length-1];return `<div class="scanner ${last?"beep":""}" ${last?`data-k="${m.scan}"`:""}><div class="scscr">${last?`${PRODS[last].e} ${ar(PRODS[last].p)}`:"- - -"}</div><i></i></div>`;})()}</div>
     <div class="buyer">${me}${cartHtml}</div>
     ${m.step==="card"||m.method==="card"?`<div class="pos ${m.paid?"ok":""}">💳<span>${m.paid?"✓":"••••".slice(0,m.pin.length)||"PIN"}</span></div>`:""}
     ${m.step==="cash"||m.method==="cash"?`<div class="tray">${m.given.map(x=>`<span>${x>=5?"💵":"🪙"}<small>${ar(x)}</small></span>`).join("")}</div>`:""}
