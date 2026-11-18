@@ -640,7 +640,7 @@ button.tile:hover{border-color:var(--bld)}
 .till{background:#eceff1;border-radius:12px;padding:8px;display:flex;gap:8px;flex-wrap:wrap}.tillscr{flex:1;min-width:180px;background:#102027;color:#a5d6a7;font-family:monospace;border-radius:8px;padding:6px 10px;min-height:70px}.tillscr div{display:flex;justify-content:space-between;gap:8px}.tillscr .hint{color:#78909c}.tilltot{border-top:1px dashed #a5d6a7;margin-top:4px;padding-top:4px;color:#fff59d;font-weight:900}
 .cbelt{flex:1;min-width:150px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center;background:repeating-linear-gradient(90deg,#455a64 0 18px,#546e7a 18px 36px);border-radius:8px;padding:6px;font-size:2rem}.bitem{font-size:2.1rem;background:#fff;border:0;border-radius:10px;width:56px;height:56px;cursor:pointer;box-shadow:0 2px 4px rgba(0,0,0,.3)}.bitem:not([disabled]){animation:dropPulse 1.2s infinite}
 .cardpay{text-align:center;font-size:2.4rem;margin:10px 0}.cardpay div{font-size:1rem;font-weight:800}
-.mylist{display:flex;flex-direction:column;gap:5px;margin:6px 0;max-height:190px;overflow:auto}.myp{display:flex;align-items:center;gap:8px;background:#fffde7;border:2px solid #fff59d;border-radius:12px;padding:4px 8px}.myp span{font-size:1.8rem}.myp b{flex:1}.myp i{font-style:normal;font-weight:700;color:#6d4c41}.myp button{background:none;border:0;font-size:1.3rem;cursor:pointer}
+.mylist{display:flex;flex-direction:column;gap:5px;margin:6px 0;max-height:190px;overflow:auto}.myp{display:flex;align-items:center;gap:8px;background:#fffde7;border:2px solid #fff59d;border-radius:12px;padding:4px 8px}.myp span{font-size:1.8rem}.myp b{flex:1}.myp .myab{display:block;font-size:.75rem;color:#2e7d32;font-weight:700}.shopshelf .sp small .arz{display:block;font-style:normal;font-size:.62rem;color:#2e7d32}.myp i{font-style:normal;font-weight:700;color:#6d4c41}.myp button{background:none;border:0;font-size:1.3rem;cursor:pointer}
 .addp{background:#f1f8e9;border:2px dashed #9ccc65;border-radius:14px;padding:8px;margin:6px 0}.emgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(40px,1fr));gap:4px;max-height:130px;overflow:auto;margin-bottom:6px}.emgrid button{font-size:1.5rem;background:#fff;border:2px solid #e0e0e0;border-radius:10px;cursor:pointer;padding:2px}.emgrid button.on{border-color:#43a047;background:#c8e6c9}
 .addrow{display:flex;align-items:center;gap:8px;margin:6px 0;justify-content:center}.addrow .bigem{font-size:2.4rem}.addrow input{flex:1;font-size:1.1rem;padding:8px;border-radius:10px;border:2px solid #c5e1a5;font-family:inherit}
 .shopshelf{grid-template-columns:repeat(4,1fr)}
@@ -684,7 +684,7 @@ img.emoji{height:1em;width:1em;margin:0 .05em;vertical-align:-0.12em;display:inl
 .mpp small{font-size:.75rem;color:#666}
 .mpp .mpe{font-size:2rem;line-height:1}.mpp .mpn{font-weight:700;font-size:.92rem;text-align:center}
 .mprand{background:#fff7d6;border-color:#f2c94c}
-</style><script src="config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.js"></script><script src="https://cdn.jsdelivr.net/npm/@twemoji/api@15.1.0/dist/twemoji.min.js"></script></head><body>
+</style><script src="/config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.js"></script><script src="https://cdn.jsdelivr.net/npm/@twemoji/api@15.1.0/dist/twemoji.min.js"></script></head><body>
 
 <div class="wrap" dir="rtl">
   <header>
@@ -4219,7 +4219,7 @@ function startShop(){
   const draw=(body)=>{
     o.innerHTML=`<div class="gcard shopcard">${gHead("🏪",`دكّان ${me}`,`dukkan ${PL_INFO[CUR].tr}`)}
       <div class="shopbar"><span>👥 ${ar(Math.min(ci+1,N))}/${ar(N)}</span><span>💰 ${riyalAr(earned)}</span></div>
-      <div class="shopshelf">${shelf.map(k=>`<div class="sp ${cust&&cust.item===k&&step>=2?"hl":""}"><span>${PRODS[k].e}</span><small>${PRODS[k].ar}</small><b>${ar(PRODS[k].p)} ر</b></div>`).join("")}</div>
+      <div class="shopshelf">${shelf.map(k=>`<div class="sp ${cust&&cust.item===k&&step>=2?"hl":""}"><span>${PRODS[k].e}</span><small>${esc(PRODS[k].ar)}${PRODS[k].arz&&PRODS[k].arz!==PRODS[k].ar?`<em class="arz">${esc(PRODS[k].arz)}</em>`:""}</small><b>${ar(PRODS[k].p)} ر</b></div>`).join("")}</div>
       <div class="shopcounter"><div class="cust">${cust?cust.r.e:""}</div><div class="phlog">${log}</div></div>
       ${msg?`<div class="${/❌|🤔/.test(msg)?"alert":"win"} center">${msg}</div>`:""}${body}</div>`;
     o.hidden=false;gBind(o);const lg=o.querySelector(".phlog");if(lg)lg.scrollTop=1e5;
@@ -4365,7 +4365,7 @@ openAdv=function(){_openAdv8();const g=document.querySelector("#advBox .advgrid"
 /* ================= 🏪 my own products in my shop ================= */
 var MYP_EMO="🍎 🍌 🍇 🍉 🍓 🍒 🍑 🥭 🍍 🥥 🥝 🍋 🍊 🥑 🥦 🥕 🌽 🥒 🧅 🥔 🍞 🥐 🥖 🧇 🥞 🧀 🥚 🍗 🍖 🍔 🍕 🌭 🥪 🌮 🍟 🍿 🍩 🍪 🎂 🍰 🧁 🍫 🍬 🍭 🍯 🥛 🧃 🥤 ☕ 🍵 🧋 🍦 🍨 🧂 🫖 🧸 ⚽ 🎈 ✏️ 📒 🧴 🧼 🪥 🧻 🕯️ 🌹".split(" ");
 function myProds(){return PL[CUR].myProds||(PL[CUR].myProds=[]);}
-function regMyProds(){myProds().forEach(m=>{PRODS["my_"+m.id]={e:m.e,ar:m.ar,tr:"",p:m.p,mine:true};});}
+function regMyProds(){myProds().forEach(m=>{PRODS["my_"+m.id]={e:m.e,ar:m.ar,tr:"",arz:m.arz||"",p:m.p,mine:true};});}
 function shopShelfKeys(){regMyProds();const mine=myProds().map(m=>"my_"+m.id),base=Object.keys(PRODS).filter(k=>!k.startsWith("my_")).sort(()=>Math.random()-.5);return mine.concat(base).slice(0,Math.max(8,Math.min(12,mine.length+4)));}
 var _startShopRun=startShop;
 startShop=function(){
@@ -4373,7 +4373,7 @@ startShop=function(){
   const draw=()=>{const L=myProds();
     o.innerHTML=`<div class="gcard shopcard">${gHead("🏪",`دكّان ${PL_INFO[CUR].name}`,"dukkani")}
       <b>${P("🧺 منتجاتي الخاصّة","muntajati al-khassa")} (${ar(L.length)})</b>
-      <div class="mylist">${L.length?L.map(m=>`<div class="myp"><span>${m.e}</span><b>${esc(m.ar)}</b><i>${riyalAr(m.p)}</i><button data-mpdel="${m.id}" title="احذف">🗑️</button></div>`).join(""):`<div class="hint center">${P("لا توجد منتجات بعد. أضف منتجك الأوّل!","la tujadu muntajat baʿd.")}</div>`}</div>
+      <div class="mylist">${L.length?L.map(m=>`<div class="myp"><span>${m.e}</span><b>${esc(m.ar)}${m.arz&&m.arz!==m.ar?`<small class="myab">✍️ ${esc(m.arz)}</small>`:""}</b><i>${riyalAr(m.p)}</i><button data-mpdel="${m.id}" title="احذف">🗑️</button></div>`).join(""):`<div class="hint center">${P("لا توجد منتجات بعد. أضف منتجك الأوّل!","la tujadu muntajat baʿd.")}</div>`}</div>
       ${adding?`<div class="addp">
         <div class="emgrid">${MYP_EMO.map(e=>`<button class="${e===em?"on":""}" data-mpe="${e}">${e}</button>`).join("")}</div>
         <div class="addrow"><span class="bigem">${em}</span><input id="mpName" dir="rtl" lang="ar" maxlength="20" placeholder="✍️ اسم المنتج (عربي أو بحروف إنجليزية: pizza, khubz…)" value="${esc(nm)}"></div><div class="mpprev center" id="mpPrev">${mpPreview(nm)}</div>
@@ -4395,9 +4395,9 @@ startShop=function(){
   };
   const save=()=>{nm=(($("mpName")||{}).value||nm).trim();
     if(!nm){err=P("اكتب اسم المنتج أوّلاً ✍️","uktub ism al-muntaj");draw();return;}
-    nm=mpArabic(nm);if(!/[؀-ۿ]/.test(nm)){err=P("لم أستطع تحويل الاسم 🙂 جرّب كتابة أخرى.","");draw();return;}
+    if(!/[؀-ۿa-zA-Z]/.test(nm)){err=P("اكتب اسماً فيه حروف 🙂","uktub isman fihi huruf");draw();return;}const arz=/[a-zA-Z]/.test(nm)?mpArabic(nm):"";
     if(myProds().length>=12){err=P("الرفّ ممتلئ! احذف منتجاً أوّلاً.","al-raff mumtali'!");draw();return;}
-    myProds().push({id:Date.now().toString(36),e:em,ar:nm,p:pr});saveHome();yay();addStars(1);adding=false;nm="";err="";draw();};
+    myProds().push({id:Date.now().toString(36),e:em,ar:nm,arz,p:pr});saveHome();yay();addStars(1);adding=false;nm="";err="";draw();};
   draw();
 };
 
@@ -4452,5 +4452,7 @@ add("قهوة","qahwa gahwa 9ahwa ahwa kahwa");add("شاي","shay shai chai");ad
 function mpArabic(t){t=String(t).trim();if(!/[a-zA-Z]/.test(t))return t;t=t.replace(/\b(ice|ais|ays)\s*(cream|krim|kreem)\b/gi,"icecream");
   return t.replace(/[a-zA-Z0-9'’\-]+(\s+[a-zA-Z0-9'’\-]+)*/g,m=>m.split(/\s+/).map(w=>{const k=w.toLowerCase().replace(/[^a-z0-9]/g,"");if(MP_EN[k])return MP_EN[k];let a=typeof arabizi==="function"?arabizi(w):w;if(/[^a]a$/i.test(k)&&k.length>3&&/ا$/.test(a))a=a.replace(/ا$/,"ة");return a;}).join(" "));}
 function mpPreview(t){if(!t||!/[a-zA-Z]/.test(t))return "";return `✍️ ${P("بالعربي:","bil-ʿarabi:")} <b class="mpar">${esc(mpArabic(t))}</b>`;}
+
+
 </script>
 </body></html>
