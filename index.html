@@ -627,6 +627,7 @@ button.tile:hover{border-color:var(--bld)}
 .phcard,.shopcard{max-width:560px;width:100%}.phlog{max-height:230px;overflow:auto;display:flex;flex-direction:column;gap:6px;margin:8px 0}
 .phb{display:flex;gap:6px;align-items:flex-end}.phb.me{flex-direction:row-reverse}.phb b{font-size:1.6rem}.phb div{background:#f1f1f1;border-radius:14px;padding:6px 10px;max-width:80%;font-weight:600}.phb.me div{background:#dcf8c6}
 .phopts{display:flex;flex-direction:column;gap:6px;margin-top:6px}.phopts .big{width:100%}
+.ringbar{height:8px;background:#e0e0e0;border-radius:6px;overflow:hidden;margin:6px 0}.ringbar i{display:block;height:100%;background:#43a047;animation:ringdown 5s linear forwards}@keyframes ringdown{from{width:100%}to{width:0}}.phmissed{text-align:center;font-size:3.5rem}.phmissed div{font-size:1.05rem;font-weight:800;color:#c62828}
 .phring{text-align:center;font-size:4rem;animation:phshake .5s infinite}.phring div{font-size:1.1rem;font-weight:800}
 @keyframes phshake{0%,100%{transform:rotate(0)}25%{transform:rotate(-8deg)}75%{transform:rotate(8deg)}}
 .shopbar{display:flex;justify-content:space-between;font-weight:800;margin:4px 0}
@@ -4217,7 +4218,8 @@ function phoneRing(force,pick){
   let log="";
   const draw=(body)=>{o.innerHTML=`<div class="gcard phcard">${gHead("📞",step?`مكالمة مع ${r.ar}`:"يرنّ الهاتف!",step?`mukalama maʿa ${r.tr}`:"yarinnu al-hatif!")}<div class="phlog">${log}</div>${body}</div>`;o.hidden=false;gBind(o);
     const lg=o.querySelector(".phlog");if(lg)lg.scrollTop=1e5;o.querySelectorAll("[data-ph]").forEach(b=>b.onclick=()=>next(+b.dataset.ph));};
-  const ring=()=>{draw(`<div class="phring">📱<div>${r.e} ${P(`${r.ar} — الشقّة ${n}`,`${r.tr} — al-shaqqa ${(f-1)*4+s+1}`)}</div></div>`+opts([["📞 ردّ","rudd"],["🔕 لاحقاً","lahiqan"]]));};
+  const ring=()=>{draw(`<div class="phring">📱<div>${r.e} ${P(`${r.ar} — الشقّة ${n}`,`${r.tr} — al-shaqqa ${(f-1)*4+s+1}`)}</div></div><div class="ringbar"><i></i></div>`+opts([["📞 ردّ","rudd"],["🔕 لاحقاً","lahiqan"]]));};
+  const missed=()=>{clearInterval(ringIv);tone(400,.15);tone(300,.2,.15);draw(`<div class="phmissed">📵<div>${P(`مكالمة فائتة من ${r.ar} — الشقّة ${n}`,`mukalama fa'ita min ${r.tr}`)}</div></div>`+opts([[`📞 اتّصل ب${rG("ه","ها")} الآن`,`ittasil bi${rG("hi","ha")} al-an`],["🔕 لاحقاً","lahiqan"]]));};
   const end=(start)=>{clearInterval(ringIv);setTimeout(()=>{closeGame(false);if(start){const go=()=>{newRound(false);S.t=f;S.side=s;S.why=req.why;S.call={e:req.e,m:req.m,f,s};S.callPaid=false;render();pop(req.e,P(`${req.m[0]} ${r.ar}`,""));};if(ERRANDS[req.e])errandRun(req,r,n,go);else go();}},start?1300:600);};
   const next=i=>{
     if(step===0){if(i===1){clearInterval(ringIv);closeGame(false);return;}clearInterval(ringIv);step=1;tone(700,.05);
@@ -4234,7 +4236,7 @@ function phoneRing(force,pick){
       log+=bub("me","مع السلامة 👋","maʿa al-salama")+bub("them","في أمان الله! 👋","fi amani allah!");const go=step===3;step=9;addStars(1);yay();
       draw(go?`<div class="win center">📞 ${ERRANDS[req.e]?P(`أوّلاً: ${ERRANDS[req.e].go[0]}، ثمّ أوصله إلى الشقّة ${n}`,ERRANDS[req.e].go[1]):P(`مهمّتك: ${req.m[0]} ${r.ar} — الشقّة ${n}`,`${req.m[1]} ${r.tr}`)}</div>`:"");end(go);}
   };
-  ring();ringIv=setInterval(()=>{if(!GAME||GAME.kind!=="phone"){clearInterval(ringIv);return;}if(step===0){tone(1200,.08);tone(1500,.08,.12);tone(1200,.08,.24);}},1400);tone(1200,.08);tone(1500,.08,.12);
+  ring();setTimeout(()=>{if(GAME&&GAME.kind==="phone"&&step===0)missed();},5000);ringIv=setInterval(()=>{if(!GAME||GAME.kind!=="phone"){clearInterval(ringIv);return;}if(step===0){tone(1200,.08);tone(1500,.08,.12);tone(1200,.08,.24);}},1400);tone(1200,.08);tone(1500,.08,.12);
 }
 setInterval(()=>{if(S.phase==="reception"&&!GAME&&$("gameBox")&&$("gameBox").hidden&&Date.now()-CALL_LAST>4*60*1000&&Math.random()<0.4)phoneRing(false);},20000);
 var _newRound7=newRound;
