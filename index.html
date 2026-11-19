@@ -674,6 +674,7 @@ button.tile:hover{border-color:var(--bld)}
 .tpad .opw .ope,.phopts .opw .ope{color:#0d47a1}
 .emres{border-radius:12px;padding:8px;margin-bottom:6px;font-weight:800;display:flex;flex-direction:column;gap:2px}.emres.g{background:#e8f5e9;color:#1b5e20}.emres.m{background:#fff8e1;color:#e65100}.emres.b{background:#ffebee;color:#b71c1c}.emres small{font-weight:700}
 .emnotes{text-align:start;background:#fafafa;border-radius:10px;padding:6px 10px;font-size:.88rem;font-weight:600}.emnotes div{margin-top:2px}
+.tprev{background:#f1f8e9;border-radius:12px;padding:6px 8px;margin-bottom:8px;font-size:.85rem}.tprev>div{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}.tprev span{background:#fff;border-radius:10px;padding:1px 7px;font-weight:700}.tprev i{font-style:normal;color:#e65100}
 .stypes{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin:4px 0 8px}.stypes button{background:#fff;border:2px solid #e0e0e0;border-radius:12px;padding:3px;display:flex;flex-direction:column;align-items:center;cursor:pointer}.stypes button span{font-size:1.5rem}.stypes button b{font-size:.68rem}.stypes button small{font-size:.58rem;color:#1565c0}.stypes button.on{border-color:#43a047;background:#e8f5e9}.stypes button.on b{color:#1b5e20!important}.stypes button.on small{color:#1565c0!important}
 @media (max-width:600px){.stypes{grid-template-columns:repeat(3,1fr)}}
 .esccard{max-width:560px;background:linear-gradient(#263238,#37474f)!important;color:#eceff1}.esccard .ghead b,.esccard .ghead{color:#fff}.esccard.shk{animation:wshake .35s}
@@ -700,6 +701,7 @@ button.tile:hover{border-color:var(--bld)}
 .wwrap{position:relative;width:280px;height:280px;margin:10px auto}.wptr{position:absolute;top:-14px;left:50%;transform:translateX(-50%);font-size:2rem;color:#263238;z-index:2}
 .wheel{width:280px;height:280px;border-radius:50%;border:8px solid #fff;box-shadow:0 4px 16px rgba(0,0,0,.3);position:relative}.wheel span{position:absolute;left:50%;top:50%;font-size:2.2rem;margin:-20px 0 0 -20px;width:40px;text-align:center}
 .quickc{background:linear-gradient(135deg,#fff3e0,#ffe0b2)!important;border-color:#ffb74d!important}
+.storec{background:linear-gradient(135deg,#e8f5e9,#c8e6c9)!important;border-color:#66bb6a!important}
 .pincard{max-width:380px;text-align:center}.doorpic{position:relative;font-size:4rem;line-height:1;margin:4px 0}.doorpic .lock{position:absolute;font-size:1.6rem;left:50%;margin-left:6px;top:28px}
 .pinscr2{font-size:2rem;letter-spacing:10px;background:#263238;color:#80deea;border-radius:12px;padding:6px;margin:8px auto;max-width:220px;direction:ltr}.pinscr2.bad{animation:pshake .35s;color:#ef9a9a}
 .pinpad2{display:grid;grid-template-columns:repeat(3,72px);gap:10px;justify-content:center;margin:10px auto;direction:ltr}.pinpad2 button{height:64px;font-size:1.6rem;font-weight:800;border-radius:16px;background:#f5f5f5;border:2px solid #ddd;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}.pinpad2 button small{font-size:.65rem;color:#888;font-weight:400}.pinpad2 button[data-hp="✓"]{background:#e8f5e9;border-color:#66bb6a}
@@ -4438,14 +4440,14 @@ function regMyProds(){myProds().forEach(m=>{PRODS["my_"+m.id]={e:m.e,ar:m.ar,tr:
 function shopShelfKeys(){regMyProds();const mine=myProds().map(m=>"my_"+m.id),base=Object.keys(PRODS).filter(k=>!k.startsWith("my_")).sort(()=>Math.random()-.5);return mine.concat(base).slice(0,Math.max(8,Math.min(12,mine.length+4)));}
 var _startShopRun=startShop;
 startShop=function(){
-  const o=$("gameBox");GAME={kind:"shopsetup"};let adding=false,em="🍎",nm="",pr=3,err="";
+  const o=$("gameBox");GAME={kind:"shopsetup"};let adding=false,em=mypEmoFor(shopType())[0],nm="",pr=3,err="";
   const draw=()=>{const L=myProds();
     o.innerHTML=`<div class="gcard shopcard">${gHead("🏪",`دكّان ${PL_INFO[CUR].name}`,"dukkani")}
-      <b>${P("🏬 نوع الدكّان","nawʿ al-dukkan")}</b><div class="stypes">${Object.entries(SHOP_TYPES).map(([k,t])=>`<button class="${shopType()===k?"on":""}" data-stype="${k}"><span>${t.e}</span><b>${t.ar}</b><small>${t.en}</small></button>`).join("")}</div>
+      <b>${P("🏬 نوع الدكّان","nawʿ al-dukkan")}</b><div class="stypes">${Object.entries(SHOP_TYPES).map(([k,t])=>`<button class="${shopType()===k?"on":""}" data-stype="${k}"><span>${t.e}</span><b>${t.ar}</b><small>${t.en}</small></button>`).join("")}</div><div class="tprev"><b>${P(`📦 منتجات ${SHOP_TYPES[shopType()].ar} على الرفّ:`,`products: ${SHOP_TYPES[shopType()].en}`)}</b><div>${(SHOP_TYPES[shopType()].items||SHELVES.flat().map(k=>[PRODS[k].e,PRODS[k].ar,"","",PRODS[k].p])).slice(0,12).map(x=>`<span>${x[0]} ${x[1]} <i>${ar(x[4])}</i></span>`).join("")}</div></div>
       <b>${P("🧺 منتجاتي الخاصّة","muntajati al-khassa")} (${ar(L.length)})</b>
       <div class="mylist">${L.length?L.map(m=>`<div class="myp"><span>${m.e}</span><b>${esc(m.ar)}${m.arz&&m.arz!==m.ar?`<small class="myab">✍️ ${esc(m.arz)}</small>`:""}</b><i>${riyalAr(m.p)}</i><button data-mpdel="${m.id}" title="احذف">🗑️</button></div>`).join(""):`<div class="hint center">${P("لا توجد منتجات بعد. أضف منتجك الأوّل!","la tujadu muntajat baʿd.")}</div>`}</div>
       ${adding?`<div class="addp">
-        <div class="emgrid">${MYP_EMO.map(e=>`<button class="${e===em?"on":""}" data-mpe="${e}">${e}</button>`).join("")}</div>
+        <div class="emgrid">${mypEmoFor(shopType()).map(e=>`<button class="${e===em?"on":""}" data-mpe="${e}">${e}</button>`).join("")}</div>
         <div class="addrow"><span class="bigem">${em}</span><input id="mpName" dir="rtl" lang="ar" maxlength="20" placeholder="✍️ اسم المنتج (عربي أو بحروف إنجليزية: pizza, khubz…)" value="${esc(nm)}"></div><div class="mpprev center" id="mpPrev">${mpPreview(nm)}</div>
         <div class="addrow center"><b>${P("السعر:","al-siʿr:")}</b><button class="small" data-mpp="-1">➖</button><input id="mpPrice" type="number" inputmode="numeric" min="1" step="1" value="${pr}" class="mpprice"><b>ريال</b><button class="small" data-mpp="1">➕</button></div>
         ${err?`<div class="alert center">${err}</div>`:""}
@@ -4459,7 +4461,7 @@ startShop=function(){
     on("mpCancel",()=>{adding=false;draw();});
     on("mpSave",()=>save());
     on("mpOpen",()=>{closeGame(false);_startShopRun();});
-    o.querySelectorAll("[data-stype]").forEach(b=>b.onclick=()=>{nm=($("mpName")||{}).value||nm;PL[CUR].shopType=b.dataset.stype;saveHome();tone(900,.05);draw();});
+    o.querySelectorAll("[data-stype]").forEach(b=>b.onclick=()=>{nm=($("mpName")||{}).value||nm;PL[CUR].shopType=b.dataset.stype;em=mypEmoFor(b.dataset.stype)[0];saveHome();tone(900,.05);draw();});
     o.querySelectorAll("[data-mpe]").forEach(b=>b.onclick=()=>{nm=($("mpName")||{}).value||nm;pr=parseInt(($("mpPrice")||{}).value)||pr;em=b.dataset.mpe;tone(900,.04);draw();});
     o.querySelectorAll("[data-mpp]").forEach(b=>b.onclick=()=>{nm=($("mpName")||{}).value||nm;pr=Math.max(1,(parseInt(($("mpPrice")||{}).value)||pr)+ +b.dataset.mpp);tone(700,.04);draw();});
     o.querySelectorAll("[data-mpdel]").forEach(b=>b.onclick=()=>{const L2=myProds(),i=L2.findIndex(m=>m.id===b.dataset.mpdel);if(i>=0){const m=L2.splice(i,1)[0];delete PRODS["my_"+m.id];saveHome();tone(300,.08);}draw();});
@@ -5158,5 +5160,24 @@ openAdv=function(){_openAdv11();const g=document.querySelector("#advBox .advgrid
   g.querySelectorAll("[data-q]").forEach(b=>b.onclick=()=>{$("advBox").hidden=true;({wheel:startWheel,catch:startCatch,moves:startMoves})[b.dataset.q]();});};
 if(typeof ACT_LBL!=="undefined"){ACT_LBL.catch=["🎯","اصطد الجملة"];ACT_LBL.moves=["🤸","تحدّي الحركة"];}
 if(typeof BADGES!=="undefined"){BADGES.push({id:"catch",e:"🎯",ar:"الصيّاد السريع",tr:"al-sayyad al-sariʿ",need:"العب «اصطد الجملة» ٥ مرّات",test:c=>(c.catch||0)>=5});BADGES.push({id:"moves",e:"🤸",ar:"بطل الحركة",tr:"batal al-haraka",need:"أكمل تحدّي الحركة ٣ مرّات",test:c=>(c.moves||0)>=3});}
+
+/* ---------- add-product picker follows the shop type ---------- */
+var TYPE_EMO={general:MYP_EMO,
+ fruit:"🍎 🍏 🍐 🍊 🍋 🍌 🍉 🍇 🍓 🫐 🍈 🍒 🍑 🥭 🍍 🥥 🥝 🍅 🍆 🥑 🥦 🥬 🥒 🌶️ 🫑 🌽 🥕 🧄 🧅 🥔 🍠 🫘 🥜 🌰".split(" "),
+ electronics:"📱 💻 🖥️ ⌨️ 🖱️ 🖨️ 🎧 🎮 🕹️ ⌚ 📷 📹 📺 📻 🔋 🔌 💡 🔦 🎙️ 💾 💿 📀 🖲️ 📡 🛜 🔊 🔈 ⏰ 🧮 🤖".split(" "),
+ plumbing:"🔧 🔨 🪛 🔩 ⚙️ 🧰 🪚 🪠 🚰 🚿 🛁 🚽 🪣 🧽 🧯 🪜 🧱 🪝 🧲 ⛓️ 🔗 🧪 🩹 🧤 🦺 💧".split(" "),
+ bakery:"🍞 🥐 🥖 🫓 🥨 🥯 🧇 🥞 🧁 🎂 🍰 🍩 🍪 🥧 🍮 🧈 🥛 🧀 🥚 🍯 ☕ 🍵".split(" "),
+ books:"📕 📗 📘 📙 📒 📓 📔 📚 📖 ✏️ 🖊️ 🖋️ 🖍️ 🖌️ 📏 📐 ✂️ 📎 🖇️ 📌 📍 🗂️ 📁 🎒 🗺️ 🧮 🏷️".split(" "),
+ toys:"🧸 ⚽ 🏀 🏈 ⚾ 🎾 🏐 🪁 🚗 🚓 🚒 🚀 ✈️ 🚂 🧩 🤖 🎲 🪀 🛴 🛹 🧱 🎈 🪅 🎯 🎮 🪃 🦖 🦄 🐻".split(" "),
+ flowers:"🌹 🌷 🌻 🌼 🌸 💐 🌺 🪷 🪻 🥀 🌵 🪴 🌳 🌲 🌿 🍀 🍁 🌾 🎍".split(" "),
+ clothes:"👕 👚 👔 👖 🧥 🥼 👗 🥻 🩱 👘 🧢 👒 🎩 🧣 🧤 🧦 👟 👞 🥾 👠 🩴 👜 🎒 👓 🕶️ ⌚ 💍".split(" "),
+ sweets:"🍫 🍬 🍭 🍮 🍩 🍪 🧁 🍰 🎂 🍦 🍨 🍧 🥧 🍯 🧃 🥤 🧋 🍡 🍿 🥜 🍥".split(" ")};
+function mypEmoFor(t){const T=SHOP_TYPES[t],own=T&&T.items?T.items.map(x=>x[0]):[];return [...new Set(own.concat(TYPE_EMO[t]||MYP_EMO))];}
+
+/* ---------- link to the standalone 3D store game ---------- */
+var _openAdv12=openAdv;
+openAdv=function(){_openAdv12();const g=document.querySelector("#advBox .advgrid");if(!g)return;
+  g.insertAdjacentHTML("afterbegin",`<button class="advc storec" data-store="1"><span class="ae">🛒</span><b>${P("لعبة رف المتجر","luʿbat raff al-matjar")}</b><small>امشِ في السوبرماركت ثلاثيّ الأبعاد · متسوّق أو كاشير · غيّر المنتجات والأسعار</small></button>`);
+  g.querySelector("[data-store]").onclick=()=>{location.href="store.html";};};
 </script>
 </body></html>
