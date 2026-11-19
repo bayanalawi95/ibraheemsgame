@@ -686,6 +686,20 @@ button.tile:hover{border-color:var(--bld)}
 .esccols{display:flex;gap:12px;justify-content:center;margin:8px 0}.esccols button{width:70px;height:70px;border-radius:50%;border:4px solid #fff;cursor:pointer;box-shadow:0 3px 8px rgba(0,0,0,.4)}.esccard .dot{display:inline-block;width:16px;height:16px;border-radius:50%;margin:2px;border:2px solid #fff}
 .esctyped{text-align:center;font-size:1.3rem;letter-spacing:6px;min-height:1.6em;color:#ffd54f}.escbig{font-size:3rem}.escadv{background:linear-gradient(135deg,#263238,#455a64)!important;color:#fff!important}.escadv *{color:#fff!important}
 .kb .ken{display:block;direction:ltr;text-align:left;color:#1565c0;font-style:italic;font-size:.78rem;margin-top:2px;font-weight:600}
+.catchcard,.movecard,.wheelcard{max-width:600px;width:100%}
+.cbar{display:flex;justify-content:space-between;font-weight:900;font-size:1.1rem;margin:4px 0}.cbar .low{color:#e53935;animation:dropPulse .6s infinite}
+.cprompt{text-align:center;background:#e3f2fd;border:3px solid #42a5f5;border-radius:14px;padding:8px;font-size:1.3rem;direction:ltr}
+.carena{position:relative;height:360px;background:linear-gradient(#e1f5fe,#b3e5fc);border-radius:14px;overflow:hidden;margin-top:6px}
+.cbub{position:absolute;top:-60px;width:22%;min-height:54px;border-radius:18px;border:3px solid #fff;background:#7e57c2;color:#fff;font-weight:900;font-size:1rem;cursor:pointer;box-shadow:0 4px 10px rgba(0,0,0,.25);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px;line-height:1.2}
+.cbub small{font-size:.62rem;font-weight:600;opacity:.85;direction:ltr}.cbub.hit{background:#43a047;transform:scale(1.2);transition:transform .2s!important}.cbub.miss{background:#e53935;animation:wshake .3s}
+.cbig{font-size:2.6rem;font-weight:900}.newrec{color:#e65100}
+.crev{background:#fafafa;border-radius:12px;padding:8px;margin:8px 0}.crev div{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;padding:2px 0}.crev span{font-weight:800}.crev small{color:#555;direction:ltr}.crev i{color:#1565c0;direction:ltr}
+.mprog{display:flex;gap:4px;justify-content:center;margin:4px 0}.mprog i{width:22px;height:8px;border-radius:4px;background:#e0e0e0}.mprog i.ok{background:#43a047}.mprog i.cur{background:#ffb300}
+.memo{text-align:center;font-size:5rem;animation:bob 1s infinite}.mtxt{text-align:center;font-size:1.7rem;font-weight:900}.mtr{text-align:center;direction:ltr;color:#555}.men{text-align:center;direction:ltr;color:#1565c0;font-style:italic;font-weight:700}
+.mtime{height:12px;background:#e0e0e0;border-radius:8px;overflow:hidden;margin:10px 0}.mtime i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#43a047,#ffb300,#e53935)}
+.wwrap{position:relative;width:280px;height:280px;margin:10px auto}.wptr{position:absolute;top:-14px;left:50%;transform:translateX(-50%);font-size:2rem;color:#263238;z-index:2}
+.wheel{width:280px;height:280px;border-radius:50%;border:8px solid #fff;box-shadow:0 4px 16px rgba(0,0,0,.3);position:relative}.wheel span{position:absolute;left:50%;top:50%;font-size:2.2rem;margin:-20px 0 0 -20px;width:40px;text-align:center}
+.quickc{background:linear-gradient(135deg,#fff3e0,#ffe0b2)!important;border-color:#ffb74d!important}
 .pincard{max-width:380px;text-align:center}.doorpic{position:relative;font-size:4rem;line-height:1;margin:4px 0}.doorpic .lock{position:absolute;font-size:1.6rem;left:50%;margin-left:6px;top:28px}
 .pinscr2{font-size:2rem;letter-spacing:10px;background:#263238;color:#80deea;border-radius:12px;padding:6px;margin:8px auto;max-width:220px;direction:ltr}.pinscr2.bad{animation:pshake .35s;color:#ef9a9a}
 .pinpad2{display:grid;grid-template-columns:repeat(3,72px);gap:10px;justify-content:center;margin:10px auto;direction:ltr}.pinpad2 button{height:64px;font-size:1.6rem;font-weight:800;border-radius:16px;background:#f5f5f5;border:2px solid #ddd;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}.pinpad2 button small{font-size:.65rem;color:#888;font-weight:400}.pinpad2 button[data-hp="✓"]{background:#e8f5e9;border-color:#66bb6a}
@@ -5044,5 +5058,105 @@ async function ktrGet(ar){const key=String(ar).replace(/<[^>]+>/g,"").trim();if(
 setInterval(()=>{const c=S.kidChat;if(!c||!c.log||KTR_BUSY>2)return;
   c.log.forEach(m=>{if(m.who!=="kid"||m.en||m.enTry)return;m.enTry=1;KTR_BUSY++;
     ktrGet(m.l[0]).then(t=>{if(t){m.en=t;if(S.kidChat===c)render();}}).catch(()=>{}).finally(()=>{KTR_BUSY--;});});},700);
+
+/* =====================================================================
+   ⚡ ألعاب سريعة — short, active bursts that recycle what he learned
+   ===================================================================== */
+function quickPool(){
+  const learned=new Set((PL[CUR].log||[]).flatMap(x=>x.ok||[]));
+  const SILLY=["لا تأتوا","أعطني","أريد سيّارة","فيلاً","لا أحبّ الدواء","أريد لعبة","التلفاز","أريد أن أنام","أين الحليب","هذا قليل"];const all=Object.entries(OPT_D).filter(([a,v])=>v[1]&&!SILLY.some(x=>a.includes(x))&&a.trim()!=="لا!"&&a.replace(/[^؀-ۿ ]/g,"").trim().length<=24&&a.replace(/[^؀-ۿ ]/g,"").trim().length>=3)
+    .map(([a,v])=>({ar:a.replace(/[\u{1F300}-\u{1FAFF}☀-➿]/gu,"").trim(),tr:v[0],en:v[1].replace(/\(.*?\)/g,"").trim(),w:learned.has(a)?3:1}));
+  const extra=[["يميناً","yaminan","Right"],["يساراً","yasaran","Left"],["إلى الأمام","ila al-amam","Forward"],["توقّف هنا","tawaqqaf huna","Stop here"],["تحت الكرسي","tahta al-kursi","Under the chair"],["فوق الطاولة","fawqa al-tawila","On the table"],["خلف الباب","khalfa al-bab","Behind the door"],["داخل الصندوق","dakhila al-sunduq","Inside the box"],["أحمر","ahmar","Red"],["أزرق","azraq","Blue"],["أخضر","akhdar","Green"],["أصفر","asfar","Yellow"],["مبروك!","mabruk!","Congratulations!"],["سلامتك!","salamatak!","Get well soon!"],["كم الثمن؟","kam al-thaman?","How much is it?"],["أين المصعد؟","ayna al-misʿad?","Where is the elevator?"],["أنا جوعان","ana jawʿan","I'm hungry"],["أنا عطشان","ana ʿatshan","I'm thirsty"],["افتح الباب","iftah al-bab","Open the door"],["أغلق الباب","aghliq al-bab","Close the door"]].map(x=>({ar:x[0],tr:x[1],en:x[2],w:1}));
+  const seen=new Set(),out=[];all.concat(extra).forEach(x=>{if(!seen.has(x.en)&&!seen.has(x.ar)){seen.add(x.en);seen.add(x.ar);out.push(x);}});
+  return out;
+}
+function wpick(pool){const tot=pool.reduce((a,x)=>a+x.w,0);let r=Math.random()*tot;for(const x of pool){r-=x.w;if(r<=0)return x;}return pool[0];}
+
+/* ---------- 🎯 catch the phrase (falling bubbles, 60 s) ---------- */
+function startCatch(){
+  const o=$("gameBox"),pool=quickPool(),LIM=60,t0=Date.now();GAME={kind:"catch"};
+  let score=0,combo=0,lives=3,target=null,caught=[],spawnT=null,tick=null,ended=false,since=0,id=0;
+  o.innerHTML=`<div class="gcard catchcard">${gHead("🎯","اصطد الجملة!","istad al-jumla!")}
+    <div class="cbar"><span id="cTime">⏱️ ٦٠</span><span id="cScore">⭐ ٠</span><span id="cCombo"></span><span id="cLives">❤️❤️❤️</span></div>
+    <div class="cprompt" id="cPrompt"></div><div class="carena" id="cArena"></div>
+    <div class="hint center">${P("اضغط على الجملة العربيّة التي معناها بالأعلى قبل أن تسقط!","idghat ʿala al-jumla al-ʿarabiyya!")}</div></div>`;
+  o.hidden=false;gBind(o);const arena=$("cArena");
+  const newTarget=()=>{let t;do{t=wpick(pool);}while(target&&t.ar===target.ar);target=t;since=0;$("cPrompt").innerHTML=`🇬🇧 <b>${t.en}</b>`;};
+  const hud=()=>{$("cScore").textContent=`⭐ ${ar(score)}`;$("cCombo").textContent=combo>=2?`🔥×${ar(combo)}`:"";$("cLives").textContent="❤️".repeat(lives)+"🤍".repeat(3-lives);};
+  const elapsed=()=>(Date.now()-t0)/1000;
+  const spawn=()=>{if(ended)return;since++;const isT=since>=3||Math.random()<.4;const ph=isT?target:(()=>{let x;do{x=wpick(pool);}while(x.ar===target.ar);return x;})();if(isT)since=0;
+    const b=document.createElement("button");b.className="cbub";b.dataset.ar=ph.ar;b.innerHTML=`${ph.ar}<small>${ph.tr}</small>`;const lane=Math.floor(Math.random()*4);b.style.left=(4+lane*24)+"%";
+    const dur=Math.max(3.2,6.5-elapsed()/15);b.style.transition=`top ${dur}s linear`;arena.appendChild(b);requestAnimationFrame(()=>requestAnimationFrame(()=>{b.style.top="100%";}));
+    const kill=setTimeout(()=>{if(b.isConnected){if(b.dataset.ar===target.ar){combo=0;hud();}b.remove();}},dur*1000);
+    b.onclick=()=>{clearTimeout(kill);if(ended)return;
+      if(b.dataset.ar===target.ar){combo++;const pts=10*Math.min(combo,5);score+=pts;caught.push(target);b.classList.add("hit");b.innerHTML=`+${ar(pts)} ✨`;tone(700+combo*80,.07);setTimeout(()=>b.remove(),300);newTarget();}
+      else{combo=0;lives--;b.classList.add("miss");tone(160,.2,0,"square",.08);setTimeout(()=>b.remove(),300);if(lives<=0)end();}
+      hud();};
+    spawnT=setTimeout(spawn,Math.max(650,1300-elapsed()*10));};
+  const end=()=>{if(ended)return;ended=true;clearTimeout(spawnT);clearInterval(tick);
+    const best=PL[CUR].catchBest||0,stars=score>=250?3:score>=120?2:score>=40?1:0;if(score>best)PL[CUR].catchBest=score;
+    if(stars)addStars(stars);_countOnceL("catch");logAct("catch",{s:stars,ok:[...new Set(caught.map(x=>x.ar))].slice(0,8)});saveHome();if(stars)confetti(40);yay();
+    const uniq=[...new Map(caught.map(x=>[x.ar,x])).values()];
+    o.innerHTML=`<div class="gcard catchcard">${gHead("🎯","انتهت الجولة!","intahat al-jawla!")}
+      <div class="center cbig">⭐ ${ar(score)}</div><div class="center">${"⭐".repeat(stars)||"💪"} ${score>best&&best?`<b class="newrec">🏆 ${P("رقم قياسيّ جديد!","raqm qiyasi jadid!")}</b>`:`🏆 ${ar(Math.max(best,score))}`}</div>
+      ${uniq.length?`<div class="crev"><b>${P("🗣️ الجمل التي اصطدتها — قلها بصوت عالٍ:","qulha bi-sawtin ʿalin")}</b>${uniq.slice(0,8).map(x=>`<div><span>${x.ar}</span><small>${x.tr}</small><i>${x.en}</i></div>`).join("")}</div>`:""}
+      <div class="tog center"><button class="big huge" id="cAgain">🔁 ${P("مرّة أخرى!","marra ukhra!")}</button><button class="big" id="cDone">✅ ${P("انتهيت","intahaytu")}</button></div></div>`;
+    gBind(o);$("cAgain").onclick=()=>{closeGame(false);startCatch();};$("cDone").onclick=()=>closeGame(false);};
+  tick=setInterval(()=>{if(!GAME||GAME.kind!=="catch"){ended=true;clearInterval(tick);clearTimeout(spawnT);return;}const left=Math.max(0,LIM-Math.floor(elapsed()));const e=$("cTime");if(e){e.textContent=`⏱️ ${ar(left)}`;e.classList.toggle("low",left<=10);}if(left<=10&&left>0)tone(1000,.03,0,"square",.03);if(left<=0)end();},1000);
+  GAME.iv=tick;newTarget();hud();spawn();
+}
+
+/* ---------- 🤸 move challenge (body + numbers + verbs) ---------- */
+var BODY_MOVES=[
+ ["🦘","اقفز ثلاث مرّات","اقفزي ثلاث مرّات","iqfiz thalath marrat","Jump three times"],["👏","صفّق مرّتين","صفّقي مرّتين","saffiq marratayn","Clap twice"],["🙆","المس رأسك","المسي رأسك","ilmas ra'sak","Touch your head"],
+ ["👃","المس أنفك","المسي أنفك","ilmas anfak","Touch your nose"],["🙌","ارفع يديك إلى الأعلى","ارفعي يديكِ إلى الأعلى","irfaʿ yadayk ila al-aʿla","Raise your hands up"],["🦩","قف على رجل واحدة","قفي على رجل واحدة","qif ʿala rijlin wahida","Stand on one leg"],
+ ["🌀","دُر حول نفسك","دوري حول نفسك","dur hawla nafsik","Spin around"],["🏃","اركض في مكانك","اركضي في مكانك","urkud fi makanik","Run on the spot"],["🦶","المس قدميك","المسي قدميكِ","ilmas qadamayk","Touch your feet"],
+ ["🪑","اجلس ثمّ قم","اجلسي ثمّ قومي","ijlis thumma qum","Sit down, then stand up"],["👂","المس أذنيك","المسي أذنيكِ","ilmas udhunayk","Touch your ears"],["💪","اعمل خمس قفزات وعُدّ بالعربي","اعملي خمس قفزات وعُدّي بالعربي","iʿmal khams qafazat","Do five jumps and count in Arabic"],
+ ["🤫","قل «سبحان الله» بهدوء","قولي «سبحان الله» بهدوء","qul subhan allah bi-hudu'","Say «Subhan Allah» quietly"],["😄","ابتسم ابتسامة كبيرة","ابتسمي ابتسامة كبيرة","ibtasim ibtisama kabira","Give a big smile"],["🐸","اقفز مثل الضفدع","اقفزي مثل الضفدع","iqfiz mithla al-difdaʿ","Jump like a frog"],["✈️","افتح يديك مثل الطائرة","افتحي يديكِ مثل الطائرة","iftah yadayk mithla al-ta'ira","Open your arms like a plane"]];
+function startMoves(){
+  const o=$("gameBox"),list=lshuf(BODY_MOVES).slice(0,8),SEC=8;GAME={kind:"moves"};let i=0,done=0,iv=null,left=SEC;
+  const show=()=>{if(i>=list.length){fin();return;}const m=list[i];left=SEC;
+    o.innerHTML=`<div class="gcard movecard">${gHead("🤸","تحدّي الحركة!","tahaddi al-haraka!")}
+      <div class="mprog">${list.map((_,j)=>`<i class="${j<i?"ok":j===i?"cur":""}"></i>`).join("")}</div>
+      <div class="memo">${m[0]}</div><div class="mtxt">${GV(m[1],m[2])}</div><div class="mtr">${m[3]}</div><div class="men">🇬🇧 ${m[4]}</div>
+      <div class="mtime"><i id="mBar"></i></div>
+      <div class="tog center"><button class="big huge" id="mDid">✅ ${P(GV("فعلتُها!","فعلتُها!"),"faʿaltuha!")}</button><button class="big" id="mSkip">⏭️</button></div></div>`;
+    o.hidden=false;gBind(o);tone(600,.06);tone(900,.08,.08);
+    const bar=$("mBar");requestAnimationFrame(()=>{bar.style.transition=`width ${SEC}s linear`;bar.style.width="0%";});
+    $("mDid").onclick=()=>{done++;clearInterval(iv);yay();i++;setTimeout(show,250);};$("mSkip").onclick=()=>{clearInterval(iv);i++;show();};
+    clearInterval(iv);iv=setInterval(()=>{if(!GAME||GAME.kind!=="moves"){clearInterval(iv);return;}left--;if(left<=3&&left>0)tone(800,.04);if(left<=0){clearInterval(iv);i++;show();}},1000);GAME.iv=iv;};
+  const fin=()=>{clearInterval(iv);const stars=done>=7?3:done>=5?2:done>=2?1:0;if(stars)addStars(stars);_countOnceL("moves");logAct("moves",{s:stars,ok:list.slice(0,done).map(m=>GV(m[1],m[2]))});confetti(40);
+    o.innerHTML=`<div class="gcard movecard">${gHead("🤸","أحسنت!","ahsant!")}<div class="center cbig">💪 ${ar(done)}/${ar(list.length)}</div><div class="center">${"⭐".repeat(stars)}</div>
+      <div class="crev"><b>${P("🧠 هل تتذكّر؟ ماذا يعني:","hal tatadhakkar?")}</b>${list.slice(0,4).map(m=>`<div><span>${m[0]} ${GV(m[1],m[2])}</span><small>${m[3]}</small><i>${m[4]}</i></div>`).join("")}</div>
+      <div class="tog center"><button class="big huge" id="mAgain">🔁 ${P("مرّة أخرى!","marra ukhra!")}</button><button class="big" id="mDone">✅ ${P("انتهيت","intahaytu")}</button></div></div>`;
+    gBind(o);$("mAgain").onclick=()=>{closeGame(false);startMoves();};$("mDone").onclick=()=>closeGame(false);};
+  show();
+}
+
+/* ---------- 🎡 surprise wheel ---------- */
+var WHEEL=[["🎯","اصطد الجملة",()=>startCatch()],["🤸","تحدّي الحركة",()=>startMoves()],["🗝️","غرفة الهروب",()=>startEscape()],["🚨","طوارئ!",()=>scEmergency(false)],["🚕","التاكسي",()=>scTaxi()],["🏪","دكّاني",()=>startShop()]];
+function startWheel(){
+  const o=$("gameBox");GAME={kind:"wheel"};const n=WHEEL.length,seg=360/n,cols=["#ef5350","#ffa726","#ffee58","#66bb6a","#42a5f5","#ab47bc"];
+  o.innerHTML=`<div class="gcard wheelcard">${gHead("🎡","عجلة المفاجآت!","ʿajalat al-mufaja'at!")}
+    <div class="wwrap"><div class="wptr">▼</div><div class="wheel" id="wheel" style="background:conic-gradient(${WHEEL.map((w,i)=>`${cols[i]} ${i*seg}deg ${(i+1)*seg}deg`).join(",")})">
+      ${WHEEL.map((w,i)=>`<span style="transform:rotate(${i*seg+seg/2}deg) translateY(-105px) rotate(-${i*seg+seg/2}deg)">${w[0]}</span>`).join("")}</div></div>
+    <div class="center" id="wRes">${P("اضغط «لُفّ» وجرّب حظّك! 🍀","idghat «luff»!")}</div>
+    <div class="tog center"><button class="big huge" id="wSpin">🎡 ${P("لُفّ!","luff!")}</button></div></div>`;
+  o.hidden=false;gBind(o);
+  $("wSpin").onclick=()=>{const k=Math.floor(Math.random()*n),turns=5*360+(360-(k*seg+seg/2));const w=$("wheel");w.style.transition="transform 3.2s cubic-bezier(.17,.67,.2,1)";w.style.transform=`rotate(${turns}deg)`;$("wSpin").disabled=true;
+    let c=0;const tk=setInterval(()=>{tone(1200,.02);if(++c>22)clearInterval(tk);},130);
+    setTimeout(()=>{const x=WHEEL[k];$("wRes").innerHTML=`<div class="win">${x[0]} ${P(x[1],"")} — 🎁 +٢ ⭐</div>`;yay();addStars(2);setTimeout(()=>{closeGame(false);x[2]();},1400);},3400);};
+}
+
+/* ---------- menu ---------- */
+var _openAdv11=openAdv;
+openAdv=function(){_openAdv11();const g=document.querySelector("#advBox .advgrid");if(!g)return;
+  g.insertAdjacentHTML("afterbegin",`<div class="advsec">⚡ ${P("ألعاب سريعة — دقيقة واحدة!","alʿab sariʿa")}</div>
+    <button class="advc quickc" data-q="wheel"><span class="ae">🎡</span><b>${P("عجلة المفاجآت","ʿajalat al-mufaja'at")}</b><small>لُفّ واكتشف لعبتك + ٢ ⭐</small></button>
+    <button class="advc quickc" data-q="catch"><span class="ae">🎯</span><b>${P("اصطد الجملة","istad al-jumla")}</b><small>٦٠ ثانية · جمل تعلّمتها ${PL[CUR].catchBest?"· 🏆 "+ar(PL[CUR].catchBest):""}</small></button>
+    <button class="advc quickc" data-q="moves"><span class="ae">🤸</span><b>${P("تحدّي الحركة","tahaddi al-haraka")}</b><small>قم وتحرّك! اقفز، صفّق، المس رأسك…</small></button>`);
+  g.querySelectorAll("[data-q]").forEach(b=>b.onclick=()=>{$("advBox").hidden=true;({wheel:startWheel,catch:startCatch,moves:startMoves})[b.dataset.q]();});};
+if(typeof ACT_LBL!=="undefined"){ACT_LBL.catch=["🎯","اصطد الجملة"];ACT_LBL.moves=["🤸","تحدّي الحركة"];}
+if(typeof BADGES!=="undefined"){BADGES.push({id:"catch",e:"🎯",ar:"الصيّاد السريع",tr:"al-sayyad al-sariʿ",need:"العب «اصطد الجملة» ٥ مرّات",test:c=>(c.catch||0)>=5});BADGES.push({id:"moves",e:"🤸",ar:"بطل الحركة",tr:"batal al-haraka",need:"أكمل تحدّي الحركة ٣ مرّات",test:c=>(c.moves||0)>=3});}
 </script>
 </body></html>
