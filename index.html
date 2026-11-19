@@ -653,7 +653,7 @@ button.tile:hover{border-color:var(--bld)}
 .scanner{background:#263238;border-radius:10px;padding:5px;width:84px;box-shadow:0 2px 5px rgba(0,0,0,.3);position:relative}.scanner .scscr{background:#c5e1a5;color:#1b5e20;font-family:monospace;font-weight:900;border-radius:5px;text-align:center;padding:3px 2px;font-size:1rem;direction:ltr;white-space:nowrap}
 .scanner i{display:block;height:4px;margin:4px auto 0;width:60%;background:#e53935;border-radius:2px}.scanner.beep i{animation:scanbeep .45s}@keyframes scanbeep{0%{box-shadow:0 0 12px 4px #ff1744}100%{box-shadow:none}}
 @media (max-width:820px){.cdisp{left:auto;right:2%;top:auto;bottom:10px;width:180px;font-size:.72rem;padding:4px 7px;border-width:4px}.cdisp .cdrows{max-height:62px}.checkout .pos,.checkout .tray{display:none}}
-.lifecard{max-width:600px}.lifesit{background:#fff8e1;border:2px dashed #ffca28;border-radius:12px;padding:6px 10px;font-weight:700;text-align:center;margin:4px 0}.lifesit .menu{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin-bottom:6px;font-weight:600;font-size:.82rem}.lifesit .menu span{background:#fff;border-radius:8px;padding:1px 6px;border:1px solid #ffe082}.lifesit .menu b{color:#e65100}
+.lifecard{max-width:600px}.lifecard .big.wrongb{background:#ffcdd2!important;border-color:#e53935!important;color:#b71c1c!important;animation:wshake .35s}@keyframes wshake{25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-3px)}}.lifecard .big.wrongb::before{content:"✗ "}.lifecard .alert{font-size:1.05rem;font-weight:800}.lifesit{background:#fff8e1;border:2px dashed #ffca28;border-radius:12px;padding:6px 10px;font-weight:700;text-align:center;margin:4px 0}.lifesit .menu{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin-bottom:6px;font-weight:600;font-size:.82rem}.lifesit .menu span{background:#fff;border-radius:8px;padding:1px 6px;border:1px solid #ffe082}.lifesit .menu b{color:#e65100}
 .emsit{font-size:2.6rem;animation:phshake .5s infinite}.ltimer{text-align:center;font-weight:800;color:#c62828}
 .picopts{flex-direction:row!important;justify-content:center;flex-wrap:wrap}.picopts .big{width:auto!important;min-width:110px}.picopts .pic{font-size:2.2rem;letter-spacing:2px}
 .learned{margin:6px 0;display:flex;flex-wrap:wrap;gap:5px;align-items:center}.learned span{background:#e8f5e9;border-radius:10px;padding:2px 8px;font-weight:700;font-size:.85rem}
@@ -4540,14 +4540,14 @@ function runScene(def){
       ${def.sit?`<div class="lifesit">${typeof def.sit==="function"?def.sit():def.sit}</div>`:""}
       ${def.extra?def.extra():""}
       <div class="phlog">${log}</div>${msg?`<div class="alert center">${msg}</div>`:""}
-      ${st&&st._o&&!locked?`${st.hint0?`<div class="hint center">${P(st.hint0[0],st.hint0[1]||"")}</div>`:""}<div class="phopts ${st.pics?"picopts":""}">${st._o.map((x,j)=>`<button class="big" data-lo="${j}">${st.pics?`<span class="pic">${x.pic}</span>`:P(x.t[0],x.t[1]||"")}</button>`).join("")}</div>`:""}</div>`;
+      ${st&&st._o&&!locked?`${st.hint0?`<div class="hint center">${P(st.hint0[0],st.hint0[1]||"")}</div>`:""}<div class="phopts ${st.pics?"picopts":""}">${st._o.map((x,j)=>`<button class="big ${st._bad&&st._bad.includes(j)?"wrongb":""}" data-lo="${j}">${st.pics?`<span class="pic">${x.pic}</span>`:P(x.t[0],x.t[1]||"")}</button>`).join("")}</div>`:""}</div>`;
     o.hidden=false;gBind(o);const lg=o.querySelector(".phlog");if(lg)lg.scrollTop=1e5;
     o.querySelectorAll("[data-lo]").forEach(b=>b.onclick=()=>choose(+b.dataset.lo));};
   const enter=()=>{const st=step();if(!st){finish();return;}
     const say=typeof st.say==="function"?st.say():st.say;if(say)bub("them",say[0],say[1],st.e);
     st._o=st.keep?st.opts.slice():lshuf(st.opts);msg="";draw();};
   const choose=j=>{if(locked)return;const st=step(),x=st._o[j];
-    if(!x.ok){miss++;bad.push({said:x.t?x.t[0]:x.pic,right:(st._o.find(y=>y.ok)||{t:[""]}).t[0]});msg=`🤔 ${x.hint||st.hint||"حاول مرّة أخرى!"}`;tone(200,.15);draw();return;}
+    if(!x.ok){(st._bad=st._bad||[]).push(j);miss++;bad.push({said:x.t?x.t[0]:x.pic,right:(st._o.find(y=>y.ok)||{t:[""]}).t[0]});msg=`🤔 ${x.hint||st.hint||"حاول مرّة أخرى!"}`;tone(200,.15);draw();return;}
     const said=x.me||x.t;if(said)bub("me",said[0],said[1]);if(x.t&&!st.noLog)okLines.push(x.t[0]);
     if(x.reply)bub("them",x.reply[0],x.reply[1],st.e);
     if(st.after)st.after(x);tone(880,.05);i++;locked=true;msg="";draw();setTimeout(()=>{locked=false;enter();},450);};
@@ -4685,7 +4685,7 @@ function scEmergency(auto){
     {e:sv[0],say:LT(`${sv[1]}، ما المشكلة؟`,"ma al-mushkila?"),hint:"صف المشكلة بالضبط 👆",opts:[LOK(LT(E.d,E.dTr)),LNO(LT(all[1].d),"هذه ليست مشكلتنا! اقرأ في الأعلى 👆"),LNO(LT(all[2].d),"هذه ليست مشكلتنا! اقرأ في الأعلى 👆")]},
     {e:sv[0],say:LT("أين بالضبط؟","ayna bil-dabt?"),hint:`المشكلة في الشقّة ${n}`,opts:flA.map(x=>({t:LT(`في ${FL[x]?FL[x].ar:"الطابق "+ar(x)}، ${x===f?`الشقّة ${n}`:`الشقّة ${aptNo(x,fs[1])}`}.`),ok:x===f,hint:`انظر: المشكلة في الشقّة ${n} 👆`}))}
   ];
-  if(E.hurt!==null)steps.push({e:sv[0],say:LT("هل يوجد أحد مصاب؟","hal yujadu ahadun musab?"),opts:[{t:LT("نعم، يوجد شخص مصاب.","naʿam."),ok:E.hurt,hint:"هل سقط أحد؟ اقرأ في الأعلى 👆"},{t:LT("لا، لا يوجد أحد مصاب.","la."),ok:!E.hurt,hint:"هل سقط أحد؟ اقرأ في الأعلى 👆"}]});
+  if(E.hurt!==null)steps.push({e:sv[0],say:LT("هل يوجد أحد مصاب؟","hal yujadu ahadun musab?"),opts:[{t:LT("نعم، يوجد شخص مصاب.","naʿam."),ok:E.hurt,hint:"لا أحد سقط أو تأذّى في هذه المشكلة 🙂 اقرأ في الأعلى 👆"},{t:LT("لا، لا يوجد أحد مصاب.","la."),ok:!E.hurt,hint:"جارك سقط على الأرض ولا يتكلّم، إذن يوجد شخص مصاب! 🚑"}]});
   else steps.push({e:sv[0],say:LT("ما اسمك؟","ma ismuk?"),opts:[LOK(LT(`اسمي ${PL_INFO[CUR].name}.`,`ismi ${PL_INFO[CUR].tr}.`)),LNO(LT("لا أعرف! 😵",""),"قل اسمك بهدوء 🙂")]});
   steps.push({e:sv[0],say:LT(`نحن قادمون الآن! ${GV("ابقَ هادئاً وابتعد","ابقي هادئةً وابتعدي")} عن الخطر.`,"nahnu qadimun al-an!"),opts:[LOK(LT("شكراً، أسرعوا من فضلك!","shukran, asriʿu min fadlikum!")),LNO(LT("لا تأتوا! 😝",""),"نحتاج المساعدة! قل: أسرعوا من فضلك")]});
   runScene({kind:"emergency",icon:"🚨",title:LT("طوارئ في العمارة!","tawari' fi al-ʿimara!"),npc:{e:sv[0]},timer:45,
