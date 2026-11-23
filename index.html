@@ -1,4 +1,5 @@
-<!doctype html><html lang="ar"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style><title>عمارة المصاعد الثلاثة</title>
+<!doctype html><html lang="ar"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}.wawho{display:flex;gap:6px;padding:6px 8px;background:#075e54;justify-content:center}.wawho button{flex:1;border:0;border-radius:12px;padding:6px 10px;font-weight:800;background:#ffffff26;color:#fff;cursor:pointer}.wawho button.on{background:#fff;color:#075e54}.wawho i{font-style:normal;background:#25d366;color:#fff;border-radius:10px;padding:0 6px;margin-inline-start:4px}
+</style><title>عمارة المصاعد الثلاثة</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@400;600;800&family=Lalezar&display=swap">
@@ -799,7 +800,7 @@ img.emoji{height:1em;width:1em;margin:0 .05em;vertical-align:-0.12em;display:inl
 <div id="gameBox" class="overlay" hidden style="z-index:70"></div>
 <div id="login"><form class="lcard" id="loginF" autocomplete="on">
   <div style="font-size:44px">🏢</div><h2>تسجيل الدخول</h2><div class="sub">tasjil al-dukhul · Log in</div>
-  <input id="lEmail" type="email" placeholder="Email" autocomplete="username" required>
+  <input id="lEmail" type="text" placeholder="Email / username" autocomplete="username" autocapitalize="off" autocorrect="off" spellcheck="false" dir="ltr" required>
   <input id="lPass" type="password" placeholder="Password" autocomplete="current-password" required>
   <button class="go" id="lGo" type="submit">دخول · Log in</button>
   <div class="err" id="lErr"></div></form></div>
@@ -887,6 +888,7 @@ const VIS=[
  {e:"🕵️",ar:"محقّق",tr:"muhaqqiq",en:"a detective"},
  {e:"🛵",ar:"عامل توصيل",tr:"ʿamil tawsil",en:"a delivery driver",id:"dl"},
  {e:"👩‍🏫",ar:"المعلّمة بيان",tr:"al-muʿallima bayan",en:"Teacher Bayan",g:"f",id:"by"},
+ {e:"👦🏽",ar:"مشهور",tr:"mashhur",en:"Mashhour",id:"mh"},
  {e:"🦖",ar:"ديناصور",tr:"dinasor",en:"a dinosaur"},
 ];
 // {ه}/{h}/{o}/{p} are filled with the target's pronoun (him/her)
@@ -1224,28 +1226,34 @@ const BONUS=["🌟","خمس نجوم إضافية","khams nujum idafiyya"];
 const rwItem=()=>FURN[S.reward]||BONUS;
 const SPOTS=[["بجانب النافذة","bi-janib al-nafidha"],["تحت النافذة","tahta al-nafidha"],["في الزاوية","fi al-zawiya"],["بجانب الباب","bi-janib al-bab"],["في الوسط","fi al-wasat"],["على اليمين","ʿala al-yamin"]];
 /* ---------- two players: Ibraheem and Bayan, each with own stars, apartment and settings ---------- */
-const PL_INFO={ib:{name:"إبراهيم",tr:"ibrahim",e:"👦",vis:"ib"},by:{name:"بيان",tr:"bayan",e:"👩‍🏫",vis:"by"}};
-let PL={ib:{stars:0,home:{f:11,s:0,items:[]},cfg:{det:true}},by:{stars:0,home:{f:11,s:1,items:[]},cfg:{det:true}}};
+const PL_INFO={ib:{name:"إبراهيم",tr:"ibrahim",e:"👦",vis:"ib"},by:{name:"بيان",tr:"bayan",e:"👩‍🏫",vis:"by"},mh:{name:"مشهور",tr:"mashhur",e:"👦🏽",vis:"mh"}};
+const PLK=Object.keys(PL_INFO);
+const PL_DEF=()=>({ib:{stars:0,home:{f:11,s:0,items:[]},cfg:{det:true}},by:{stars:0,home:{f:11,s:1,items:[]},cfg:{det:true}},mh:{stars:0,home:{f:11,s:2,items:[]},cfg:{det:true}}});
+let PL=PL_DEF();
 try{
   const saved=JSON.parse(localStorage.getItem("tower-players-v1")||"null");
-  if(saved&&saved.ib&&saved.by)PL=saved;
+  if(saved&&saved.ib&&saved.by){const d=PL_DEF();PL=saved;for(const k of PLK)if(!PL[k])PL[k]=d[k];}
   else{const old=JSON.parse(localStorage.getItem("tower-home-v1")||"null");if(old&&Array.isArray(old.items))PL.ib.home.items=old.items;}
 }catch(e){}
-for(const k of ["ib","by"]){PL[k].cfg=Object.assign({det:true},PL[k].cfg||{});PL[k].stars=PL[k].stars||0;if(!Array.isArray(PL[k].opts))PL[k].opts=[];}
-const AUTH=(()=>{try{const a=JSON.parse(localStorage.getItem("tower-auth")||"null");return a&&a.t&&(a.pl==="ib"||a.pl==="by")?a:null;}catch(e){return null;}})();
+for(const k of PLK){PL[k].cfg=Object.assign({det:true},PL[k].cfg||{});PL[k].stars=PL[k].stars||0;if(!Array.isArray(PL[k].opts))PL[k].opts=[];}
+const AUTH=(()=>{try{const a=JSON.parse(localStorage.getItem("tower-auth")||"null");return a&&a.t&&PL_INFO[a.pl]?a:null;}catch(e){return null;}})();
 let CUR=AUTH?AUTH.pl:"ib";
 let HOME=PL[CUR].home;
-const other=()=>CUR==="ib"?"by":"ib";
-const isIb=()=>CUR==="ib", isBy=()=>CUR==="by";
+/* kids (ib, mh) talk to Bayan; Bayan picks which kid she is talking to */
+var CHATW=(()=>{try{const w=localStorage.getItem("tower-chatwith");return w&&PL_INFO[w]&&w!=="by"?w:"ib";}catch(e){return "ib";}})();
+const other=()=>CUR==="by"?CHATW:"by";
+function setChatW(k,quiet){if(CUR!=="by"||!PL_INFO[k]||k==="by"||k===CHATW)return;CHATW=k;try{localStorage.setItem("tower-chatwith",k);}catch(e){}TYP.until=0;if(quiet)return;if(typeof layout==="function")layout();if(CHT.open)drawChat();render();}
+const isIb=()=>CUR!=="by", isBy=()=>CUR==="by";
 function saveHome(){if(typeof syncPlayer==="function")setTimeout(syncPlayer,0);PL[CUR].stars=S.stars;try{localStorage.setItem("tower-players-v1",JSON.stringify(PL));localStorage.setItem("tower-player",CUR);}catch(e){}}
 const IB_RES={e:"👦",ar:"إبراهيم",tr:"ibrahim",en:"Ibraheem",g:"m",m:1,ab:"أنا جارُ المعلّمة بيان، وأحبّ الألعاب والتقنية!",abt:"ana jaru al-muʿallima bayan, wa uhibbu al-alʿaba wal-tiqniyya!",abe:"I'm Teacher Bayan's neighbor, and I love games and tech!"};
 const BY_RES={e:"👩‍🏫",ar:"المعلّمة بيان",tr:"al-muʿallima bayan",en:"Teacher Bayan",g:"f",m:1,ab:"أنا معلّمة لغة عربية، وجارةُ إبراهيم!",abt:"ana muʿallimatu lugha ʿarabiyya, wa jaratu ibrahim!",abe:"I'm an Arabic teacher, and Ibraheem's neighbor!"};
-const RES_OF={ib:IB_RES,by:BY_RES};
+const MH_RES={e:"👦🏽",ar:"مشهور",tr:"mashhur",en:"Mashhour",g:"m",m:1,ab:"أنا جارُ المعلّمة بيان، وأحبّ اللعب والمغامرات!",abt:"ana jaru al-muʿallima bayan, wa uhibbu al-laʿiba wal-mughamarat!",abe:"I'm Teacher Bayan's neighbor, and I love games and adventures!"};
+const RES_OF={ib:IB_RES,by:BY_RES,mh:MH_RES};
 function layout(){
   if(!S.base)return;
   S.res=[null,...S.base.slice(1).map(row=>row.slice())];
-  for(const k of ["ib","by"]){const h=PL[k].home;if(h.f)S.res[h.f][h.s]=k===CUR?HOME_RES:RES_OF[k];}
-  for(const k of ["ib","by"]){const m=PL[k].myRes;if(m&&m.f&&S.res[m.f]&&!S.res[m.f][m.s].home&&S.res[m.f][m.s]!==RES_OF[other()])S.res[m.f][m.s]=myResObj(m);}
+  for(const k of PLK){const h=PL[k].home;if(h.f)S.res[h.f][h.s]=k===CUR?HOME_RES:RES_OF[k];}
+  for(const k of PLK){const m=PL[k].myRes;if(m&&m.f&&S.res[m.f]&&!S.res[m.f][m.s].home&&S.res[m.f][m.s]!==RES_OF[other()])S.res[m.f][m.s]=myResObj(m);}
   if(S.secret&&S.res[S.secret.f])S.res[S.secret.f][S.secret.s]=S.secret.r;
   if(S.guest&&S.res[S.guest.f])S.res[S.guest.f][S.guest.s]=S.guest.r;
 }
@@ -1282,7 +1290,8 @@ const newId=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
 const lastSeen=()=>{try{return +localStorage.getItem("tower-seen-"+CUR)||0;}catch(e){return 0;}};
 function markSeen(){try{localStorage.setItem("tower-seen-"+CUR,String(Date.now()));}catch(e){}}
 const pair=m=>(m.from===CUR&&m.to===other())||(m.from===other()&&m.to===CUR);
-const unread=()=>{const t=lastSeen();return CHAT.filter(m=>m.to===CUR&&m.from===other()&&m.ts>t&&!isCtl(m)&&!isEndMsg(m)&&!isDel(m)).length;};
+const unreadFrom=k=>{const t=lastSeen();return CHAT.filter(m=>m.to===CUR&&m.from===k&&m.ts>t&&!isCtl(m)&&!isEndMsg(m)&&!isDel(m)).length;};
+const unread=()=>{const t=lastSeen();return CHAT.filter(m=>m.to===CUR&&(CUR==="by"?m.from!==CUR:m.from===other())&&m.ts>t&&!isCtl(m)&&!isEndMsg(m)&&!isDel(m)).length;};
 const hhmm=ts=>{const d=new Date(ts);return ar(String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"));};
 const bubble=m=>{if(typeof m.text==="string"&&m.text.startsWith("§END§"))return `<div class="msg endmsg">👋 ${P("انتهت الزيارة. هديّة لشقّة كلّ واحد منكما! 🎁","intahat al-ziyara.")}<div class="mtime">${hhmm(m.ts)}</div></div>`;const p=PL_INFO[m.from]||PL_INFO.ib;if(isDel(m)){const p0=PL_INFO[m.from]||PL_INFO.ib;return `<div class="msg ${m.from===CUR?"mine":"theirs"} deleted"><div class="mhead">${p0.e} ${p0.name}</div><div class="mtext">🚫 ${P("حُذِفت هذه الرسالة","hudhifat hadhihi al-risala")}</div><div class="mtime">${hhmm(m.ts)}</div></div>`;}
   const mine=m.from===CUR,aud=isAud(m),img=isImg(m)||aud,url=aud?m.text.slice(AUD_TAG.length):img?m.text.slice(IMG_TAG.length):"";const okUrl=/^https:\/\/[a-z0-9.-]+\.supabase\.co\//i.test(url);return `<div class="msg ${mine?"mine":"theirs"} ${CHT.editId===m.id?"editing":""}"><div class="mhead">${p.e} ${p.name}${mine&&!img?`<button class="medit" data-edit="${esc(m.id)}" title="تعديل">✏️</button>`:""}${mine?`<button class="medit mdel ${CHT.delArm===m.id?"armed":""}" data-del="${esc(m.id)}" title="حذف">${CHT.delArm===m.id?`🗑️ ${P("احذف؟","ihdhif?")}`:"🗑️"}</button>`:""}</div>${aud?(okUrl?`<div class="maud">🎤 <audio controls preload="metadata" src="${esc(url)}"></audio></div>`:`<div class="mtext">🎤</div>`):img?(okUrl?`<a href="${esc(url)}" target="_blank" rel="noopener"><img class="mimg" src="${esc(url)}" alt="صورة" loading="lazy"></a>`:`<div class="mtext">🖼️</div>`):`<div class="mtext">${esc(m.text)}</div>`}<div class="mtime">${m.edited?`<span class="medited">${P("معدّلة","muʿaddala")}</span> `:""}${hhmm(m.ts)}<button class="mreact" data-rbtn="${esc(m.id)}" title="تفاعل">😊+</button></div>${CHT.reactFor===m.id?`<div class="rbar">${REACTS.map(e=>`<button data-react="${esc(m.id)}|${e}" class="${cleanReacts(m.reacts)[CUR]===e?"on":""}">${e}</button>`).join("")}</div>`:""}${(()=>{const r=cleanReacts(m.reacts),ks=Object.keys(r);return ks.length?`<div class="mreacts">${ks.map(k=>`<span title="${PL_INFO[k].name}">${r[k]}<small>${PL_INFO[k].e}</small></span>`).join("")}</div>`:"";})()}</div>`;};
@@ -1293,8 +1302,8 @@ function ingest(m){
   CHAT.push({id:m.id.slice(0,40),from:m.from,to:m.to,text:m.text.slice(0,MSG_CHARS),ts:m.ts,edited:!!m.edited,reacts:cleanReacts(m.reacts)});
   return true;
 }
-function sendChat(text,from=CUR){
-  const msg={id:newId(),from,to:from==="ib"?"by":"ib",text:fitMsg(String(text)),ts:Date.now()};
+function sendChat(text,from=CUR,to){
+  const msg={id:newId(),from,to:to||(from===CUR?other():(from==="by"?CHATW:"by")),text:fitMsg(String(text)),ts:Date.now()};
   CHAT.push(msg);saveChat();
   if(SB)SB.from("tower_messages").insert({id:msg.id,from_pl:msg.from,to_pl:msg.to,body:msg.text,ts:msg.ts}).then(()=>{});
   return msg;
@@ -1315,13 +1324,13 @@ function showTyping(){
 function sendTyping(on){
   if(!typCh)return;const now=Date.now();
   if(on&&now-TYP.sent<1500)return;TYP.sent=on?now:0;
-  typCh.send({type:"broadcast",event:"typing",payload:{pl:CUR,on}}).catch(()=>{});
+  typCh.send({type:"broadcast",event:"typing",payload:{pl:CUR,to:other(),on}}).catch(()=>{});
 }
 const TAB=Math.random().toString(36).slice(2,10);
 const otherHere=()=>onlineNow.has(other());
 const rowToMsg=r=>({id:r.id,from:r.from_pl,to:r.to_pl,text:r.body,ts:Number(r.ts),edited:!!r.edited,reacts:r.reacts});
 const REACTS=["❤️","👍","😂","😮","😢","🤲","⭐"];
-function cleanReacts(r){const o={};if(r&&typeof r==="object")for(const k of ["ib","by"])if(REACTS.includes(r[k]))o[k]=r[k];return o;}
+function cleanReacts(r){const o={};if(r&&typeof r==="object")for(const k of PLK)if(REACTS.includes(r[k]))o[k]=r[k];return o;}
 function applyEdit(m){const x=CHAT.find(y=>y.id===m.id);if(!x||typeof m.text!=="string")return false;const rc=cleanReacts(m.reacts);
   if(x.text===m.text&&!!x.edited===!!m.edited&&JSON.stringify(cleanReacts(x.reacts))===JSON.stringify(rc))return false;
   x.text=m.text.slice(0,MSG_CHARS);x.edited=!!m.edited;x.reacts=rc;return true;}
@@ -1391,7 +1400,7 @@ function syncPlayer(){
       .subscribe();
     // who is online now
     typCh=SB.channel("tower-typing",{config:{broadcast:{self:false}}})
-      .on("broadcast",{event:"typing"},({payload:p})=>{if(!p||p.pl!==other())return;TYP.until=p.on?Date.now()+3500:0;showTyping();})
+      .on("broadcast",{event:"typing"},({payload:p})=>{if(!p||p.pl!==other()||(p.to&&p.to!==CUR))return;TYP.until=p.on?Date.now()+3500:0;showTyping();})
       .subscribe();
     presCh=SB.channel("tower-online",{config:{presence:{key:TAB}}});
     presCh.on("presence",{event:"sync"},()=>{
@@ -1486,14 +1495,14 @@ function handleCtl(){
 }
 function drawKnock(){
   const o=$("knockBox");if(!KNOCK){o.hidden=true;return;}
-  const v=PL_INFO[KNOCK.from],he=KNOCK.from==="ib";
+  const v=PL_INFO[KNOCK.from],he=KNOCK.from!=="by";
   o.innerHTML=`<div class="homecard knockcard"><div class="bigstar">🚪✊</div>
     <h2>${P(`${v.e} ${v.name} ${he?"يطرق":"تطرق"} باب شقّتك!`,`${v.tr} ${he?"yatruqu":"tatruqu"} baba shaqqatik!`)}</h2>
     <div class="ar big">${he?"هل تسمح له بالدخول؟":"هل تسمح لها بالدخول؟"}</div><div class="tr">${he?"hal tasmahu lahu bil-dukhul?":"hal tasmahu laha bil-dukhul?"}</div><div class="en">Do you let ${he?"him":"her"} come in?</div>
     <div class="tog center"><button class="big huge" id="kYes">✅ ${P("تفضّل، ادخل!","tafaddal, udkhul!")}</button><button class="big" id="kNo">❌ ${P("ليس الآن","laysa al-an")}</button></div></div>`;
   o.hidden=false;
-  const ans=tag=>{const id=KNOCK.id;sendChat(tag+id);KNOCK=null;o.hidden=true;beep();handleCtl();
-    if(tag===ACC_TAG){const v=PL_INFO[other()];if(!CHT.open)openChat();else{drawChat();render();}pop("🚪",`${v.name} ${other()==="ib"?"دخل":"دخلت"} شقّتك! تكلّما هنا في المحادثة.`);}else render();};
+  const ans=tag=>{const id=KNOCK.id,kf=KNOCK.from;if(tag===ACC_TAG)setChatW(kf);sendChat(tag+id,CUR,kf);KNOCK=null;o.hidden=true;beep();handleCtl();
+    if(tag===ACC_TAG){const v=PL_INFO[other()];if(!CHT.open)openChat();else{drawChat();render();}pop("🚪",`${v.name} ${other()!=="by"?"دخل":"دخلت"} شقّتك! تكلّما هنا في المحادثة.`);}else render();};
   $("kYes").onclick=()=>ans(ACC_TAG);$("kNo").onclick=()=>ans(DEN_TAG);
 }
 setInterval(()=>{if(KNOCK&&Date.now()-KNOCK.ts>KNOCK_TTL)handleCtl();},30000);
@@ -1510,7 +1519,7 @@ function drawChat(){
   const oth=PL_INFO[other()];
   const msgs=CHAT.filter(m=>pair(m)&&!isCtl(m));
   o.innerHTML=`<div class="wa">
-    <div class="wahead"><span class="wav">${oth.e}</span><div><b>${oth.name}</b><small id="waStatus">${typingNow()?typingHtml():chatStatus()}</small></div><button id="waMenuB" class="wamenub" aria-label="المزيد">⋮</button><button id="cClose">✕</button>
+    ${CUR==="by"?`<div class="wawho">${PLK.filter(k=>k!=="by").map(k=>{const n=unreadFrom(k);return `<button class="${k===CHATW?"on":""}" data-cw="${k}">${PL_INFO[k].e} ${PL_INFO[k].name}${n&&k!==CHATW?` <i>${ar(n)}</i>`:""}</button>`;}).join("")}</div>`:""}<div class="wahead"><span class="wav">${oth.e}</span><div><b>${oth.name}</b><small id="waStatus">${typingNow()?typingHtml():chatStatus()}</small></div><button id="waMenuB" class="wamenub" aria-label="المزيد">⋮</button><button id="cClose">✕</button>
       ${CHT.menu?`<div class="wamenu"><button id="waClear" class="${CHT.clrArm?"armed":""}">🧹 ${CHT.clrArm?P("اضغط مرّة أخرى للتأكيد","idghat marratan ukhra lil-ta'kid"):P("مسح المحادثة","mash al-muhadatha")}</button><div class="hint">${P("تُمسح عند بيان وإبراهيم","tumsahu ʿinda bayan wa ibrahim")}</div></div>`:""}</div>
     <div class="wabody" id="waBody">${msgs.map(bubble).join("")}${CHT.uploading?`<div class="msg mine"><div class="mtext">⏳ ${CHT.uploading==="aud"?P("جارٍ إرسال الرسالة الصوتية…","jarin irsal al-risala al-sawtiyya…"):P("جارٍ إرسال الصورة…","jarin irsal al-sura…")}</div></div>`:""}${msgs.length||CHT.uploading?"":`<div class="hint center">${P(`لا توجد رسائل بعد. اكتب أوّل رسالة إلى ${oth.name}!`,`uktub awwala risala!`)}</div>`}</div>
     ${(PL[CUR].opts||[]).length?`<div class="opts wa-opts">${PL[CUR].opts.map((t,i)=>`<button class="small" data-wo="${i}">${esc(t)}</button>`).join("")}</div>`:""}
@@ -1518,6 +1527,7 @@ function drawChat(){
     <div class="wafoot">${CHT.rec?`<div class="recbar"><span class="recdot"></span> ${P("جارٍ التسجيل…","jarin al-tasjil…")} <b id="recT">٠:٠٠</b></div><button id="recX" class="recx" aria-label="إلغاء">✕</button><button id="recSend" aria-label="أرسل">➤</button>`
       :`<label class="waattach" title="أرفق صورة" aria-label="أرفق صورة">📎<input type="file" id="waPic" accept="image/*" hidden></label><textarea id="waIn" dir="rtl" lang="ar" rows="1"  placeholder="اكتب رسالة…"></textarea>${CHT.editId?"":`<button id="waMic" class="wamic" aria-label="سجّل رسالة صوتية">🎤</button>`}<button id="waSend" aria-label="${CHT.editId?"حفظ":"أرسل"}">${CHT.editId?"✓":"➤"}</button>`}</div></div>`;
   const body=$("waBody");if(body&&keep){body.scrollTop=prevTop;}else if(body&&body.scrollHeight!=null){body.scrollTop=body.scrollHeight;body.querySelectorAll("img.mimg").forEach(im=>{if(!im.complete)im.onload=()=>{body.scrollTop=body.scrollHeight;};});}
+  o.querySelectorAll("[data-cw]").forEach(b=>b.onclick=()=>setChatW(b.dataset.cw));
   const ta=$("waIn");
   const send=()=>{const t=(CHT.draft||"").trim();if(!t)return;
     if(tooLong(t)){pop("⚠️",`الحدّ الأقصى ${ar(MSG_LINES)} سطراً في الرسالة الواحدة.`);return;}
@@ -2127,7 +2137,7 @@ function renderPanel(){
     if(!Object.keys(S.said).length){
       h+=`<div class="tog center"><button class="big mosqueb" id="mosqueTrip">🕌 ${P("خذ أحداً إلى المسجد","khudh ahadan ila al-masjid")}</button><button class="big beachb" id="beachTrip">🏖️ ${P("خذ أحداً إلى الشاطئ","khudh ahadan ila al-shati'")}</button><button class="big parkb" id="parkTrip">🌳 ${P("خذ أحداً إلى الحديقة","khudh ahadan ila al-hadiqa")}</button><button class="big rentb" id="rentTrip">🔑 ${P("أريد أن أستأجر شقّة","uridu an asta'jira shaqqa")}</button>${HOME.f?`<button class="big" id="homeTrip">🏠 ${P("أريد أن أذهب إلى شقّتي","uridu an adhhaba ila shaqqati")}</button>`:""}
         ${isIb()?(PL.by.home.f?`<button class="big" id="visitBy">👩‍🏫 ${P("أريد أن أزور جارتي المعلّمة بيان","uridu an azura jarati al-muʿallima bayan")}</button>`:"")
-                :PL.ib.home.f?`<button class="big" id="visitIb">👦 ${P("أريد أن أزور جاري إبراهيم","uridu an azura jari ibrahim")}</button>`:""}</div>`;
+                :(PL.ib.home.f?`<button class="big" id="visitIb">👦 ${P("أريد أن أزور جاري إبراهيم","uridu an azura jari ibrahim")}</button>`:"")+(PL.mh&&PL.mh.home.f?`<button class="big" id="visitMh">👦🏽 ${P("أريد أن أزور جاري مشهور","uridu an azura jari mashhur")}</button>`:"")}</div>`;
     }
     h+=weatherLine();
     const AH=accHello();
@@ -2370,7 +2380,7 @@ function renderPanel(){
       } else if(r.home){
         banner=`<div class="win">🏠 ${P("هذه شقّتك أنت! 😄","hadhihi shaqqatuka anta!")}</div>`;
         lines.push(ln(k+"home",K,v.e,`هذه شقّتي! أنا أبحث عن ${t.ar}.`,`hadhihi shaqqati! ana abhathu ʿan ${t.tr}.`,`This is my apartment! I'm looking for ${t.en}.`,1));
-      } else if(right&&r===RES_OF[other()]&&SB&&!S.live&&(!S.knockReq||S.knockReq.st!=="ok")){
+      } else if(right&&(CUR==="by"?PLK.some(k=>k!=="by"&&RES_OF[k]===r&&(setChatW(k,true),true)):r===RES_OF[other()])&&SB&&!S.live&&(!S.knockReq||S.knockReq.st!=="ok")){
         if(!S.knockReq){const m=sendChat(REQ_TAG);S.knockReq={id:m.id,st:"wait"};}
         const kr=S.knockReq,hn=PL_INFO[other()],she=other()==="by";
         if(kr.st==="wait"){
@@ -2574,7 +2584,8 @@ function renderPanel(){
   on("adhanReplay",playAdhan);
   on("adhanStopP",stopAdhan);
   on("visitBy",()=>startVisit(PL.by.home.f,PL.by.home.s));
-  on("visitIb",()=>startVisit(PL.ib.home.f,PL.ib.home.s));
+  on("visitIb",()=>{setChatW("ib");startVisit(PL.ib.home.f,PL.ib.home.s);});
+  on("visitMh",()=>{setChatW("mh");startVisit(PL.mh.home.f,PL.mh.home.s);});
 }
 
 function renderCast(){
@@ -2917,7 +2928,7 @@ function updateMeta(){
   const p=PL[CUR],st=p.streak;
   const sb=$("streakB");if(sb)sb.textContent=st&&st.n?`🔥 ${ar(st.n)}`:"";
   const bn=$("badgeN");if(bn)bn.textContent=ar((p.badges||[]).length);
-  const tot=weekStars("ib")+weekStars("by"),wg=$("weekGoal");
+  const tot=PLK.reduce((a,k)=>a+weekStars(k),0),wg=$("weekGoal");
   if(wg)wg.innerHTML=tot>=WEEK_GOAL?`🌳 ${P("حديقة السطح جاهزة! بنيتماها معاً","hadiqat al-sath jahiza!")}`
     :`🌱 ${P(`هدفكما اليوم: حديقة السطح ${ar(tot)}/${ar(WEEK_GOAL)}`,`hadafukuma al-yawm: ${tot}/${WEEK_GOAL}`)}<span class="wbar"><i style="width:${Math.min(100,tot/WEEK_GOAL*100)}%"></i></span>`;
 }
@@ -4800,7 +4811,7 @@ function openReport(k){
   const badBy={};bad.forEach(b=>{badBy[b.k]=(badBy[b.k]||0)+1;});const weak=Object.entries(badBy).sort((a,b)=>b[1]-a[1])[0];
   const life=L.filter(x=>LIFE_KINDS[x.k]),avg=life.length?(life.reduce((a,x)=>a+(x.s||0),0)/life.length):0;
   o.innerHTML=`<div class="gcard phcard repcard">${gHead("📊","تقرير الدرس","taqrir al-dars")}
-    <div class="reptabs">${["ib","by"].map(x=>`<button class="${x===k?"on":""}" data-rk="${x}">${PL_INFO[x].e||""} ${PL_INFO[x].name}</button>`).join("")}</div>
+    <div class="reptabs">${PLK.map(x=>`<button class="${x===k?"on":""}" data-rk="${x}">${PL_INFO[x].e||""} ${PL_INFO[x].name}</button>`).join("")}</div>
     <div class="repgrid"><div><b>${ar((p.wkS&&p.wkS.w===wk)?p.wkS.n:0)}</b><small>⭐ نجوم هذا الأسبوع</small></div><div><b>${ar(L.filter(x=>x.k!=="kids").length)}</b><small>🎯 نشاطات</small></div><div><b>${life.length?ar(avg.toFixed(1)):"-"}</b><small>📈 متوسّط النجوم في المواقف</small></div><div>${rankChip(k)}<small>🏅 الرتبة · ${ar(plXp(k))} نقطة</small></div></div>
     ${wchHtml()}
     <h4>🎯 ماذا لعب هذا الأسبوع؟</h4><div class="repacts">${Object.keys(cnt).length?Object.entries(cnt).sort((a,b)=>b[1]-a[1]).map(([kk,v])=>`<span>${(ACT_LBL[kk]||["•",kk])[0]} ${(ACT_LBL[kk]||["",kk])[1]} <b>×${ar(v)}</b></span>`).join(""):`<i>لا نشاط بعد هذا الأسبوع</i>`}</div>
