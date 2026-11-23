@@ -56,8 +56,7 @@ small.tr{display:block;font-size:.7rem;font-weight:600;opacity:.75;direction:ltr
 <canvas id="c"></canvas>
 <div id="cross">＋</div>
 <div id="hud">
-  <button class="btn" id="back">↩️ رجوع</button>
-  <span class="chip title">🛒 لعبة رف المتجر</span>
+    <span class="chip title">🛒 لعبة رف المتجر</span>
   <button class="btn" data-mode="shop">🛍️ متسوّق</button>
   <button class="btn" data-mode="cash">🧾 كاشير</button>
   <button class="btn" data-mode="edit">🛠️ إدارة الرفوف</button>
@@ -72,6 +71,9 @@ small.tr{display:block;font-size:.7rem;font-weight:600;opacity:.75;direction:ltr
 <div id="act"><button class="btn big green" id="actB" hidden></button></div>
 <div id="panel" hidden><div class="card" id="pcard"></div></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@twemoji/api@15.1.0/dist/twemoji.min.js" crossorigin="anonymous"></script>
+<script>(function(){const go=n=>{try{twemoji.parse(n||document.body,{base:"https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/",folder:"72x72",ext:".png"});}catch(e){}};let q=false;new MutationObserver(()=>{if(q)return;q=true;requestAnimationFrame(()=>{q=false;go();});}).observe(document.documentElement,{childList:true,subtree:true,characterData:true});addEventListener("load",()=>go());})();</script>
+<style>img.emoji{height:1.1em;width:1.1em;vertical-align:-.15em;margin:0 .05em}</style>
 <script type="module">
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
 
@@ -123,7 +125,12 @@ for(let i=-12;i<=12;i+=6)for(let j=-6;j<=6;j+=6){const l=new THREE.Mesh(new THRE
 // shelf units
 const BOXES=[];const shelfM=new THREE.MeshStandardMaterial({color:0x8d6e63}),boardM=new THREE.MeshStandardMaterial({color:0xd7ccc8});
 const UNITS=[-6,-1.5,3];const UX=-2,ULEN=13.2;
-const emoTex={};const eTex=e=>emoTex[e]||(emoTex[e]=canvasTex(128,128,(x,w,h)=>{x.font=`100px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif`;x.textAlign="center";x.textBaseline="middle";x.fillText(e,64,70);}));
+const twCode=e=>{const cps=[...e].map(c=>c.codePointAt(0));const hasZ=cps.includes(0x200d);return cps.filter(c=>hasZ||c!==0xfe0f).map(c=>c.toString(16)).join("-");};
+const TW="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/72x72/";
+const emoTex={};const eTex=e=>{if(emoTex[e])return emoTex[e];
+  const t=canvasTex(128,128,(x,w,h)=>{x.font=`100px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif`;x.textAlign="center";x.textBaseline="middle";x.fillText(e,64,70);});
+  const img=new Image();img.crossOrigin="anonymous";img.onload=()=>{t._draw=(x,w,h)=>{x.drawImage(img,8,8,112,112);};redraw(t);};img.src=TW+twCode(e)+".png";
+  return emoTex[e]=t;};
 const prodSprites=[],tagMeshes=[];
 UNITS.forEach((uz,u)=>{
   const body=new THREE.Mesh(new THREE.BoxGeometry(ULEN,2.2,.5),shelfM);body.position.set(UX,1.1,uz);scene.add(body);
@@ -332,7 +339,6 @@ function setMode(m){mode=m;document.querySelectorAll("[data-mode]").forEach(b=>b
   custSp.visible=false;beltSprites.forEach(s=>scene.remove(s));beltSprites=[];CLOG="";PAY.items=[];PAY.total=0;PAY.status="wait";updPay();
   if(m==="cash")cashStart();if(m==="edit")openEdit();drawSide();setHint("");}
 document.querySelectorAll("[data-mode]").forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
-$("back").onclick=()=>{location.href="./";};
 $("panel").addEventListener("pointerdown",e=>{if(e.target===$("panel")&&mode!=="cash")closeP();});
 
 /* ---------- loop ---------- */
