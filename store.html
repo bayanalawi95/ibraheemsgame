@@ -93,7 +93,7 @@ small.tr{display:block;font-size:.7rem;font-weight:600;opacity:.75;direction:ltr
 <div id="cartbox"></div>
 <div id="hint"></div>
 <div id="lockchip"></div>
-<div id="help">⬆️⬇️ أو W S: امشِ · ⬅️➡️ أو A D: دُر · اسحب الشاشة للنظر · اضغط على المنتج</div>
+<div id="help">W A S D: امشِ (للأمام، يسار، للخلف، يمين) · Shift: اركض · الماوس: انظر · ⬅️➡️: دُر · G: إظهار الماوس</div>
 <div id="pad"><button class="up" data-k="f">⬆️</button><button class="lt" data-k="l">⬅️</button><button class="dn" data-k="b">⬇️</button><button class="rt" data-k="r">➡️</button></div>
 <div id="act"><button class="btn big green" id="actB" hidden></button></div>
 <div id="panel" hidden><div class="card" id="pcard"></div></div>
@@ -209,8 +209,11 @@ const cartSp=new THREE.Sprite(new THREE.SpriteMaterial({map:eTex("🛒")}));cart
 /* ---------- movement ---------- */
 const P={x:0,z:8.2,yaw:0,pitch:-.05};const keys={};let mode="shop";
 const fixedCash={x:CX-.5,z:CZ-2.4,yaw:Math.PI,pitch:-.32};
-addEventListener("keydown",e=>{if(!$("panel").hidden)return;keys[e.key.toLowerCase()]=1;if(["arrowup","arrowdown","arrowleft","arrowright"," "].includes(e.key.toLowerCase()))e.preventDefault();});
-addEventListener("keyup",e=>{keys[e.key.toLowerCase()]=0;});
+const KCODE={KeyW:"w",KeyA:"a",KeyS:"s",KeyD:"d",ArrowUp:"arrowup",ArrowDown:"arrowdown",ArrowLeft:"arrowleft",ArrowRight:"arrowright",ShiftLeft:"shift",ShiftRight:"shift"};
+function kname(e){return KCODE[e.code]||(e.key||"").toLowerCase();}
+addEventListener("keydown",e=>{if(!$("panel").hidden)return;const t=e.target;if(t&&(t.tagName==="INPUT"||t.tagName==="TEXTAREA"||t.isContentEditable))return;const k=kname(e);keys[k]=1;if(["arrowup","arrowdown","arrowleft","arrowright"," ","w","a","s","d"].includes(k)&&!TRIP)e.preventDefault();});
+addEventListener("keyup",e=>{keys[kname(e)]=0;keys[(e.key||"").toLowerCase()]=0;});
+addEventListener("blur",()=>{Object.keys(keys).forEach(k=>keys[k]=0);});
 document.querySelectorAll("#pad button").forEach(b=>{const k="pad_"+b.dataset.k;const on=e=>{e.preventDefault();keys[k]=1;},off=()=>{keys[k]=0;};b.addEventListener("pointerdown",on);b.addEventListener("pointerup",off);b.addEventListener("pointerleave",off);b.addEventListener("pointercancel",off);});
 let drag=null,moved=0;
 /* ---- mouse lock: locked by default, G toggles ---- */
@@ -231,7 +234,9 @@ addEventListener("pointerup",e=>{if(drag&&moved<8&&e.target===canvas)clickAt(e.c
 const hit=(x,z)=>x<-14.4||x>14.4||z<-9.4||z>9.4||BOXES.some(b=>x>b.x1-.3&&x<b.x2+.3&&z>b.z1-.3&&z<b.z2+.3);
 function step(dt){if(mode==="cash"||mode==="edit"||!$("panel").hidden||TRIP)return;
   const f=(keys.w||keys.arrowup||keys.pad_f?1:0)-(keys.s||keys.arrowdown||keys.pad_b?1:0),t=(keys.a||keys.arrowleft||keys.pad_l?1:0)-(keys.d||keys.arrowright||keys.pad_r?1:0);
-  P.yaw+=t*dt*1.9;if(f){const sp=3.2*dt*f,nx=P.x-Math.sin(P.yaw)*sp,nz=P.z-Math.cos(P.yaw)*sp;if(!hit(nx,P.z))P.x=nx;if(!hit(P.x,nz))P.z=nz;}}
+  /* A/D: step left/right; arrows turn */
+  const lk=typeof isLocked==="function"&&isLocked();const turn=(keys.arrowleft||keys.pad_l?1:0)-(keys.arrowright||keys.pad_r?1:0);const str=(keys.d?1:0)-(keys.a?1:0);
+  P.yaw+=turn*dt*1.9;if(f||str){const run=keys.shift?1.6:1;let fx=-Math.sin(P.yaw)*f+Math.cos(P.yaw)*str,fz=-Math.cos(P.yaw)*f-Math.sin(P.yaw)*str;const m=Math.hypot(fx,fz)||1;const sp=3.2*dt*run;const nx=P.x+fx/m*sp,nz=P.z+fz/m*sp;if(!hit(nx,P.z))P.x=nx;if(!hit(P.x,nz))P.z=nz;}}
 function placeCam(){const s=mode==="cash"?fixedCash:P;cam.position.set(s.x,1.6,s.z);cam.rotation.order="YXZ";cam.rotation.y=s.yaw;cam.rotation.x=s.pitch;
   cartSp.visible=mode==="shop";cashierSp.visible=mode!=="cash";cartSp.position.set(P.x-Math.sin(P.yaw)*1.1,.6,P.z-Math.cos(P.yaw)*1.1);}
 
@@ -548,7 +553,7 @@ function startTrip(dir){TRIP=dir;closeP();setHint("");$("actB").hidden=true;Obje
       <div class="troad" id="tRd"><div class="tlines"></div><div class="tme" id="tMe">🚗</div></div><div class="tctrl"><button id="tL">⬅️ ${L("يساراً","yasaran","Left")}</button><button id="tR">${L("يميناً","yaminan","Right")} ➡️</button></div>`);
     const rd=$("tRd"),pl=$("tMe"),lx=i=>(16.7+i*33.3)+"%";pl.style.left=lx(lane);
     const mv=d=>{if(done)return;lane=Math.max(0,Math.min(2,lane+d));pl.style.left=lx(lane);tone(600,.03);if(sign&&Math.sign(sign)===d){addScore(1);$("tSg").innerHTML="✅";tone(1000,.08);sign=null;}};
-    $("tL").onclick=()=>mv(-1);$("tR").onclick=()=>mv(1);const key=e=>{if(e.key==="ArrowLeft"||e.key==="a"){e.preventDefault();mv(-1);}if(e.key==="ArrowRight"||e.key==="d"){e.preventDefault();mv(1);}};addEventListener("keydown",key);
+    $("tL").onclick=()=>mv(-1);$("tR").onclick=()=>mv(1);const key=e=>{if(e.key==="ArrowLeft"||e.code==="KeyA"){e.preventDefault();mv(-1);}if(e.key==="ArrowRight"||e.code==="KeyD"){e.preventDefault();mv(1);}};addEventListener("keydown",key);
     const loop=now=>{if(done)return;const dt=(now-last)/1000;last=now;const el=(now-t0)/1000;$("tPg").style.width=Math.min(100,el/LEN*100)+"%";
       if(now>spawn){spawn=now+850+Math.random()*600;const ln=Math.floor(Math.random()*3),k=Math.random()<.3?"⭐":pick(["🚧","🚙","🚕","🛢️"]);const d=document.createElement("div");d.className="tob";d.textContent=k;d.style.left=lx(ln);rd.appendChild(d);objs.push({d,ln,y:-10,k});
         if(!sign&&Math.random()<.4){sign=lane===0?1:lane===2?-1:pick([-1,1]);$("tSg").innerHTML=L(sign<0?"⬅️ انعطف يساراً":"➡️ انعطف يميناً","",sign<0?"Turn left":"Turn right");}}
