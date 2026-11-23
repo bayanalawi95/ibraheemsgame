@@ -1,0 +1,581 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>لعبة رف المتجر</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#263238;--gold:#ffc107;--ok:#2e7d32;--bad:#c62828;--blue:#1565c0}
+*{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden;background:#cfd8dc;font-family:Tajawal,system-ui,sans-serif;color:var(--ink);-webkit-user-select:none;user-select:none;touch-action:none}
+#c{position:fixed;inset:0;width:100%;height:100%;display:block}
+#hud{position:fixed;top:8px;left:8px;right:8px;display:flex;gap:6px;align-items:center;flex-wrap:wrap;z-index:25;pointer-events:none}
+#hud>*{pointer-events:auto}
+.chip{background:#fffffff0;border-radius:14px;padding:5px 10px;font-weight:800;box-shadow:0 2px 6px #0003;display:flex;gap:6px;align-items:center}
+.btn{border:0;border-radius:14px;padding:7px 12px;font:inherit;font-weight:800;cursor:pointer;background:#fff;box-shadow:0 2px 6px #0003}
+.btn.on{background:var(--gold)}.btn.big{font-size:1.1rem;padding:10px 16px}.btn.green{background:#43a047;color:#fff}.btn.red{background:#e53935;color:#fff}.btn:disabled{opacity:.45}
+.title{font-size:1.05rem}.sp{flex:1}
+small.tr{display:block;font-size:.7rem;font-weight:600;opacity:.75;direction:ltr}small.en{display:block;font-size:.7rem;font-weight:700;color:var(--blue);direction:ltr;font-style:italic}
+#cross{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);font-size:26px;color:#fff;text-shadow:0 0 4px #000;pointer-events:none;z-index:4}
+#hint{position:fixed;left:50%;bottom:120px;transform:translateX(-50%);background:#263238e6;color:#fff;border-radius:14px;padding:8px 14px;font-weight:800;z-index:4;max-width:92vw;text-align:center;pointer-events:none;display:none}
+#list{position:fixed;top:60px;right:8px;background:#fffffff0;border-radius:14px;padding:8px 10px;z-index:4;min-width:170px;box-shadow:0 2px 6px #0003;font-size:.9rem}
+#list b{display:block;margin-bottom:3px}#list div.ok{text-decoration:line-through;color:var(--ok)}
+#cartbox{position:fixed;top:60px;left:8px;background:#fffffff0;border-radius:14px;padding:8px 10px;z-index:4;min-width:170px;max-width:240px;box-shadow:0 2px 6px #0003;font-size:.88rem;max-height:46vh;overflow:auto}
+#cartbox .ci{display:flex;justify-content:space-between;gap:6px;align-items:center}#cartbox .ci button{border:0;background:#ffebee;border-radius:50%;width:22px;height:22px;cursor:pointer}
+#pad{position:fixed;bottom:14px;left:14px;display:grid;grid-template-columns:repeat(3,58px);grid-template-rows:repeat(2,58px);gap:6px;z-index:5;direction:ltr}
+#pad button{border:0;border-radius:16px;background:#ffffffd9;font-size:1.6rem;box-shadow:0 2px 6px #0004;cursor:pointer;touch-action:none}
+#pad .up{grid-column:2}#pad .lt{grid-column:1;grid-row:2}#pad .dn{grid-column:2;grid-row:2}#pad .rt{grid-column:3;grid-row:2}
+#act{position:fixed;bottom:18px;right:14px;z-index:5}
+#panel{position:fixed;inset:0;background:#0007;z-index:20;display:flex;align-items:center;justify-content:center;padding:62px 10px 10px}
+#panel[hidden]{display:none}
+.card{background:#fff;border-radius:20px;padding:14px;max-width:560px;width:100%;max-height:92vh;overflow:auto;box-shadow:0 10px 30px #0006}
+.card h2{margin:0 0 6px;display:flex;justify-content:space-between;align-items:center;font-size:1.25rem}
+.x{border:0;background:#eceff1;border-radius:12px;padding:4px 10px;font-size:1.1rem;cursor:pointer}
+.center{text-align:center}.big-e{font-size:4rem;line-height:1.1}
+.opts{display:flex;flex-direction:column;gap:6px;margin-top:8px}.opts .btn{width:100%;background:var(--gold)}
+.log{max-height:200px;overflow:auto;display:flex;flex-direction:column;gap:6px;margin:6px 0}
+.b{display:flex;gap:6px;align-items:flex-end}.b.me{flex-direction:row-reverse}.b>span{font-size:1.6rem}.b>div{background:#f1f1f1;border-radius:14px;padding:6px 10px;font-weight:700;max-width:82%}.b.me>div{background:#dcf8c6}
+.alert{background:#ffebee;color:var(--bad);border-radius:12px;padding:6px 10px;font-weight:800;margin:6px 0;text-align:center}
+.win{background:#e8f5e9;color:var(--ok);border-radius:12px;padding:6px 10px;font-weight:800;margin:6px 0;text-align:center}
+.pinpad,.wallet,.coins{display:grid;gap:8px;justify-content:center;margin:8px auto;direction:ltr}
+.pinpad{grid-template-columns:repeat(3,64px)}.pinpad button{height:56px;font-size:1.4rem;font-weight:900;border-radius:14px;border:2px solid #ddd;background:#f7f7f7;cursor:pointer}
+.wallet{grid-template-columns:repeat(4,1fr)}.wallet button{border:2px solid #81c784;background:#e8f5e9;border-radius:12px;padding:8px 4px;font-weight:900;cursor:pointer;font-size:1rem}
+.coins{grid-template-columns:repeat(5,1fr)}.coins button{border:2px solid #b8860b;background:radial-gradient(#ffe082,#ffb300);border-radius:50%;height:56px;font-weight:900;cursor:pointer}
+.scr{background:#102027;color:#a5d6a7;font-family:monospace;border-radius:10px;padding:6px 10px;text-align:center;font-size:1.3rem;letter-spacing:4px;direction:ltr}
+.grid{display:grid;grid-template-columns:repeat(6,1fr);gap:5px}.slot{border:2px solid #e0e0e0;border-radius:10px;background:#fafafa;padding:3px;text-align:center;cursor:pointer}.slot span{font-size:1.5rem;display:block}.slot small{font-size:.62rem;font-weight:700;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.slot.offer{border-color:#ff7043;background:#fff3e0}
+.facehd{margin:8px 0 3px;font-weight:900}
+.emo{display:grid;grid-template-columns:repeat(auto-fill,minmax(38px,1fr));gap:3px;max-height:140px;overflow:auto;margin:6px 0}.emo button{font-size:1.4rem;border:2px solid #eee;background:#fff;border-radius:8px;cursor:pointer}.emo button.on{border-color:#43a047;background:#e8f5e9}
+.row{display:flex;gap:8px;align-items:center;margin:6px 0;flex-wrap:wrap}.row input{font:inherit;font-size:1rem;padding:7px;border-radius:10px;border:2px solid #ddd;flex:1;min-width:90px}
+.rcpt{background:#fff;border:1px dashed #9e9e9e;border-radius:8px;padding:8px 12px;margin:8px auto;max-width:320px}.rcpt div{display:flex;justify-content:space-between}.rcpt .t{border-top:1px dashed #9e9e9e;margin-top:4px;padding-top:4px;font-weight:900}
+@media (max-width:700px){#list,#cartbox{font-size:.75rem;min-width:130px;top:auto;bottom:150px}#list{right:8px}#cartbox{left:auto;right:8px;bottom:280px;display:none}.grid{grid-template-columns:repeat(4,1fr)}}
+#help{position:fixed;bottom:150px;left:14px;font-size:.75rem;background:#ffffffd0;border-radius:10px;padding:4px 8px;z-index:4;pointer-events:none}
+@media (max-width:700px){#help{display:none}}
+#toast{position:fixed;top:58px;left:50%;transform:translateX(-50%) translateY(-120px);background:#263238;color:#fff;border-radius:14px;padding:8px 14px;font-weight:800;z-index:26;max-width:92vw;text-align:center;transition:transform .35s;pointer-events:none}#toast.on{transform:translateX(-50%) translateY(0)}#toast small.tr{color:#cfd8dc}#toast small.en{color:#90caf9}
+#trip{position:fixed;inset:0;z-index:30;background:linear-gradient(#b3e5fc,#e1f5fe);display:flex;align-items:center;justify-content:center;padding:10px}#trip[hidden]{display:none}
+.tcard{background:#fff;border-radius:22px;padding:14px;max-width:600px;width:100%;max-height:94vh;overflow:auto;box-shadow:0 10px 30px #0004}.tcard h2{margin:0 0 6px;font-size:1.2rem}
+.tsay{background:#fff8e1;border:2px solid #ffe082;border-radius:14px;padding:8px 12px;font-weight:800;text-align:center;margin:4px 0}.tmoney{font-weight:800;margin-top:6px}
+.tdoorwrap{display:flex;align-items:center;justify-content:center;gap:16px;margin:10px 0;direction:ltr}.tframe{position:relative;width:170px;height:250px;border:10px solid #5d4037;border-radius:10px 10px 0 0;perspective:700px;overflow:hidden}
+.tout{position:absolute;inset:0;background:linear-gradient(#90caf9,#e3f2fd 60%,#a5d6a7 60%);display:flex;align-items:flex-end;justify-content:center;font-size:2.2rem;padding-bottom:18px}.tout.home{background:linear-gradient(#fff3e0,#ffe0b2)}
+.tdoor{position:absolute;inset:0;background:linear-gradient(90deg,#a1887f,#8d6e63);border:4px solid #6d4c41;transform-origin:left center;transition:transform 1.1s ease-in;z-index:2;display:flex;align-items:center;justify-content:center;font-size:2.6rem}.tdoor i{position:absolute;right:12px;top:50%;width:13px;height:13px;border-radius:50%;background:#ffd54f}.tdoor.open{transform:rotateY(-100deg)}
+.texit{display:flex;flex-direction:column;align-items:center;gap:4px;background:#2e7d32;color:#fff;border:4px solid #a5d6a7;border-radius:14px;padding:12px 10px;cursor:pointer;font:inherit;font-weight:800;animation:pulse 1.4s infinite}.texit b{font-size:2rem}.texit small{color:#e8f5e9!important}.texit:disabled{animation:none;opacity:.6}
+@keyframes pulse{50%{transform:scale(1.06)}}
+.tstreet{height:190px;background:linear-gradient(#bbdefb 0 55%,#616161 55%);border-radius:14px;position:relative;margin:8px 0}.tshop{position:absolute;left:10px;top:20px;font-size:3.4rem}.tcar{position:absolute;left:50%;bottom:16px;transform:translateX(-50%) scaleX(-1);font-size:5.6rem;cursor:pointer;animation:pulse 1.4s infinite}.tcar.in{animation:none}.tcar span{position:absolute;font-size:1.8rem;left:36%;top:16%;transform:scaleX(-1)}
+.tprog{position:relative;height:14px;background:#e0e0e0;border-radius:8px;overflow:hidden;margin:4px 0}.tprog i{display:block;height:100%;width:0;background:linear-gradient(90deg,#42a5f5,#66bb6a)}.tprog span{position:absolute;right:4px;top:-4px}
+.tsign{min-height:30px;text-align:center;font-weight:900;color:#1b5e20}
+.troad{position:relative;height:300px;background:#455a64;border-radius:14px;overflow:hidden;border-left:8px solid #8bc34a;border-right:8px solid #8bc34a}.troad.bump{animation:shk .3s}@keyframes shk{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.tlines{position:absolute;inset:0;background:repeating-linear-gradient(transparent 0 30px,#fff 30px 60px) 33.3% 0/4px 100% no-repeat,repeating-linear-gradient(transparent 0 30px,#fff 30px 60px) 66.6% 0/4px 100% no-repeat;animation:rd .5s linear infinite}@keyframes rd{to{background-position:33.3% 60px,66.6% 60px}}
+.tme,.tob{position:absolute;transform:translateX(-50%);font-size:2.5rem}.tme{bottom:14px;transform:translateX(-50%) rotate(-90deg);transition:left .15s}.tob{top:-10%}
+.tctrl{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.tctrl button{font:inherit;font-size:1.15rem;font-weight:900;padding:12px;border-radius:14px;border:2px solid #ffca28;background:#fff8e1;cursor:pointer}
+.tgatewrap{display:flex;align-items:center;justify-content:center;gap:18px;margin:10px 0;direction:ltr;cursor:none}.tgatewrap *{cursor:none}.tgate{position:relative;width:230px;height:210px;background:linear-gradient(#cfd8dc,#b0bec5);border:8px solid #546e7a;border-radius:12px 12px 0 0;overflow:hidden}.tgate span{position:absolute;top:6px;left:50%;transform:translateX(-50%);background:#fff;border-radius:8px;padding:1px 8px;font-weight:900;font-size:.85rem;white-space:nowrap;z-index:2}
+.tbars{position:absolute;inset:0;background:repeating-linear-gradient(90deg,#37474f 0 10px,transparent 10px 34px);transition:transform 1.2s}.tbars.up{transform:translateY(-100%)}
+.tscan{width:90px;height:128px;background:#263238;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:#fff;border:3px solid #90a4ae;box-shadow:0 0 0 4px #ffca2855}.tscan b{font-size:1.7rem}.tscan small{font-size:.62rem;text-align:center}
+.tled{width:18px;height:18px;border-radius:50%;background:#e53935;box-shadow:0 0 8px #e53935}.tled.ok{background:#00e676;box-shadow:0 0 14px #00e676}
+.tcardk{position:fixed;z-index:99;pointer-events:none;width:120px;height:76px;transform:translate(-50%,-50%) rotate(-8deg);background:linear-gradient(135deg,#1565c0,#42a5f5);color:#fff;border-radius:10px;padding:6px 8px;box-shadow:0 6px 14px #0006;font-size:.72rem;display:flex;flex-direction:column}.tcardk span{font-weight:800;margin-top:auto}.tcardk i{position:absolute;right:6px;bottom:4px;font-style:normal;font-size:1.4rem}
+.atmscr{background:#0d47a1;color:#fff;border-radius:12px;padding:10px;text-align:center;font-weight:800;margin:6px 0}.atmscr small.tr{color:#bbdefb}.atmscr small.en{color:#90caf9}.atmmsg{background:#102027;border-radius:8px;padding:6px;margin-top:6px}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="cross">＋</div>
+<div id="hud">
+  <button class="btn" id="back">🏢 رجوع إلى العمارة</button>
+    <span class="chip title">🛒 لعبة رف المتجر</span>
+  <button class="btn" data-mode="shop">🛍️ متسوّق</button>
+  <button class="btn" data-mode="cash">🧾 كاشير</button>
+  <button class="btn" data-mode="edit">🛠️ إدارة الرفوف</button>
+  <span class="sp"></span>
+  <span class="chip" id="cartchip">🛒 ٠ · ٠ ر.س</span><span class="chip" id="walchip"></span><span class="chip" id="scorechip">⭐ ٠</span>
+</div>
+<div id="list"></div>
+<div id="cartbox"></div>
+<div id="hint"></div>
+<div id="help">⬆️⬇️ أو W S: امشِ · ⬅️➡️ أو A D: دُر · اسحب الشاشة للنظر · اضغط على المنتج</div>
+<div id="pad"><button class="up" data-k="f">⬆️</button><button class="lt" data-k="l">⬅️</button><button class="dn" data-k="b">⬇️</button><button class="rt" data-k="r">➡️</button></div>
+<div id="act"><button class="btn big green" id="actB" hidden></button></div>
+<div id="panel" hidden><div class="card" id="pcard"></div></div>
+<div id="toast"></div>
+<div id="trip" hidden></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@twemoji/api@15.1.0/dist/twemoji.min.js" crossorigin="anonymous"></script>
+<script>(function(){const go=n=>{try{twemoji.parse(n||document.body,{base:"https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/",folder:"72x72",ext:".png"});}catch(e){}};let q=false;new MutationObserver(()=>{if(q)return;q=true;requestAnimationFrame(()=>{q=false;go();});}).observe(document.documentElement,{childList:true,subtree:true,characterData:true});addEventListener("load",()=>go());})();</script>
+<style>img.emoji{height:1.1em;width:1.1em;vertical-align:-.15em;margin:0 .05em}</style>
+<script type="module">
+import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
+
+/* ---------- helpers ---------- */
+const $=id=>document.getElementById(id);
+const AD="٠١٢٣٤٥٦٧٨٩",ar=n=>String(n).replace(/\d/g,d=>AD[d]);
+const riyal=n=>n===1?"ريالٌ واحد":n===2?"ريالان":n<=10?`${ar(n)} ريالات`:`${ar(n)} ريالاً`;
+const esc=t=>String(t).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const L=(a,t,e)=>`${a}${t?`<small class="tr">${t}</small>`:""}${e?`<small class="en">${e}</small>`:""}`;
+let AC=null;function tone(f,d,t=0,type="sine",v=.12){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.type=type;o.frequency.value=f;g.gain.setValueAtTime(v,AC.currentTime+t);g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+t+d);o.connect(g).connect(AC.destination);o.start(AC.currentTime+t);o.stop(AC.currentTime+t+d+.02);}catch(e){}}
+const beep=()=>tone(1500,.08,0,"square",.06),yay=()=>[523,659,784,1046].forEach((f,i)=>tone(f,.2,i*.1,"triangle"));
+const pick=a=>a[Math.floor(Math.random()*a.length)],shuf=a=>a.slice().sort(()=>Math.random()-.5);
+// who is playing (from the main game login)
+let me={name:"إبراهيم",g:"m",e:"👦"};try{const a=JSON.parse(localStorage.getItem("tower-auth")||"null");if(a&&a.pl==="by")me={name:"بيان",g:"f",e:"👩‍🏫"};}catch(e){}
+const G=(m,f)=>me.g==="f"?f:m;
+
+/* ---------- catalogue: 3 shelf units × 2 faces × 6 columns ---------- */
+const FACES=[["🍎","فواكه وخضار","Fruit & Veg"],["🥖","مخبز وألبان","Bakery & Dairy"],["🥤","مشروبات وسناكات","Drinks & Snacks"],["🧼","منظّفات","Cleaning"],["📱","إلكترونيّات","Electronics"],["🧸","ألعاب وقرطاسيّة","Toys & Stationery"]];
+const DEF=[
+ ["🍎","تفّاح","tuffah","apples",3],["🍌","موز","mawz","bananas",4],["🍇","عنب","ʿinab","grapes",6],["🍉","بطّيخ","battikh","watermelon",12],["🥕","جزر","jazar","carrots",2],["🍅","طماطم","tamatim","tomatoes",3],
+ ["🍞","خبز","khubz","bread",2],["🥐","كرواسون","kruwasun","croissant",5],["🥛","حليب","halib","milk",5],["🧀","جبن","jubn","cheese",7],["🥚","بيض","bayd","eggs",6],["🧈","زبدة","zubda","butter",8],
+ ["🧃","عصير","ʿasir","juice",3],["💧","ماء","ma'","water",1],["🥤","مشروب غازيّ","mashrub ghazi","soda",3],["🍪","بسكويت","baskawit","cookies",4],["🍫","شوكولاتة","shukulata","chocolate",4],["🍿","فشار","fushar","popcorn",5],
+ ["🧼","صابون","sabun","soap",4],["🧴","شامبو","shambu","shampoo",12],["🧻","مناديل","manadil","tissues",6],["🪥","فرشاة أسنان","furshat asnan","toothbrush",5],["🧽","إسفنجة","isfanja","sponge",3],["🪣","دلو","dalw","bucket",12],
+ ["📱","جوّال","jawwal","phone",900],["🎧","سمّاعة","sammaʿa","headphones",150],["🔋","بطّاريّة","battariyya","battery",10],["🔌","شاحن","shahin","charger",35],["🖱️","فأرة","fa'ra","mouse",50],["💡","مصباح","misbah","light bulb",15],
+ ["🧸","دبدوب","dabdub","teddy bear",30],["⚽","كرة","kura","ball",20],["🧩","أحجية","uhjiyya","puzzle",35],["✏️","قلم","qalam","pencil",1],["📒","دفتر","daftar","notebook",5],["🎨","ألوان","alwan","paints",10]];
+const KEY="store-shelf-v1";
+let SLOTS;try{SLOTS=JSON.parse(localStorage.getItem(KEY)||"null");}catch(e){}
+if(!Array.isArray(SLOTS)||SLOTS.length!==36)SLOTS=DEF.map(d=>({e:d[0],ar:d[1],tr:d[2],en:d[3],p:d[4],off:0}));
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(SLOTS));}catch(e){}};
+// daily offers if none chosen
+if(!SLOTS.some(s=>s.off)){shuf([...Array(36).keys()]).slice(0,3).forEach(i=>{SLOTS[i].off=Math.max(1,Math.round(SLOTS[i].p*0.7));});}
+const price=s=>s.off&&s.off<s.p?s.off:s.p;
+
+/* ---------- three.js scene ---------- */
+const canvas=$("c"),renderer=new THREE.WebGLRenderer({canvas,antialias:true});renderer.setPixelRatio(Math.min(2,devicePixelRatio));
+const scene=new THREE.Scene();scene.background=new THREE.Color(0xe3f2fd);scene.fog=new THREE.Fog(0xe3f2fd,18,40);
+const cam=new THREE.PerspectiveCamera(70,1,.05,80);
+scene.add(new THREE.HemisphereLight(0xffffff,0x90a4ae,1.1));const dl=new THREE.DirectionalLight(0xffffff,.6);dl.position.set(5,10,6);scene.add(dl);
+function canvasTex(w,h,draw){const c=document.createElement("canvas");c.width=w;c.height=h;const x=c.getContext("2d");draw(x,w,h);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=4;t._c=c;t._draw=draw;return t;}
+function redraw(t){const x=t._c.getContext("2d");x.clearRect(0,0,t._c.width,t._c.height);t._draw(x,t._c.width,t._c.height);t.needsUpdate=true;}
+const FONT=`"Tajawal","Segoe UI",Arial,sans-serif`;
+// floor / walls / ceiling
+const floorT=canvasTex(256,256,(x,w,h)=>{for(let i=0;i<4;i++)for(let j=0;j<4;j++){x.fillStyle=(i+j)%2?"#eceff1":"#cfd8dc";x.fillRect(i*64,j*64,64,64);}});floorT.wrapS=floorT.wrapT=THREE.RepeatWrapping;floorT.repeat.set(15,10);
+const floor=new THREE.Mesh(new THREE.PlaneGeometry(30,20),new THREE.MeshStandardMaterial({map:floorT}));floor.rotation.x=-Math.PI/2;scene.add(floor);
+const ceil=new THREE.Mesh(new THREE.PlaneGeometry(30,20),new THREE.MeshStandardMaterial({color:0xfafafa}));ceil.rotation.x=Math.PI/2;ceil.position.y=4;scene.add(ceil);
+const wallM=new THREE.MeshStandardMaterial({color:0xfff8e1});
+[[0,2,-10,30,0],[0,2,10,30,Math.PI],[-15,2,0,20,Math.PI/2],[15,2,0,20,-Math.PI/2]].forEach(([x,y,z,w,r])=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(w,4),wallM);m.position.set(x,y,z);m.rotation.y=r;scene.add(m);});
+for(let i=-12;i<=12;i+=6)for(let j=-6;j<=6;j+=6){const l=new THREE.Mesh(new THREE.BoxGeometry(2.2,.06,.4),new THREE.MeshBasicMaterial({color:0xffffff}));l.position.set(i,3.97,j);scene.add(l);}
+// shelf units
+const BOXES=[];const shelfM=new THREE.MeshStandardMaterial({color:0x8d6e63}),boardM=new THREE.MeshStandardMaterial({color:0xd7ccc8});
+const UNITS=[-6,-1.5,3];const UX=-2,ULEN=13.2;
+const twCode=e=>{const cps=[...e].map(c=>c.codePointAt(0));const hasZ=cps.includes(0x200d);return cps.filter(c=>hasZ||c!==0xfe0f).map(c=>c.toString(16)).join("-");};
+const TW="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/72x72/";
+const emoTex={};const eTex=e=>{if(emoTex[e])return emoTex[e];
+  const t=canvasTex(128,128,(x,w,h)=>{x.font=`100px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif`;x.textAlign="center";x.textBaseline="middle";x.fillText(e,64,70);});
+  const img=new Image();img.crossOrigin="anonymous";img.onload=()=>{t._draw=(x,w,h)=>{x.drawImage(img,8,8,112,112);};redraw(t);};img.src=TW+twCode(e)+".png";
+  return emoTex[e]=t;};
+const prodSprites=[],tagMeshes=[];
+UNITS.forEach((uz,u)=>{
+  const body=new THREE.Mesh(new THREE.BoxGeometry(ULEN,2.2,.5),shelfM);body.position.set(UX,1.1,uz);scene.add(body);
+  for(let lv=0;lv<3;lv++){const bd=new THREE.Mesh(new THREE.BoxGeometry(ULEN,.05,1.3),boardM);bd.position.set(UX,.35+lv*.7,uz);scene.add(bd);}
+  BOXES.push({x1:UX-ULEN/2-.1,x2:UX+ULEN/2+.1,z1:uz-.75,z2:uz+.75});
+  [1,-1].forEach((side,fi)=>{const face=u*2+fi;
+    const sign=new THREE.Mesh(new THREE.PlaneGeometry(3.2,.55),new THREE.MeshBasicMaterial({map:canvasTex(512,90,(x,w,h)=>{x.fillStyle="#1565c0";x.fillRect(0,0,w,h);x.fillStyle="#fff";x.font=`900 52px ${FONT}`;x.textAlign="center";x.textBaseline="middle";x.direction="rtl";x.fillText(`${FACES[face][0]} ${FACES[face][1]}`,w/2,h/2+4);})}));
+    sign.position.set(UX,2.55,uz+side*.27);sign.rotation.y=side>0?0:Math.PI;scene.add(sign);
+    for(let col=0;col<6;col++){const si=face*6+col,cx=UX-ULEN/2+1.1+col*2.2*(side>0?1:1);const xx=side>0?cx:UX+ULEN/2-1.1-col*2.2;
+      for(let lv=0;lv<3;lv++)for(let k=0;k<3;k++){const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:eTex(SLOTS[si].e)}));sp.scale.set(.5,.5,.5);sp.position.set(xx-.55+k*.55,.62+lv*.7,uz+side*.5);sp.userData={slot:si};scene.add(sp);prodSprites.push(sp);}
+      const tag=new THREE.Mesh(new THREE.PlaneGeometry(1.5,.36),new THREE.MeshBasicMaterial({map:tagTex(si)}));tag.position.set(xx,.2,uz+side*.66);tag.rotation.y=side>0?0:Math.PI;tag.userData={slot:si};scene.add(tag);tagMeshes.push(tag);}
+  });
+});
+function tagTex(si){return canvasTex(300,72,(x,w,h)=>{const s=SLOTS[si];x.fillStyle=s.off?"#ff7043":"#ffeb3b";x.fillRect(0,0,w,h);x.fillStyle="#263238";x.direction="rtl";x.textBaseline="middle";
+  x.font=`800 28px ${FONT}`;x.textAlign="right";x.fillText(s.ar.slice(0,12),w-10,h/2+2);x.textAlign="left";x.font=`900 30px ${FONT}`;x.fillText(`${ar(price(s))} ر.س`,10,h/2+2);
+  if(s.off){x.font=`700 16px ${FONT}`;x.fillText(`كان ${ar(s.p)}`,12,13);}});}
+function refreshShelves(){prodSprites.forEach(sp=>{sp.material.map=eTex(SLOTS[sp.userData.slot].e);sp.material.needsUpdate=true;});tagMeshes.forEach(t=>{t.material.map.dispose();t.material.map=tagTex(t.userData.slot);t.material.needsUpdate=true;});redraw(promoT);}
+// checkout counter + cashier + payment screen
+const CX=11,CZ=6;
+const counter=new THREE.Mesh(new THREE.BoxGeometry(3.4,1,1.1),new THREE.MeshStandardMaterial({color:0x546e7a}));counter.position.set(CX,.5,CZ);scene.add(counter);BOXES.push({x1:CX-1.8,x2:CX+1.8,z1:CZ-.65,z2:CZ+.65});
+const belt=new THREE.Mesh(new THREE.BoxGeometry(2.2,.04,.7),new THREE.MeshStandardMaterial({color:0x37474f}));belt.position.set(CX-.4,1.02,CZ);scene.add(belt);
+const cashierSp=new THREE.Sprite(new THREE.SpriteMaterial({map:eTex("🧕")}));cashierSp.scale.set(1.3,1.3,1.3);cashierSp.position.set(CX+.6,1.55,CZ-1.1);scene.add(cashierSp);
+const PAY={items:[],total:0,status:"wait",pin:0,given:0};
+const payT=canvasTex(512,320,(x,w,h)=>{x.fillStyle="#102027";x.fillRect(0,0,w,h);x.strokeStyle="#455a64";x.lineWidth=14;x.strokeRect(0,0,w,h);x.direction="rtl";x.textAlign="right";
+  x.fillStyle="#80cbc4";x.font=`900 34px ${FONT}`;x.fillText("🧾 شاشة الدفع",w-24,48);x.font=`700 26px ${FONT}`;x.fillStyle="#e0f2f1";
+  PAY.items.slice(-4).forEach((it,i)=>{x.textAlign="right";x.fillText(`${it.e} ${it.ar}${it.q>1?" × "+ar(it.q):""}`,w-24,95+i*36);x.textAlign="left";x.fillText(ar(it.q*it.p),24,95+i*36);});
+  x.textAlign="right";x.fillStyle="#fff59d";x.font=`900 38px ${FONT}`;x.fillText("المجموع",w-24,h-70);x.textAlign="left";x.fillText(`${ar(PAY.total)} ر.س`,24,h-70);
+  const st={wait:["⏳ بانتظار الدفع","#ef6c00"],scan:["📟 جارٍ المسح…","#1565c0"],pin:[`💳 الرمز ${"●".repeat(PAY.pin)}`,"#ef6c00"],cash:[`💵 المدفوع ${ar(PAY.given)}`,"#ef6c00"],ok:["✅ تمّ الدفع","#2e7d32"],fail:["❌ الرصيد غير كافٍ","#c62828"]}[PAY.status]||["",""];
+  x.fillStyle=st[1];x.fillRect(16,h-48,w-32,36);x.fillStyle="#fff";x.textAlign="center";x.font=`900 26px ${FONT}`;x.fillText(st[0],w/2,h-22);});
+const payScreen=new THREE.Mesh(new THREE.PlaneGeometry(1.3,.8),new THREE.MeshBasicMaterial({map:payT}));payScreen.position.set(CX-1.2,1.6,CZ+.2);payScreen.rotation.y=Math.PI*0.15;scene.add(payScreen);
+const pole=new THREE.Mesh(new THREE.CylinderGeometry(.03,.03,.6),new THREE.MeshStandardMaterial({color:0x263238}));pole.position.set(CX-1.2,1.15,CZ+.2);scene.add(pole);
+const updPay=()=>redraw(payT);
+// big offers screen on the back wall
+let promoI=0;
+const promoT=canvasTex(1024,480,(x,w,h)=>{const g=x.createLinearGradient(0,0,w,h);g.addColorStop(0,"#d81b60");g.addColorStop(1,"#ff7043");x.fillStyle=g;x.fillRect(0,0,w,h);
+  x.direction="rtl";x.textAlign="center";x.fillStyle="#fff";x.font=`900 70px ${FONT}`;x.fillText("🔥 عروض اليوم 🔥",w/2,95);
+  const offs=SLOTS.filter(s=>s.off&&s.off<s.p);if(!offs.length){x.font=`800 44px ${FONT}`;x.fillText("لا توجد عروض الآن",w/2,h/2+40);return;}
+  const s=offs[promoI%offs.length];x.font=`200px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif`;x.fillText(s.e,w*0.78,h*0.72);
+  x.font=`900 72px ${FONT}`;x.textAlign="right";x.fillText(s.ar,w*0.6,h*0.45);x.font=`700 44px ${FONT}`;x.fillStyle="#ffe0b2";x.fillText(`كان ${ar(s.p)} ر.س`,w*0.6,h*0.6);
+  x.fillStyle="#fff59d";x.font=`900 96px ${FONT}`;x.fillText(`الآن ${ar(s.off)} ر.س!`,w*0.6,h*0.84);x.font=`700 30px ${FONT}`;x.fillStyle="#fff";x.textAlign="left";x.direction="ltr";x.fillText(`${s.en}: ${s.off} SAR (was ${s.p})`,30,h-24);});
+const promo=new THREE.Mesh(new THREE.PlaneGeometry(8,3.75),new THREE.MeshBasicMaterial({map:promoT}));promo.position.set(-2,2.15,-9.95);scene.add(promo);
+setInterval(()=>{promoI++;redraw(promoT);},3500);
+// entrance sign
+const ent=new THREE.Mesh(new THREE.PlaneGeometry(5,.8),new THREE.MeshBasicMaterial({map:canvasTex(640,100,(x,w,h)=>{x.fillStyle="#2e7d32";x.fillRect(0,0,w,h);x.fillStyle="#fff";x.font=`900 56px ${FONT}`;x.textAlign="center";x.textBaseline="middle";x.fillText("🛒 سوبرماركت العمارة",w/2,h/2+4);})}));ent.position.set(0,3.3,9.95);ent.rotation.y=Math.PI;scene.add(ent);
+const cartSp=new THREE.Sprite(new THREE.SpriteMaterial({map:eTex("🛒")}));cartSp.scale.set(.9,.9,.9);scene.add(cartSp);
+
+/* ---------- movement ---------- */
+const P={x:0,z:8.2,yaw:0,pitch:-.05};const keys={};let mode="shop";
+const fixedCash={x:CX-.5,z:CZ-2.4,yaw:Math.PI,pitch:-.32};
+addEventListener("keydown",e=>{if(!$("panel").hidden)return;keys[e.key.toLowerCase()]=1;if(["arrowup","arrowdown","arrowleft","arrowright"," "].includes(e.key.toLowerCase()))e.preventDefault();});
+addEventListener("keyup",e=>{keys[e.key.toLowerCase()]=0;});
+document.querySelectorAll("#pad button").forEach(b=>{const k="pad_"+b.dataset.k;const on=e=>{e.preventDefault();keys[k]=1;},off=()=>{keys[k]=0;};b.addEventListener("pointerdown",on);b.addEventListener("pointerup",off);b.addEventListener("pointerleave",off);b.addEventListener("pointercancel",off);});
+let drag=null,moved=0;
+canvas.addEventListener("pointerdown",e=>{drag={x:e.clientX,y:e.clientY};moved=0;});
+addEventListener("pointermove",e=>{if(!drag)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;moved+=Math.abs(dx)+Math.abs(dy);P.yaw-=dx*.005;P.pitch=Math.max(-1,Math.min(.8,P.pitch-dy*.004));drag={x:e.clientX,y:e.clientY};});
+addEventListener("pointerup",e=>{if(drag&&moved<8&&e.target===canvas)clickAt(e.clientX,e.clientY);drag=null;});
+const hit=(x,z)=>x<-14.4||x>14.4||z<-9.4||z>9.4||BOXES.some(b=>x>b.x1-.3&&x<b.x2+.3&&z>b.z1-.3&&z<b.z2+.3);
+function step(dt){if(mode==="cash"||mode==="edit"||!$("panel").hidden||TRIP)return;
+  const f=(keys.w||keys.arrowup||keys.pad_f?1:0)-(keys.s||keys.arrowdown||keys.pad_b?1:0),t=(keys.a||keys.arrowleft||keys.pad_l?1:0)-(keys.d||keys.arrowright||keys.pad_r?1:0);
+  P.yaw+=t*dt*1.9;if(f){const sp=3.2*dt*f,nx=P.x-Math.sin(P.yaw)*sp,nz=P.z-Math.cos(P.yaw)*sp;if(!hit(nx,P.z))P.x=nx;if(!hit(P.x,nz))P.z=nz;}}
+function placeCam(){const s=mode==="cash"?fixedCash:P;cam.position.set(s.x,1.6,s.z);cam.rotation.order="YXZ";cam.rotation.y=s.yaw;cam.rotation.x=s.pitch;
+  cartSp.visible=mode==="shop";cashierSp.visible=mode!=="cash";cartSp.position.set(P.x-Math.sin(P.yaw)*1.1,.6,P.z-Math.cos(P.yaw)*1.1);}
+
+/* ---------- picking ---------- */
+const ray=new THREE.Raycaster();ray.camera=cam;
+function lookAt(nx,ny){ray.setFromCamera({x:nx,y:ny},cam);const objs=mode==="cash"?beltSprites.concat([cashierSp]):prodSprites.concat(tagMeshes,[cashierSp,counter,payScreen,atm,exitDoor],NPCS);
+  const h=ray.intersectObjects(objs,false)[0];return h&&h.distance<(mode==="cash"?6:4.5)?h:null;}
+function clickAt(cx,cy){if(!$("panel").hidden)return;const r=canvas.getBoundingClientRect(),h=lookAt(((cx-r.left)/r.width)*2-1,-((cy-r.top)/r.height)*2+1);if(!h)return;const o=h.object;
+  if(mode==="cash"){if(o.userData.belt!=null)scanBelt(o);return;}
+  if(o.userData.slot!=null){openProduct(o.userData.slot);return;}
+  if(o===atm){openATM();return;}if(o===exitDoor){tryExit();return;}if(o.userData.npc!=null){npcTalk(o);return;}
+  if(o===cashierSp||o===counter||o===payScreen)startCheckout();}
+let hintTxt="";function setHint(t){if(t===hintTxt)return;hintTxt=t;const h=$("hint");h.style.display=t?"block":"none";h.innerHTML=t;}
+function updHint(){if(mode!=="shop")$("actB").hidden=true;if(!$("panel").hidden){setHint("");return;}
+  if(mode==="cash"){setHint(CASH.cur?(CASH.step==="scan"?"📟 اضغط على كلّ منتج على السير لتمسحه":""):"");return;}
+  if(mode==="edit"){setHint("");return;}
+  const h=lookAt(0,0);if(h&&h.object.userData.slot!=null){const s=SLOTS[h.object.userData.slot];setHint(`${s.e} ${esc(s.ar)} — ${ar(price(s))} ر.س${s.off?" 🔥":""}<small class="en">${esc(s.en)} · tap to add</small>`);}
+  else if(Math.hypot(P.x-CX,P.z-CZ)<4)setHint(CART.length?"🧾 اضغط على الكاشيرة للدفع":"🛒 العربة فارغة! تسوّق أوّلاً");
+  else if(Math.hypot(P.x+14.6,P.z-7.4)<3.2)setHint("🏧 الصرّاف الآلي — اسحب أو أودِع<small class=\"en\">ATM — withdraw or deposit</small>");
+  else if(P.z>7.4&&Math.abs(P.x)<2.6)setHint("🚪 باب الخروج<small class=\"en\">Exit door</small>");
+  else setHint("");
+  const ab=$("actB");if(TRIP){ab.hidden=true;return;}if(mode==="shop"&&Math.hypot(P.x-CX,P.z-CZ)<4&&CART.length){ab.hidden=false;ab.innerHTML="🧾 ادفع الآن";ab.onclick=startCheckout;}
+  else if(mode==="shop"&&Math.hypot(P.x+14.6,P.z-7.4)<3.2){ab.hidden=false;ab.innerHTML="🏧 استعمل الصرّاف";ab.onclick=openATM;}
+  else if(mode==="shop"&&P.z>7.4&&Math.abs(P.x)<2.6){ab.hidden=false;ab.innerHTML="🚪 اخرج من المتجر";ab.onclick=tryExit;}else ab.hidden=true;}
+
+/* ---------- shopper: cart + list ---------- */
+let CART=[];let LIST=[];
+function newList(){LIST=shuf([...Array(36).keys()]).filter(i=>SLOTS[i].p<=60).slice(0,3).map(i=>({i,q:1+Math.floor(Math.random()*2)}));drawSide();}
+function cartQty(i){return CART.filter(c=>c.i===i).reduce((a,c)=>a+c.q,0);}
+function cartTotal(){return CART.reduce((a,c)=>a+c.q*price(SLOTS[c.i]),0);}
+function drawSide(){
+  $("list").style.display=mode==="shop"?"block":"none";$("cartbox").style.display=mode==="shop"&&CART.length?"block":"none";
+  $("list").innerHTML=`<b>📝 قائمة التسوّق</b>${LIST.map(l=>{const s=SLOTS[l.i];return `<div class="${cartQty(l.i)>=l.q?"ok":""}">${s.e} ${esc(s.ar)} × ${ar(l.q)}<small class="en">${esc(s.en)} × ${l.q}</small></div>`;}).join("")}`;
+  $("cartbox").innerHTML=`<b>🛒 العربة</b>${CART.map((c,k)=>{const s=SLOTS[c.i];return `<div class="ci"><span>${s.e} ${esc(s.ar)} × ${ar(c.q)}</span><span>${ar(c.q*price(s))}<button data-rm="${k}">✕</button></span></div>`;}).join("")}<div class="ci"><b>المجموع</b><b>${ar(cartTotal())} ر.س</b></div>`;
+  $("cartbox").querySelectorAll("[data-rm]").forEach(b=>b.onclick=()=>{const c=CART[+b.dataset.rm];if(c.q>1)c.q--;else CART.splice(+b.dataset.rm,1);tone(300,.08);drawSide();});
+  $("cartchip").innerHTML=`🛒 ${ar(CART.reduce((a,c)=>a+c.q,0))} · ${ar(cartTotal())} ر.س`;}
+function panel(html){$("pcard").innerHTML=html;$("panel").hidden=false;const x=$("pcard").querySelector(".x");if(x)x.onclick=closeP;}
+function closeP(){$("panel").hidden=true;}
+function openProduct(si){const s=SLOTS[si];let q=1;
+  const draw=()=>panel(`<h2><span>${s.e} ${esc(s.ar)}</span><button class="x">✕</button></h2><div class="center big-e">${s.e}</div>
+    <div class="center"><b style="font-size:1.4rem">${L(esc(s.ar),esc(s.tr),esc(s.en))}</b></div>
+    <div class="center" style="font-size:1.3rem;margin:6px 0">${s.off?`<s>${ar(s.p)}</s> 🔥 <b>${ar(s.off)} ر.س</b>`:`<b>${ar(s.p)} ر.س</b>`}</div>
+    <div class="row" style="justify-content:center"><button class="btn" id="qm">➖</button><b style="font-size:1.4rem">${ar(q)}</b><button class="btn" id="qp">➕</button></div>
+    <div class="opts"><button class="btn big" id="add">${L(`🛒 أضف ${ar(q)} إلى العربة`,`adif ${q} ila al-ʿaraba`,`Add ${q} to the cart`)}</button></div>`);
+  draw();const bind=()=>{$("qm").onclick=()=>{q=Math.max(1,q-1);draw();bind();};$("qp").onclick=()=>{q=Math.min(9,q+1);draw();bind();};
+    $("add").onclick=()=>{const c=CART.find(c=>c.i===si);if(c)c.q+=q;else CART.push({i:si,q});tone(660,.06);tone(990,.08,.07);closeP();drawSide();
+      if(LIST.length&&LIST.every(l=>cartQty(l.i)>=l.q))setTimeout(()=>{setHint("✅ أكملتَ القائمة! اذهب إلى الكاشير 🧾");},200);};};bind();}
+
+/* ---------- shopper checkout ---------- */
+function startCheckout(){if(mode!=="shop")return;if(!CART.length){setHint("🛒 العربة فارغة!");return;}
+  const items=CART.map(c=>({e:SLOTS[c.i].e,ar:SLOTS[c.i].ar,p:price(SLOTS[c.i]),q:c.q})),tot=items.reduce((a,x)=>a+x.p*x.q,0);
+  PAY.items=[];PAY.total=0;PAY.status="scan";PAY.pin=0;PAY.given=0;updPay();let log="",given=[],pin="";
+  const bub=(who,a,t,e)=>{log+=`<div class="b ${who}"><span>${who==="me"?me.e:"🧕"}</span><div>${L(a,t,e)}</div></div>`;};
+  const show=body=>panel(`<h2><span>🧾 الكاشير</span><button class="x">✕</button></h2><div class="scr">${ar(PAY.total)} SAR</div><div class="log">${log}</div>${body}`);
+  bub("them","أهلاً وسهلاً! هل وجدتَ كلّ ما تريد؟".replace("وجدتَ",G("وجدتَ","وجدتِ")),"hal wajadta kulla ma turid?","Welcome! Did you find everything you need?");
+  show(`<div class="opts"><button class="btn big" id="o1">${L("نعم، شكراً!","naʿam, shukran!","Yes, thank you!")}</button></div>`);
+  $("o1").onclick=()=>{bub("me","نعم، شكراً!");let k=0;const scan=()=>{if(k<items.length){PAY.items.push(items[k]);PAY.total+=items[k].p*items[k].q;k++;beep();updPay();show(`<div class="center">📟 بيب…</div>`);setTimeout(scan,450);}else payAsk();};scan();};
+  const payAsk=()=>{PAY.status="wait";updPay();bub("them",`المجموع ${riyal(tot)}. نقداً أم بالبطاقة؟`,`al-majmuʿ ${tot}. naqdan am bil-bitaqa?`,`That's ${tot} riyals. Cash or card?`);
+    show(`<div class="opts"><button class="btn big" id="pc">${L("بالبطاقة من فضلك 💳","bil-bitaqa min fadlik","By card, please")}</button><button class="btn big" id="pn">${L("نقداً 💵","naqdan","Cash")}</button></div>`);
+    $("pc").onclick=()=>{bub("me","بالبطاقة من فضلك 💳");PAY.status="pin";updPay();bub("them","أدخل الرقم السرّي من فضلك.".replace("أدخل",G("أدخل","أدخلي")),"adkhil al-raqm al-sirri","Enter your PIN, please.");pinPad();};
+    $("pn").onclick=()=>{bub("me","نقداً 💵");PAY.status="cash";updPay();cash();};};
+  const pinPad=()=>{show(`<div class="scr">${"●".repeat(pin.length)}${"○".repeat(4-pin.length)}</div><div class="pinpad">${[1,2,3,4,5,6,7,8,9,"⌫",0,"✓"].map(k=>`<button data-p="${k}">${typeof k==="number"?ar(k):k}</button>`).join("")}</div>`);
+    $("pcard").querySelectorAll("[data-p]").forEach(b=>b.onclick=()=>{const k=b.dataset.p;if(k==="⌫")pin=pin.slice(0,-1);else if(k==="✓"){if(pin.length===4){done("card");return;}}else if(pin.length<4)pin+=k;PAY.pin=pin.length;updPay();tone(800,.04);pinPad();});};
+  const cash=(msg)=>{const g=given.reduce((a,b)=>a+b,0);PAY.given=g;updPay();
+    show(`${msg?`<div class="alert">${msg}</div>`:""}<div class="center">${L(`أعطِ الكاشيرة ${riyal(tot)} أو أكثر:`,`aʿti al-kashira ${tot}`,`Give the cashier ${tot} riyals or more:`)}</div>
+      <div class="wallet">${[1,5,10,20,50,100,200,500].map(v=>`<button data-c="${v}">💵 ${ar(v)}</button>`).join("")}</div>
+      <div class="center"><b>المدفوع: ${ar(g)} ر.س</b> <button class="btn" id="cu">↩️</button></div>
+      <div class="opts"><button class="btn big" id="cg">${L("تفضّلي!","tafaddali!","Here you are!")}</button></div>`);
+    $("pcard").querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>{given.push(+b.dataset.c);tone(520,.05);cash();});$("cu").onclick=()=>{given=[];cash();};
+    $("cg").onclick=()=>{if(g<tot){tone(200,.2);cash("المبلغ لا يكفي! 😅 Not enough");return;}bub("me",`تفضّلي، هذه ${riyal(g)}.`);done("cash",g-tot);};};
+  const done=(how,ch)=>{PAY.status="ok";updPay();tone(1300,.1);tone(1700,.15,.12);yay();
+    bub("them",how==="card"?"✅ تمّت العملية بنجاح! شكراً لك.":ch?`شكراً! تفضّل الباقي: ${riyal(ch)}.`.replace("تفضّل",G("تفضّل","تفضّلي")):"شكراً! المبلغ مضبوط 👍",how==="card"?"tammat al-ʿamaliyya!":ch?`tafaddal al-baqi: ${ch}`:"al-mablagh madbut",how==="card"?"Payment successful! Thank you.":ch?`Thanks! Here's your change: ${ch} riyals.`:"Thanks! That's exact.");
+    const listOk=LIST.length&&LIST.every(l=>cartQty(l.i)>=l.q);
+    show(`<div class="rcpt"><b>🧾 الفاتورة</b>${items.map(x=>`<div><span>${x.e} ${esc(x.ar)} × ${ar(x.q)}</span><span>${ar(x.p*x.q)}</span></div>`).join("")}<div class="t"><span>المجموع</span><span>${ar(tot)} ر.س</span></div><div><span>${how==="card"?"💳 بطاقة":"💵 نقداً"}</span><span>${how==="cash"?"الباقي "+ar(ch):"✓"}</span></div></div>
+      ${listOk?`<div class="win">🎉 أكملتَ قائمة التسوّق! ⭐⭐⭐</div>`.replace("أكملتَ",G("أكملتَ","أكملتِ")):""}
+      <div class="opts"><button class="btn big" id="ob">${L("شكراً، مع السلامة! 👋","shukran, maʿa al-salama!","Thanks, goodbye!")}</button></div>`);
+    $("ob").onclick=()=>{CART=[];newList();closeP();PAY.items=[];PAY.total=0;PAY.status="wait";updPay();P.x=0;P.z=8.2;P.yaw=0;};};
+}
+
+/* ---------- cashier mode ---------- */
+const CASH={cur:null,step:"",served:0,good:0};let beltSprites=[];
+const custSp=new THREE.Sprite(new THREE.SpriteMaterial({map:eTex("🧔")}));custSp.scale.set(1.3,1.3,1.3);custSp.visible=false;scene.add(custSp);
+const CUSTS=["🧔","👩","👴","👵","👨‍🦱","🧕","👨‍💼","👩‍🍳"];
+function cashStart(){CASH.served=0;CASH.good=0;nextCust();}
+function nextCust(){beltSprites.forEach(s=>scene.remove(s));beltSprites=[];
+  if(CASH.served>=4){const st=CASH.good;panel(`<h2><span>🧾 انتهت مناوبتك!</span><button class="x">✕</button></h2><div class="center big-e">🧾💰</div><div class="win">خدمتَ ٤ زبائن · بدون أخطاء: ${ar(st)}/٤ ${"⭐".repeat(Math.max(1,Math.round(st*3/4)))}</div><div class="opts"><button class="btn big" id="again">🔁 مناوبة جديدة</button></div>`.replace("خدمتَ",G("خدمتَ","خدمتِ")));$("again").onclick=()=>{closeP();cashStart();};return;}
+  const e=pick(CUSTS),n=2+Math.floor(Math.random()*3),its=shuf([...Array(36).keys()]).filter(i=>SLOTS[i].p<=100).slice(0,n);
+  CASH.cur={e,its,scanned:[],ok:true,card:Math.random()<.45};CASH.step="walk";custSp.material.map=eTex(e);custSp.material.needsUpdate=true;custSp.visible=true;custSp.position.set(CX-1,1.4,9);
+  const t0=performance.now();const walk=()=>{const k=Math.min(1,(performance.now()-t0)/1600);custSp.position.z=9-(9-(CZ+1.1))*k;if(k<1)requestAnimationFrame(walk);else arrive();};walk();}
+function arrive(){const c=CASH.cur;c.its.forEach((si,k)=>{const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:eTex(SLOTS[si].e)}));sp.scale.set(.42,.42,.42);sp.position.set(CX-1.3+k*.45,1.25,CZ);sp.userData={belt:si};scene.add(sp);beltSprites.push(sp);});
+  PAY.items=[];PAY.total=0;PAY.status="scan";updPay();
+  cashDlg([["them","السلام عليكم! أريد أن أدفع ثمن هذه الأغراض 🛒","al-salamu ʿalaykum! uridu an adfaʿ…","Hello! I'd like to pay for these things."]],[["السلام عليكم، أهلاً وسهلاً!","al-salamu ʿalaykum, ahlan wa sahlan!","Peace be upon you, welcome!","g"],["مع السلامة!","maʿa al-salama!","Goodbye!","x"]]);}
+let CLOG="";
+function cashDlg(lines,opts,extra){lines.forEach(l=>{CLOG+=`<div class="b ${l[0]==="me"?"me":""}"><span>${l[0]==="me"?"🧑‍💼":CASH.cur.e}</span><div>${L(l[1],l[2],l[3])}</div></div>`;});
+  panel(`<h2><span>🧾 أنت الكاشير ${CASH.cur.e}</span><span style="font-size:.9rem">👥 ${ar(CASH.served+1)}/٤</span></h2><div class="scr">${ar(PAY.total)} SAR</div><div class="log">${CLOG}</div>${extra||""}<div class="opts">${(opts||[]).map(o=>`<button class="btn big" data-o="${o[3]}">${L(o[0],o[1],o[2])}</button>`).join("")}</div>`);
+  const lg=$("pcard").querySelector(".log");if(lg)lg.scrollTop=1e5;$("pcard").querySelectorAll("[data-o]").forEach(b=>b.onclick=()=>cashAct(b.dataset.o));}
+let giveSum=0;
+function cashAct(a){const c=CASH.cur;
+  if(a==="x"){c.ok=false;tone(200,.15);cashDlg([],[["السلام عليكم، أهلاً وسهلاً!","al-salamu ʿalaykum, ahlan wa sahlan!","Peace be upon you, welcome!","g"]],`<div class="alert">🤔 رحّب بالزبون أوّلاً! · Greet first</div>`);return;}
+  if(a==="g"){CLOG+=`<div class="b me"><span>🧑‍💼</span><div>السلام عليكم، أهلاً وسهلاً!</div></div>`;CASH.step="scan";closeP();setHint("📟 اضغط على كلّ منتج على السير لتمسحه");return;}
+  if(a[0]==="t"){const v=+a.slice(1),tot=c.its.reduce((s,i)=>s+price(SLOTS[i]),0);if(v!==tot){c.ok=false;tone(200,.15);cashDlg([],totOpts(tot),`<div class="alert">🤔 اجمعها مرّة أخرى · Add again</div>`);return;}
+    PAY.status="wait";updPay();cashDlg([["me",`المجموع ${riyal(tot)}.`,`al-majmuʿ ${tot}`,`That's ${tot} riyals.`]],[[`هل تدفع نقداً أم بالبطاقة؟`,"hal tadfaʿ naqdan am bil-bitaqa?","Cash or card?","ask"]]);return;}
+  if(a==="ask"){const tot=PAY.total;
+    if(c.card){PAY.status="pin";updPay();cashDlg([["me","هل تدفع نقداً أم بالبطاقة؟"],["them","بالبطاقة 💳","bil-bitaqa","By card."]],[["💳 جهاز البطاقة جاهز، تفضّل!","jihaz al-bitaqa jahiz, tafaddal!","The card machine is ready!","card"]]);}
+    else{c.pay=[10,20,50,100,200,500,1000].find(x=>x>=tot&&(x>tot||Math.random()<.3))||1000;PAY.status="cash";PAY.given=c.pay;updPay();giveSum=0;
+      cashDlg([["me","هل تدفع نقداً أم بالبطاقة؟"],["them",`نقداً. تفضّل، هذه ${riyal(c.pay)} 💵`,`naqdan. hadhihi ${c.pay}`,`Cash. Here's ${c.pay} riyals.`]],null,changeUI());}return;}
+  if(a==="card"){CLOG+=`<div class="b me"><span>🧑‍💼</span><div>💳 جهاز البطاقة جاهز، تفضّل!</div></div>`;let p=0;const iv=setInterval(()=>{p++;PAY.pin=p;updPay();tone(800,.04);if(p>=4){clearInterval(iv);PAY.status="ok";updPay();tone(1300,.1);tone(1700,.15,.12);bye("✅ تمّت العملية بنجاح!");}},350);cashDlg([],[],`<div class="center">💳 ${L("الزبون يُدخل الرمز…","al-zabun yudkhil al-ramz…","The customer is entering the PIN…")}</div>`);return;}
+  if(a==="give"){const ch=c.pay-PAY.total;if(giveSum!==ch){c.ok=false;tone(200,.15);giveSum=0;cashDlg([],null,`<div class="alert">${giveSum>ch?"كثير!":"🤔"} الباقي = ${ar(c.pay)} − ${ar(PAY.total)}</div>`+changeUI());return;}
+    PAY.status="ok";updPay();CLOG+=`<div class="b me"><span>🧑‍💼</span><div>${L(`تفضّل الباقي: ${riyal(ch)}.`,`tafaddal al-baqi: ${ch}`,`Here's your change: ${ch} riyals.`)}</div></div>`;yay();bye("شكراً! 😊");return;}
+  if(a==="exact"){PAY.status="ok";updPay();bye("شكراً! 😊");return;}
+  if(a==="bye"){CLOG+=`<div class="b me"><span>🧑‍💼</span><div>تفضّل أغراضك، مع السلامة! 🛍️</div></div>`;if(c.ok)CASH.good++;CASH.served++;CLOG="";closeP();
+    const t0=performance.now();const walk=()=>{const k=Math.min(1,(performance.now()-t0)/1200);custSp.position.z=CZ+1.1+(9.5-CZ-1.1)*k;if(k<1)requestAnimationFrame(walk);else{custSp.visible=false;nextCust();}};walk();beltSprites.forEach(s=>scene.remove(s));beltSprites=[];}
+}
+function changeUI(){const c=CASH.cur,ch=c.pay-PAY.total;if(!ch)return `<div class="opts"><button class="btn big" data-o="exact">${L("شكراً! المبلغ مضبوط 👍","shukran! al-mablagh madbut","Thanks, that's exact!")}</button></div>`;
+  setTimeout(()=>{$("pcard").querySelectorAll("[data-g]").forEach(b=>b.onclick=()=>{const v=+b.dataset.g;giveSum=v?giveSum+v:0;tone(v?1000:400,.04);const gb=$("gsum");if(gb)gb.textContent=`الباقي: ${ar(giveSum)} ر.س`;});},0);
+  return `<div class="center">${L(`كم الباقي؟ ${ar(c.pay)} − ${ar(PAY.total)}`,"kam al-baqi?",`Change? ${c.pay} − ${PAY.total}`)}</div><div class="coins">${[100,50,10,5,1].map(v=>`<button data-g="${v}">${ar(v)}</button>`).join("")}</div><div class="center"><b id="gsum">الباقي: ${ar(giveSum)} ر.س</b> <button class="btn" data-g="0">↩️</button></div><div class="opts"><button class="btn big" data-o="give">${L("تفضّل الباقي!","tafaddal al-baqi!","Here's your change!")}</button></div>`;}
+function bye(t){cashDlg([["them",t,"","Thank you!"]],[["تفضّل أغراضك، مع السلامة! 🛍️","tafaddal aghradak, maʿa al-salama!","Here are your things, goodbye!","bye"]]);}
+function totOpts(tot){return shuf([tot,tot+3,Math.max(1,tot-2)]).map(v=>[`المجموع ${riyal(v)}.`,`al-majmuʿ ${v}`,`The total is ${v} riyals.`,"t"+v]);}
+function scanBelt(sp){const c=CASH.cur;if(!c||CASH.step!=="scan")return;const si=sp.userData.belt;scene.remove(sp);beltSprites=beltSprites.filter(s=>s!==sp);beep();
+  const s=SLOTS[si];PAY.items.push({e:s.e,ar:s.ar,p:price(s),q:1});PAY.total+=price(s);updPay();
+  if(!beltSprites.length){CASH.step="total";setHint("");cashDlg([],totOpts(PAY.total),`<div class="center">🧮 ${c.its.map(i=>ar(price(SLOTS[i]))).join(" + ")} = ؟</div>`);}}
+
+/* ---------- edit mode: change products & prices ---------- */
+const EMO="🍎 🍌 🍇 🍉 🍓 🍒 🍑 🥭 🍍 🥥 🥝 🍋 🍊 🥑 🥦 🥕 🌽 🥒 🧅 🥔 🍅 🍞 🥐 🥖 🧇 🥞 🧀 🥚 🧈 🥛 🍗 🍖 🍔 🍕 🌭 🥪 🌮 🍟 🍿 🍩 🍪 🎂 🍰 🧁 🍫 🍬 🍭 🍯 🧃 🥤 ☕ 🍵 💧 🍦 🧂 🧼 🧴 🧻 🪥 🧽 🪣 🧹 🧺 📱 💻 🎧 ⌚ 🖱️ ⌨️ 🔋 🔌 📷 🎮 💡 📺 🧸 ⚽ 🪁 🚗 🧩 🤖 🎲 🪀 🛴 ✏️ 📒 📕 🎨 ✂️ 🎒 🌹 🌷 🪴 👕 🧢 🧦 👟 🧤 🔧 🔨 🪛 🔩".split(" ");
+function openEdit(){const draw=()=>{panel(`<h2><span>🛠️ إدارة الرفوف</span><button class="x">✕</button></h2>
+  <div class="center" style="font-size:.85rem">${L("اضغط على أيّ منتج لتغييره أو تغيير سعره. 🔥 = عرض","idghat ʿala ayyi muntaj","Tap a product to change it or its price. 🔥 = offer")}</div>
+  ${FACES.map((f,fi)=>`<div class="facehd">${f[0]} ${f[1]} <small class="en" style="display:inline">${f[2]}</small></div><div class="grid">${SLOTS.slice(fi*6,fi*6+6).map((s,k)=>`<div class="slot ${s.off?"offer":""}" data-s="${fi*6+k}"><span>${s.e}</span><small>${esc(s.ar)}</small><small>${s.off?"🔥"+ar(s.off):ar(s.p)} ر.س</small></div>`).join("")}</div>`).join("")}
+  <div class="opts"><button class="btn" id="reset">↺ إرجاع المنتجات الأصليّة</button></div>`);
+  $("pcard").querySelectorAll("[data-s]").forEach(b=>b.onclick=()=>editSlot(+b.dataset.s));
+  $("reset").onclick=()=>{if(!confirmReset())return;SLOTS=DEF.map(d=>({e:d[0],ar:d[1],tr:d[2],en:d[3],p:d[4],off:0}));save();refreshShelves();draw();};};
+  let armed=false;function confirmReset(){if(armed)return true;armed=true;$("reset").textContent="⚠️ اضغط مرّة أخرى للتأكيد";setTimeout(()=>armed=false,3000);return false;}
+  draw();window._editDraw=draw;}
+function editSlot(si){const s=Object.assign({},SLOTS[si]);let err="";
+  const draw=()=>{panel(`<h2><span>✏️ ${s.e} ${esc(s.ar)}</span><button class="x">✕</button></h2>
+    <div class="emo">${EMO.map(e=>`<button class="${e===s.e?"on":""}" data-e="${e}">${e}</button>`).join("")}</div>
+    <div class="row"><b>الاسم:</b><input id="nm" value="${esc(s.ar)}" placeholder="بالعربية أو بحروف إنجليزية"></div>
+    <div class="row"><b>English:</b><input id="en" dir="ltr" value="${esc(s.en||"")}" placeholder="e.g. apples"></div>
+    <div class="row"><b>السعر:</b><input id="pr" type="number" min="1" value="${s.p}"><b>ر.س</b></div>
+    <div class="row"><b>🔥 سعر العرض:</b><input id="of" type="number" min="0" value="${s.off||""}" placeholder="اتركه فارغاً بلا عرض"></div>
+    ${err?`<div class="alert">${err}</div>`:""}
+    <div class="opts"><button class="btn big green" id="sv">✅ حفظ على الرفّ</button><button class="btn" id="cn">↩️ رجوع</button></div>`);
+    $("pcard").querySelectorAll("[data-e]").forEach(b=>b.onclick=()=>{s.ar=$("nm").value;s.en=$("en").value;s.e=b.dataset.e;draw();});
+    $("cn").onclick=()=>openEdit();
+    $("sv").onclick=()=>{const nm=$("nm").value.trim(),p=parseInt(String($("pr").value).replace(/[٠-٩]/g,d=>AD.indexOf(d))),of=parseInt(String($("of").value||"0").replace(/[٠-٩]/g,d=>AD.indexOf(d)))||0;
+      if(!nm){err="اكتب اسم المنتج ✍️";draw();return;}if(!(p>0)){err="اكتب سعراً أكبر من صفر";draw();return;}if(of&&of>=p){err="سعر العرض يجب أن يكون أقلّ من السعر 🔥";draw();return;}
+      const enV=$("en").value.trim();SLOTS[si]={e:s.e,ar:nm,tr:s.tr&&nm===SLOTS[si].ar?s.tr:"",en:nm!==SLOTS[si].ar&&enV===(SLOTS[si].en||"")?"":enV,p,off:of};save();refreshShelves();tone(880,.08);tone(1320,.1,.1);openEdit();};};draw();}
+
+
+/* =====================================================================
+   wallet · ATM · exit door · shoppers · events · trip from/to home
+   ===================================================================== */
+const WK="store-wallet-v1";let WAL;try{WAL=JSON.parse(localStorage.getItem(WK)||"null");}catch(e){}
+if(!WAL||typeof WAL.cash!=="number")WAL={cash:80,bank:300};
+let SCORE=0,BOUGHT=[],TRIP=null;
+function drawWal(){const c=$("walchip");if(c)c.innerHTML=`💵 ${ar(WAL.cash)} <small class="en" style="display:inline">cash</small> · 💳 ${ar(WAL.bank)} <small class="en" style="display:inline">card</small>`;const s=$("scorechip");if(s)s.textContent=`⭐ ${ar(SCORE)}`;}
+const saveW=()=>{try{localStorage.setItem(WK,JSON.stringify(WAL));}catch(e){}drawWal();};
+function rollMoney(){const r=Math.random();
+  if(r<.3){WAL.cash=Math.min(WAL.cash,3+Math.floor(Math.random()*10));if(WAL.bank<120)WAL.bank=120+Math.floor(Math.random()*200);}      // little cash → ATM withdraw
+  else if(r<.55){WAL.bank=Math.min(WAL.bank,2+Math.floor(Math.random()*12));if(WAL.cash<70)WAL.cash=70+Math.floor(Math.random()*80);}  // card nearly empty → pay cash / deposit
+  else{if(WAL.cash<30)WAL.cash=40+Math.floor(Math.random()*40);if(WAL.bank<60)WAL.bank=150+Math.floor(Math.random()*150);}
+  saveW();}
+const NOTES=[500,200,100,50,20,10,5,1];
+function notesOf(n){const out=[];NOTES.forEach(v=>{while(n>=v){out.push(v);n-=v;}});return out;}
+function toast(a,t,e,ms){const d=$("toast");d.innerHTML=L(a,t,e);d.classList.add("on");clearTimeout(toast._t);toast._t=setTimeout(()=>d.classList.remove("on"),ms||4500);}
+function addScore(n){SCORE+=n;drawWal();}
+
+/* ---------- checkout that checks the balances ---------- */
+startCheckout=function(){if(mode!=="shop")return;if(!CART.length){setHint("🛒 العربة فارغة!");return;}
+  const items=CART.map(c=>({e:SLOTS[c.i].e,ar:SLOTS[c.i].ar,p:price(SLOTS[c.i]),q:c.q})),tot=items.reduce((a,x)=>a+x.p*x.q,0);
+  PAY.items=[];PAY.total=0;PAY.status="scan";PAY.pin=0;PAY.given=0;updPay();let log="",given=[],pin="";
+  const bub=(who,a,t,e)=>{log+=`<div class="b ${who}"><span>${who==="me"?me.e:"🧕"}</span><div>${L(a,t,e)}</div></div>`;};
+  const show=body=>{panel(`<h2><span>🧾 الكاشير</span><button class="x">✕</button></h2><div class="scr">${ar(PAY.total)} SAR</div><div class="log">${log}</div>${body}`);const lg=$("pcard").querySelector(".log");if(lg)lg.scrollTop=1e5;};
+  const noMoney=(why)=>{PAY.status="fail";updPay();tone(180,.3,0,"square",.07);
+    bub("them",why==="card"?"❌ عذراً، الرصيد في بطاقتك غير كافٍ.":`❌ عذراً، النقود التي معك لا تكفي. معك ${riyal(WAL.cash)} فقط.`,why==="card"?"ʿafwan, al-rasid fi bitaqatik ghayr kafin.":"ʿafwan, al-nuqud la takfi.",why==="card"?"Sorry, there isn't enough money on your card.":`Sorry, you don't have enough cash. You only have ${WAL.cash} riyals.`);
+    show(`<div class="opts">${why==="card"?`<button class="btn big" id="nCash">${L("سأدفع نقداً 💵","sa-adfaʿ naqdan","I'll pay cash")}</button>`:`<button class="btn big" id="nCard">${L("سأدفع بالبطاقة 💳","sa-adfaʿ bil-bitaqa","I'll pay by card")}</button>`}
+      <button class="btn big" id="nAtm">${L("سأذهب إلى الصرّاف الآلي 🏧","sa-adhhab ila al-sarraf al-ali","I'll go to the ATM")}</button>
+      <button class="btn big" id="nBack">${L("سأُرجع بعض المنتجات 🛒","sa-urjiʿ baʿd al-muntajat","I'll put some things back")}</button></div>`);
+    const n1=$("nCash")||$("nCard");n1.onclick=()=>{if(n1.id==="nCash"){bub("me","سأدفع نقداً 💵");PAY.status="cash";updPay();cash();}else{bub("me","سأدفع بالبطاقة 💳");pin="";PAY.status="pin";updPay();pinPad();}};
+    $("nAtm").onclick=()=>{closeP();PAY.status="wait";updPay();toast("🏧 الصرّاف الآلي بجانب المدخل على اليسار","al-sarraf al-ali bi-janib al-madkhal","The ATM is next to the entrance, on the left");};
+    $("nBack").onclick=()=>{closeP();PAY.status="wait";updPay();$("cartbox").style.display="block";toast("🛒 اضغط ✕ بجانب المنتج لتُرجعه","","Tap ✕ next to an item to put it back");};};
+  bub("them","أهلاً وسهلاً! هل وجدتَ كلّ ما تريد؟".replace("وجدتَ",G("وجدتَ","وجدتِ")),"hal wajadta kulla ma turid?","Welcome! Did you find everything you need?");
+  show(`<div class="opts"><button class="btn big" id="o1">${L("نعم، شكراً!","naʿam, shukran!","Yes, thank you!")}</button></div>`);
+  $("o1").onclick=()=>{bub("me","نعم، شكراً!");let k=0;const scan=()=>{if(k<items.length){PAY.items.push(items[k]);PAY.total+=items[k].p*items[k].q;k++;beep();updPay();show(`<div class="center">📟 بيب…</div>`);setTimeout(scan,420);}else payAsk();};scan();};
+  const payAsk=()=>{PAY.status="wait";updPay();bub("them",`المجموع ${riyal(tot)}. نقداً أم بالبطاقة؟`,`al-majmuʿ ${tot}. naqdan am bil-bitaqa?`,`That's ${tot} riyals. Cash or card?`);
+    show(`<div class="center" style="font-size:.9rem">${L(`معك: 💵 ${ar(WAL.cash)} نقداً · 💳 ${ar(WAL.bank)} في البطاقة`,"","You have: cash "+WAL.cash+" · card "+WAL.bank)}</div>
+      <div class="opts"><button class="btn big" id="pc">${L("بالبطاقة من فضلك 💳","bil-bitaqa min fadlik","By card, please")}</button><button class="btn big" id="pn">${L("نقداً 💵","naqdan","Cash")}</button></div>`);
+    $("pc").onclick=()=>{bub("me","بالبطاقة من فضلك 💳");PAY.status="pin";updPay();bub("them","أدخل الرقم السرّي من فضلك.".replace("أدخل",G("أدخل","أدخلي")),"adkhil al-raqm al-sirri","Enter your PIN, please.");pinPad();};
+    $("pn").onclick=()=>{bub("me","نقداً 💵");PAY.status="cash";updPay();cash();};};
+  const pinPad=()=>{show(`<div class="scr">${"●".repeat(pin.length)}${"○".repeat(4-pin.length)}</div><div class="pinpad">${[1,2,3,4,5,6,7,8,9,"⌫",0,"✓"].map(k=>`<button data-p="${k}">${typeof k==="number"?ar(k):k}</button>`).join("")}</div>`);
+    $("pcard").querySelectorAll("[data-p]").forEach(b=>b.onclick=()=>{const k=b.dataset.p;if(k==="⌫")pin=pin.slice(0,-1);else if(k==="✓"){if(pin.length===4){if(WAL.bank<tot){pin="";noMoney("card");return;}WAL.bank-=tot;saveW();done("card");return;}}else if(pin.length<4)pin+=k;PAY.pin=pin.length;updPay();tone(800,.04);pinPad();});};
+  const cash=(msg)=>{if(WAL.cash<tot){noMoney("cash");return;}const g=given.reduce((a,b)=>a+b,0);PAY.given=g;updPay();
+    const left=notesOf(WAL.cash);given.forEach(v=>{const i=left.indexOf(v);if(i>=0)left.splice(i,1);});
+    show(`${msg?`<div class="alert">${msg}</div>`:""}<div class="center">${L(`أعطِ الكاشيرة ${riyal(tot)} أو أكثر من محفظتك:`,`aʿti al-kashira ${tot}`,`Give the cashier ${tot} riyals or more from your wallet:`)}</div>
+      <div class="wallet">${left.map((v,i)=>`<button data-c="${v}">💵 ${ar(v)}</button>`).join("")||"<i>المحفظة فارغة</i>"}</div>
+      <div class="center"><b>المدفوع: ${ar(g)} ر.س</b> <button class="btn" id="cu">↩️</button></div>
+      <div class="opts"><button class="btn big" id="cg">${L("تفضّلي!","tafaddali!","Here you are!")}</button></div>`);
+    $("pcard").querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>{given.push(+b.dataset.c);tone(520,.05);cash();});$("cu").onclick=()=>{given=[];cash();};
+    $("cg").onclick=()=>{if(g<tot){tone(200,.2);cash("المبلغ لا يكفي! 😅 Not enough");return;}bub("me",`تفضّلي، هذه ${riyal(g)}.`);WAL.cash-=tot;saveW();done("cash",g-tot);};};
+  const done=(how,ch)=>{PAY.status="ok";updPay();tone(1300,.1);tone(1700,.15,.12);yay();addScore(2);
+    bub("them",how==="card"?"✅ تمّت العملية بنجاح! شكراً لك.":ch?`شكراً! تفضّل الباقي: ${riyal(ch)}.`.replace("تفضّل",G("تفضّل","تفضّلي")):"شكراً! المبلغ مضبوط 👍",how==="card"?"tammat al-ʿamaliyya!":ch?`tafaddal al-baqi: ${ch}`:"al-mablagh madbut",how==="card"?"Payment successful! Thank you.":ch?`Thanks! Here's your change: ${ch} riyals.`:"Thanks! That's exact.");
+    const listOk=LIST.length&&LIST.every(l=>cartQty(l.i)>=l.q);if(listOk)addScore(3);
+    show(`<div class="rcpt"><b>🧾 الفاتورة</b>${items.map(x=>`<div><span>${x.e} ${esc(x.ar)} × ${ar(x.q)}</span><span>${ar(x.p*x.q)}</span></div>`).join("")}<div class="t"><span>المجموع</span><span>${ar(tot)} ر.س</span></div><div><span>${how==="card"?"💳 بطاقة":"💵 نقداً"}</span><span>${how==="cash"?"الباقي "+ar(ch):"✓"}</span></div></div>
+      <div class="center" style="font-size:.85rem">💵 ${ar(WAL.cash)} · 💳 ${ar(WAL.bank)}</div>
+      ${listOk?`<div class="win">🎉 أكملتَ قائمة التسوّق! ⭐⭐⭐</div>`.replace("أكملتَ",G("أكملتَ","أكملتِ")):""}
+      <div class="opts"><button class="btn big" id="ob">${L("شكراً، مع السلامة! 👋","shukran, maʿa al-salama!","Thanks, goodbye!")}</button></div>`);
+    $("ob").onclick=()=>{BOUGHT=BOUGHT.concat(items);CART=[];newList();closeP();PAY.items=[];PAY.total=0;PAY.status="wait";updPay();drawSide();toast("🚪 انتهيت؟ باب الخروج عند المدخل","intahayt? bab al-khuruj ʿinda al-madkhal","Done? The exit door is at the entrance");};};
+};
+
+/* ---------- 🏧 ATM ---------- */
+const atmT=canvasTex(256,360,(x,w,h)=>{x.fillStyle="#0d47a1";x.fillRect(0,0,w,h);x.fillStyle="#fff";x.font=`900 46px ${FONT}`;x.textAlign="center";x.fillText("🏧",w/2,64);x.font=`900 34px ${FONT}`;x.fillText("صرّاف آلي",w/2,112);x.font=`700 22px ${FONT}`;x.fillText("ATM",w/2,142);
+  x.fillStyle="#102027";x.fillRect(28,165,w-56,110);x.fillStyle="#80cbc4";x.font=`800 24px ${FONT}`;x.fillText("أدخل بطاقتك",w/2,228);x.fillStyle="#cfd8dc";x.fillRect(60,300,w-120,18);});
+const atm=new THREE.Mesh(new THREE.BoxGeometry(.7,2.1,1.1),[new THREE.MeshBasicMaterial({map:atmT}),new THREE.MeshStandardMaterial({color:0x1565c0}),new THREE.MeshStandardMaterial({color:0x1565c0}),new THREE.MeshStandardMaterial({color:0x1565c0}),new THREE.MeshStandardMaterial({color:0x1565c0}),new THREE.MeshStandardMaterial({color:0x1565c0})]);
+atm.position.set(-14.6,1.05,7.4);scene.add(atm);BOXES.push({x1:-15,x2:-14.2,z1:6.8,z2:8});
+function openATM(){let pin="",msg="";const card=`<div class="atmscr">`;
+  const scr=(body)=>panel(`<h2><span>🏧 الصرّاف الآلي <small class="en" style="display:inline">ATM</small></span><button class="x">✕</button></h2>${body}`);
+  const start=()=>scr(`<div class="center big-e">🏧</div><div class="atmscr">${L("مرحباً! أدخل بطاقتك من فضلك.","marhaban! adkhil bitaqataka min fadlik.","Welcome! Please insert your card.")}</div><div class="opts"><button class="btn big" id="aIn">${L("💳 أدخل البطاقة","adkhil al-bitaqa","Insert card")}</button></div>`)||($("aIn").onclick=()=>{tone(600,.08);tone(400,.1,.1);pinS();});
+  const pinS=()=>{scr(`<div class="atmscr">${L("أدخل الرقم السرّي:","adkhil al-raqm al-sirri:","Enter your PIN:")}</div><div class="scr">${"●".repeat(pin.length)}${"○".repeat(4-pin.length)}</div><div class="pinpad">${[1,2,3,4,5,6,7,8,9,"⌫",0,"✓"].map(k=>`<button data-p="${k}">${typeof k==="number"?ar(k):k}</button>`).join("")}</div>`);
+    $("pcard").querySelectorAll("[data-p]").forEach(b=>b.onclick=()=>{const k=b.dataset.p;if(k==="⌫")pin=pin.slice(0,-1);else if(k==="✓"){if(pin.length===4){menu();return;}}else if(pin.length<4)pin+=k;tone(800,.04);pinS();});};
+  const menu=()=>{scr(`<div class="atmscr">${L("اختر العمليّة:","ikhtar al-ʿamaliyya:","Choose a service:")}${msg?`<div class="atmmsg">${msg}</div>`:""}</div>
+      <div class="opts"><button class="btn big" id="aW">${L("💵 سحب نقدي","sahb naqdi","Withdraw cash")}</button><button class="btn big" id="aD">${L("📥 إيداع نقدي","idaʿ naqdi","Deposit cash")}</button><button class="btn big" id="aB">${L("📊 عرض الرصيد","ʿard al-rasid","Check balance")}</button><button class="btn" id="aX">${L("💳 أخرج البطاقة وأنهِ","akhrij al-bitaqa","Take card & finish")}</button></div>`);msg="";
+    $("aW").onclick=()=>amounts("w");$("aD").onclick=()=>amounts("d");$("aB").onclick=()=>{msg=L(`رصيد البطاقة: ${riyal(WAL.bank)} · معك نقداً: ${riyal(WAL.cash)}`,"",`Card balance: ${WAL.bank} · Cash: ${WAL.cash}`);menu();};
+    $("aX").onclick=()=>{tone(400,.1);closeP();toast("💳 لا تنسَ بطاقتك! شكراً.","la tansa bitaqatak!","Don't forget your card! Thanks.");};};
+  const amounts=(t)=>{const list=t==="w"?[20,50,100,200,500]:[10,20,50,100].filter(v=>v<=WAL.cash).concat(WAL.cash>0?[WAL.cash]:[]);
+    scr(`<div class="atmscr">${t==="w"?L("كم تريد أن تسحب؟","kam turidu an tashab?","How much do you want to withdraw?"):L("كم تريد أن تودع في البطاقة؟","kam turidu an tudiʿ?","How much do you want to deposit?")}<div class="atmmsg">💳 ${ar(WAL.bank)} · 💵 ${ar(WAL.cash)}</div></div>
+      <div class="wallet">${[...new Set(list)].map(v=>`<button data-a="${v}">${v===WAL.cash&&t==="d"&&![10,20,50,100].includes(v)?"كلّها ":""}${ar(v)}</button>`).join("")||"<i>لا توجد نقود للإيداع</i>"}</div><div class="opts"><button class="btn" id="aBk">↩️ رجوع</button></div>`);
+    $("aBk").onclick=menu;
+    $("pcard").querySelectorAll("[data-a]").forEach(b=>b.onclick=()=>{const v=+b.dataset.a;
+      if(t==="w"){if(WAL.bank<v){tone(180,.3,0,"square",.07);msg=`❌ ${L("الرصيد غير كافٍ!","al-rasid ghayr kafin!","Not enough balance!")}`;menu();return;}WAL.bank-=v;WAL.cash+=v;for(let i=0;i<5;i++)tone(300+i*40,.05,i*.08,"square",.04);msg=`✅ ${L(`خذ نقودك: ${riyal(v)} 💵`,"khudh nuqudak",`Take your cash: ${v} riyals`)}`;}
+      else{WAL.cash-=v;WAL.bank+=v;tone(700,.1);msg=`✅ ${L(`تمّ إيداع ${riyal(v)} في بطاقتك`,"tamma al-idaʿ",`Deposited ${v} riyals to your card`)}`;}
+      saveW();addScore(1);menu();});};
+  start();}
+
+/* ---------- 🚪 exit door ---------- */
+const exitDoor=new THREE.Mesh(new THREE.PlaneGeometry(2.6,2.6),new THREE.MeshBasicMaterial({map:canvasTex(300,300,(x,w,h)=>{x.fillStyle="#b3e5fc";x.fillRect(0,0,w,h);x.strokeStyle="#455a64";x.lineWidth=16;x.strokeRect(0,0,w,h);x.beginPath();x.moveTo(w/2,0);x.lineTo(w/2,h);x.stroke();
+  x.fillStyle="#c62828";x.fillRect(40,30,w-80,64);x.fillStyle="#fff";x.font=`900 40px ${FONT}`;x.textAlign="center";x.fillText("🚪 خروج",w/2,76);x.fillStyle="#263238";x.font=`900 30px ${FONT}`;x.fillText("EXIT",w/2,150);}),transparent:true,opacity:.95}));
+exitDoor.position.set(0,1.3,9.93);exitDoor.rotation.y=Math.PI;scene.add(exitDoor);
+function tryExit(){if(TRIP)return;
+  if(CART.length){panel(`<h2><span>🚪 باب الخروج</span><button class="x">✕</button></h2><div class="alert">${L("⚠️ لم تدفع ثمن المنتجات التي في العربة!","lam tadfaʿ thaman al-muntajat!","You haven't paid for the things in your cart!")}</div>
+      <div class="opts"><button class="btn big" id="xPay">${L("سأدفع أوّلاً 🧾","sa-adfaʿ awwalan","I'll pay first")}</button><button class="btn big" id="xPut">${L("سأُرجعها إلى الرفوف","sa-urjiʿuha ila al-rufuf","I'll put them back")}</button></div>`);
+    $("xPay").onclick=()=>{closeP();toast("🧾 الكاشير على اليمين","al-kashir ʿala al-yamin","The checkout is on the right");};$("xPut").onclick=()=>{CART=[];drawSide();closeP();tone(300,.1);};return;}
+  startTrip("home");}
+
+/* ---------- 🧑‍🤝‍🧑 other shoppers ---------- */
+const CORR=[-8.2,-3.75,.75,5.2];const ENDS=[-10.6,5.9];
+const NPCS=["👨‍🦳","👩‍🦱","🧔","👵","👨‍👧","🧕"].map((e,i)=>{const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:eTex(e)}));sp.scale.set(1.25,1.25,1.25);const z=CORR[i%4];sp.position.set(-9+Math.random()*14,1.35,z);sp.userData={npc:i,e,path:[],talk:false};scene.add(sp);return sp;});
+function npcPath(n){const p=n.position,ex=ENDS[Math.random()<.5?0:1],zc=pick(CORR),nx=-9+Math.random()*14;n.userData.path=[{x:ex,z:p.z},{x:ex,z:zc},{x:nx,z:zc}];}
+let nextTalk=performance.now()+25000,nextEvent=performance.now()+40000,talker=null;
+const TALKS=[
+ ()=>{const s=SLOTS[6+Math.floor(Math.random()*6)];return {q:[`عفواً، أين أجد ${s.ar}؟`,`ʿafwan, ayna ajidu ${s.tr||s.ar}?`,`Excuse me, where can I find ${s.en||s.ar}?`],opts:[[`في قسم المخبز والألبان 🥖`,"fi qism al-makhbaz wal-alban","In the bakery & dairy section",1],[`في قسم الإلكترونيّات 📱`,"fi qism al-iliktruniyyat","In the electronics section",0],[`لا أعرف، اسأل الكاشيرة.`,"la aʿrif, is'al al-kashira","I don't know, ask the cashier.",0]],ok:"شكراً جزيلاً! 😊",okE:"Thank you very much!",bad:"هممم… لا أظنّ ذلك 🤔",badE:"Hmm… I don't think so."};},
+ ()=>({q:["السلام عليكم! كيف حالك اليوم؟","al-salamu ʿalaykum! kayfa haluk al-yawm?","Hello! How are you today?"],opts:[["وعليكم السلام، بخير والحمد لله!","wa ʿalaykum al-salam, bi-khayr wal-hamdu lillah!","Peace be upon you too, fine thank God!",1],["أريد موزاً.","uridu mawzan.","I want bananas.",0]],ok:"الحمد لله! تسوّقاً ممتعاً 🛒",okE:"Thank God! Happy shopping!",bad:"😅 أقصد كيف حالك؟",badE:"I mean, how are you?"}),
+ ()=>{const s=pick(SLOTS.filter(x=>x.p<=60));const p=price(s);return {q:[`هل تعرف كم سعر ${s.ar}؟ ${s.e}`,`hal taʿrif kam siʿr ${s.tr||s.ar}?`,`Do you know how much the ${s.en||s.ar} costs?`],opts:shuf([[`${riyal(p)}`,`${p} riyal`,`${p} riyals`,1],[`${riyal(p+4)}`,"",`${p+4} riyals`,0],[`${riyal(Math.max(1,p*2))}`,"",`${p*2} riyals`,p*2===p?1:0]]),ok:"شكراً! سأشتريه 👍",okE:"Thanks! I'll buy it.",bad:"لا، أظنّ أنّ السعر مختلف… انظر إلى البطاقة الصفراء 🏷️",badE:"No, I think the price is different… look at the yellow tag."};},
+ ()=>({q:["عفواً، هل يمكنك أن تعطيني العلبة من الرفّ العالي؟ أنا قصير 😅","ʿafwan, hal yumkinuka an tuʿtiyani al-ʿulba?","Excuse me, could you pass me the box from the top shelf?"],opts:[["طبعاً، تفضّل! 📦","tabʿan, tafaddal!","Of course, here you go!",1],["لا، اذهب بعيداً.","la, idhhab baʿidan.","No, go away.",0]],ok:"شكراً، أنت لطيف جداً! 💛".replace("أنت لطيف",G("أنتَ لطيف","أنتِ لطيفة")),okE:"Thanks, you're very kind!",bad:"😢 هذا ليس لطيفاً…",badE:"That's not nice…"}),
+ ()=>({q:["هل العرض على الشاشة الكبيرة ما زال موجوداً؟ 📺","hal al-ʿard ʿala al-shasha ma zala mawjudan?","Is the offer on the big screen still on?"],opts:[["نعم، انظر إلى الشاشة الكبيرة في الخلف!","naʿam, unzur ila al-shasha al-kabira!","Yes, look at the big screen at the back!",1],["ما هي الشاشة؟","ma hiya al-shasha?","What screen?",0]],ok:"رائع! شكراً 🔥",okE:"Great! Thanks!",bad:"هي في آخر المتجر 😄",badE:"It's at the back of the store."})
+];
+function npcTalk(n){if(!$("panel").hidden||TRIP||mode!=="shop")return;const d=pick(TALKS)();n.userData.talk=false;talker=null;nextTalk=performance.now()+40000+Math.random()*25000;let log=`<div class="b"><span>${n.userData.e}</span><div>${L(d.q[0],d.q[1],d.q[2])}</div></div>`;
+  const draw=()=>{panel(`<h2><span>💬 ${n.userData.e} ${L("شخص يكلّمك","","Someone is talking to you")}</span><button class="x">✕</button></h2><div class="log">${log}</div><div class="opts">${d.opts.map((o,i)=>`<button class="btn big" data-t="${i}">${L(o[0],o[1],o[2])}</button>`).join("")}</div>`);
+    $("pcard").querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>{const o=d.opts[+b.dataset.t];log+=`<div class="b me"><span>${me.e}</span><div>${L(o[0],o[1],o[2])}</div></div><div class="b"><span>${n.userData.e}</span><div>${L(o[3]?d.ok:d.bad,"",o[3]?d.okE:d.badE)}</div></div>`;
+      if(o[3]){tone(880,.08);addScore(1);panel(`<h2><span>💬 ${n.userData.e}</span><button class="x">✕</button></h2><div class="log">${log}</div><div class="opts"><button class="btn big" id="tOk">${L("مع السلامة 👋","maʿa al-salama","Goodbye")}</button></div>`);$("tOk").onclick=closeP;}else{tone(200,.15);d.opts=d.opts.filter(x=>x!==o);draw();}});};
+  draw();}
+
+/* ---------- 🎲 random events ---------- */
+let spill=null,lost=null,tempOff=null;const hemi=scene.children.find(o=>o.isHemisphereLight);
+function storeEvent(){const ev=pick(["offer","spill","lost","power"].filter(e=>!(e==="spill"&&spill)&&!(e==="lost"&&lost)));
+  if(ev==="offer"){const i=pick([...Array(36).keys()].filter(i=>!SLOTS[i].off));const s=SLOTS[i];const old=s.off;s.off=Math.max(1,Math.round(s.p*0.6));refreshShelves();tempOff=i;
+    toast(`📢 إعلان: عرض خاص على ${s.e} ${s.ar}! الآن ${ar(s.off)} ر.س فقط لمدّة دقيقة!`,`iʿlan: ʿard khass ʿala ${s.tr||s.ar}!`,`Announcement: special offer on ${s.en||s.ar}, only ${s.off} riyals for one minute!`,7000);tone(660,.15);tone(880,.15,.2);
+    setTimeout(()=>{s.off=old||0;refreshShelves();},60000);}
+  if(ev==="spill"){const z=pick(CORR),x=-8+Math.random()*12;const g=new THREE.Group();const pud=new THREE.Mesh(new THREE.CircleGeometry(.7,24),new THREE.MeshBasicMaterial({color:0xfff59d,transparent:true,opacity:.8}));pud.rotation.x=-Math.PI/2;pud.position.y=.02;g.add(pud);
+    const sign=new THREE.Sprite(new THREE.SpriteMaterial({map:eTex("⚠️")}));sign.scale.set(.6,.6,.6);sign.position.set(.5,.4,0);g.add(sign);g.position.set(x,0,z);scene.add(g);spill={g,x,z,hit:false};
+    toast("💦 انسكب عصير في أحد الممرّات! انتبه للأرضيّة المبلّلة ⚠️","insakaba ʿasir! intabih!","Juice spilled in an aisle! Watch out for the wet floor!",6000);
+    setTimeout(()=>{if(spill){scene.remove(spill.g);spill=null;toast("🧹 نظّف العامل الأرضيّة. شكراً لصبرك!","nazzafa al-ʿamil al-ardiyya","The cleaner mopped the floor. Thanks for waiting!");}},45000);}
+  if(ev==="lost"){const kid=new THREE.Sprite(new THREE.SpriteMaterial({map:eTex("👦")}));kid.scale.set(.8,.8,.8);kid.position.set(P.x-Math.sin(P.yaw)*1.8,.9,P.z-Math.cos(P.yaw)*1.8);if(hit(kid.position.x,kid.position.z))kid.position.set(P.x,0.9,P.z-1.2);scene.add(kid);
+    const mz=pick(CORR),mx=pick([-9,3]);const mom=new THREE.Sprite(new THREE.SpriteMaterial({map:eTex("👩")}));mom.scale.set(1.25,1.25,1.25);mom.position.set(mx,1.35,mz);scene.add(mom);
+    const mark=new THREE.Sprite(new THREE.SpriteMaterial({map:eTex("❗")}));mark.scale.set(.5,.5,.5);mark.position.set(mx,2.3,mz);scene.add(mark);lost={kid,mom,mark,found:false,helping:false};
+    panel(`<h2><span>👦 طفل ضائع!</span><button class="x">✕</button></h2><div class="log"><div class="b"><span>👦</span><div>${L("أين أمّي؟ 😢 لا أجدها!","ayna ummi? la ajiduha!","Where's my mum? I can't find her!")}</div></div></div>
+      <div class="opts"><button class="btn big" id="lHelp">${L("لا تخف، سأساعدك! 🤝","la takhaf, sa-usaʿiduk!","Don't worry, I'll help you!")}</button><button class="btn big" id="lNo">${L("لا أستطيع الآن.","la astatiʿ al-an.","I can't right now.")}</button></div>`);
+    $("lHelp").onclick=()=>{lost.helping=true;closeP();toast("👩❗ ابحث عن أمّه في المتجر — فوقها علامة ❗","ibhath ʿan ummihi","Find his mum in the store — she has a ❗ above her",7000);};
+    $("lNo").onclick=()=>{closeP();setTimeout(()=>{if(lost&&!lost.helping){toast("🧕 الكاشيرة: سأساعد الطفل. لا بأس.","","The cashier will help the child.");clearLost();}},2000);};}
+  if(ev==="power"&&hemi){const old=hemi.intensity;hemi.intensity=.12;scene.background=new THREE.Color(0x263238);tone(120,.5,0,"sawtooth",.05);toast("⚡ انقطعت الكهرباء! لا تتحرّك…","inqataʿat al-kahraba'!","Power cut! Stay still…",3500);
+    setTimeout(()=>{hemi.intensity=old;scene.background=new THREE.Color(0xe3f2fd);toast("💡 عادت الكهرباء. الحمد لله!","ʿadat al-kahraba'","The power is back!");},4000);}
+  nextEvent=performance.now()+50000+Math.random()*30000;}
+function clearLost(){if(!lost)return;[lost.kid,lost.mom,lost.mark].forEach(o=>scene.remove(o));lost=null;}
+function tickWorld(dt,now){if(TRIP||mode!=="shop"){return;}
+  NPCS.forEach(n=>{const u=n.userData;n.position.y=1.35+Math.abs(Math.sin(now/260+u.npc))*.05;
+    if(u.talk){const dx=P.x-n.position.x,dz=P.z-n.position.z,d=Math.hypot(dx,dz);if(d<1.7){npcTalk(n);return;}const sp=1.6*dt;n.position.x+=dx/d*sp;n.position.z+=dz/d*sp;return;}
+    {const ax=n.position.x-P.x,az=n.position.z-P.z,ad=Math.hypot(ax,az);if(ad<1.3&&ad>0.01){n.position.x+=ax/ad*(1.3-ad);n.position.z+=az/ad*(1.3-ad);}}
+    if(!u.path.length)npcPath(n);const t=u.path[0],dx=t.x-n.position.x,dz=t.z-n.position.z,d=Math.hypot(dx,dz);if(d<.1){u.path.shift();return;}const sp=Math.min(d,1.1*dt);n.position.x+=dx/d*sp;n.position.z+=dz/d*sp;});
+  if($("panel").hidden&&now>nextTalk&&!talker){const n=NPCS.slice().sort((a,b)=>Math.hypot(a.position.x-P.x,a.position.z-P.z)-Math.hypot(b.position.x-P.x,b.position.z-P.z))[0];talker=n;n.userData.talk=true;nextTalk=now+90000;}
+  if($("panel").hidden&&now>nextEvent)storeEvent();
+  if(spill&&!spill.hit&&Math.hypot(P.x-spill.x,P.z-spill.z)<.8){spill.hit=true;P.z+=(P.z>spill.z?1:-1)*.9;P.pitch=-.5;tone(200,.3,0,"triangle");toast("😵 انزلقت! انتبه للأرضيّة المبلّلة ⚠️","inzalaqta!","You slipped! Watch the wet floor!");setTimeout(()=>{P.pitch=-.05;if(spill)spill.hit=false;},1200);}
+  if(lost&&lost.helping){const k=lost.kid.position,tx=P.x-Math.sin(P.yaw+.7)*1.8,tz=P.z-Math.cos(P.yaw+.7)*1.8;k.x+=(tx-k.x)*Math.min(1,dt*3);k.z+=(tz-k.z)*Math.min(1,dt*3);
+    if(Math.hypot(P.x-lost.mom.position.x,P.z-lost.mom.position.z)<2.2&&$("panel").hidden){lost.helping=false;addScore(3);yay();
+      panel(`<h2><span>👩 وجدتَ الأمّ!</span><button class="x">✕</button></h2><div class="log"><div class="b"><span>👩</span><div>${L("ابني! الحمد لله! شكراً جزيلاً لك 💛","ibni! al-hamdu lillah! shukran jazilan lak","My son! Thank God! Thank you so much!")}</div></div><div class="b"><span>👦</span><div>${L("ماما! 🤗","mama!","Mum!")}</div></div></div>
+        <div class="opts"><button class="btn big" id="lDone">${L("العفو! انتبها لبعضكما 😊","al-ʿafw!","You're welcome! Look after each other.")}</button></div><div class="win">⭐⭐⭐</div>`.replace("وجدتَ",G("وجدتَ","وجدتِ")));$("lDone").onclick=()=>{closeP();clearLost();};}}
+}
+
+/* ---------- 🏠 trip: apartment → car → drive → store, and back ---------- */
+function tripBox(html){const t=$("trip");t.innerHTML=`<div class="tcard">${html}</div>`;t.hidden=false;}
+function tsay(a,tr,en){return `<div class="tsay">${a}<small class="tr">${tr}</small><small class="en">${en}</small></div>`;}
+function startTrip(dir){TRIP=dir;closeP();setHint("");$("actB").hidden=true;Object.keys(keys).forEach(k=>keys[k]=0);
+  if(dir==="go"){rollMoney();BOUGHT=[];aptDoor();}else carStep();
+  function aptDoor(){tripBox(`<h2>🏢 ${L("عمارتك","ʿimaratuk","Your building")}</h2>${tsay(`${G("أنتَ","أنتِ")} ذاهب${G("","ة")} إلى السوبرماركت! اضغط${G("","ي")} زرّ الخروج بجانب باب العمارة.`,"anta dhahib ila al-subirmarkit! idghat zirr al-khuruj bi-janib bab al-ʿimara.","You're going to the supermarket! Press the exit button next to the building door.")}
+      <div class="tdoorwrap"><div class="tframe"><div class="tdoor" id="tDoor"><i></i><b>🚪</b></div><div class="tout">🌤️🌳🚗</div></div><button class="texit" id="tEx"><b>🔓</b>${L("زرّ الخروج","zirr al-khuruj","Exit button")}</button></div>
+      <div class="center tmoney">${L(`في محفظتك 💵 ${ar(WAL.cash)} · في بطاقتك 💳 ${ar(WAL.bank)}`,"",`Wallet: ${WAL.cash} · Card: ${WAL.bank}`)}</div>`);
+    $("tEx").onclick=()=>{$("tDoor").classList.add("open");$("tEx").disabled=true;tone(1200,.08,0,"square",.05);tone(300,.3,.1,"triangle");setTimeout(carStep,1300);};}
+  function carStep(){let st=0;const S=[[dir==="go"?"هذه سيّارتك! اضغط على السيّارة لتركبها.":"انتهى التسوّق! اذهب إلى سيّارتك واضغط عليها لتركبها.",dir==="go"?"hadhihi sayyaratuk! idghat ʿalayha li-tarkabaha.":"intaha al-tasawwuq! idhhab ila sayyaratik.",dir==="go"?"This is your car! Tap it to get in.":"Shopping's done! Go to your car and tap it to get in.",null],
+      ["جلستَ في السيّارة. اربط الحزام! 🔒","jalasta fi al-sayyara. irbut al-hizam!","You're in the car. Fasten your seatbelt!",["🔒 اربط الحزام","irbut al-hizam","Fasten seatbelt"]],
+      [dir==="go"?"شغّل السيّارة وقُدها إلى السوبرماركت! 🔑":"شغّل السيّارة وقُدها إلى البيت! 🔑",dir==="go"?"shaghghil al-sayyara wa qudha ila al-subirmarkit!":"shaghghil al-sayyara wa qudha ila al-bayt!",dir==="go"?"Start the car and drive to the supermarket!":"Start the car and drive home!",["🔑 شغّل وقُد","shaghghil wa qud","Start & drive"]]];
+    const draw=()=>{const s=S[st];tripBox(`<h2>🚗 ${L("السيّارة","al-sayyara","The car")}</h2>${tsay(s[0].replace("جلستَ",G("جلستَ","جلستِ")),s[1],s[2])}
+      <div class="tstreet">${dir==="home"?`<span class="tshop">🏪</span>`:`<span class="tshop">🏢</span>`}<div class="tcar ${st?"in":""}" id="tCar">🚗${st?`<span>${me.e}</span>`:""}</div></div>
+      ${s[3]?`<div class="opts"><button class="btn big" id="tN">${L(s[3][0],s[3][1],s[3][2])}</button></div>`:""}`);
+      if(!st)$("tCar").onclick=()=>{st=1;tone(400,.1);draw();};else $("tN").onclick=()=>{if(st===2){tone(110,.4,0,"sawtooth",.06);tone(170,.4,.3,"sawtooth",.05);setTimeout(drive,700);}else{tone(900,.06);st++;draw();}};};draw();}
+  function drive(){const LEN=14;let lane=1,objs=[],t0=performance.now(),last=t0,spawn=0,sign=null,done=false;
+    tripBox(`<h2>🛣️ ${dir==="go"?L("إلى السوبرماركت","ila al-subirmarkit","To the supermarket"):L("إلى البيت","ila al-bayt","Home")}</h2><div class="tprog"><i id="tPg"></i><span>${dir==="go"?"🏪":"🏠"}</span></div><div class="tsign" id="tSg"></div>
+      <div class="troad" id="tRd"><div class="tlines"></div><div class="tme" id="tMe">🚗</div></div><div class="tctrl"><button id="tL">⬅️ ${L("يساراً","yasaran","Left")}</button><button id="tR">${L("يميناً","yaminan","Right")} ➡️</button></div>`);
+    const rd=$("tRd"),pl=$("tMe"),lx=i=>(16.7+i*33.3)+"%";pl.style.left=lx(lane);
+    const mv=d=>{if(done)return;lane=Math.max(0,Math.min(2,lane+d));pl.style.left=lx(lane);tone(600,.03);if(sign&&Math.sign(sign)===d){addScore(1);$("tSg").innerHTML="✅";tone(1000,.08);sign=null;}};
+    $("tL").onclick=()=>mv(-1);$("tR").onclick=()=>mv(1);const key=e=>{if(e.key==="ArrowLeft"||e.key==="a"){e.preventDefault();mv(-1);}if(e.key==="ArrowRight"||e.key==="d"){e.preventDefault();mv(1);}};addEventListener("keydown",key);
+    const loop=now=>{if(done)return;const dt=(now-last)/1000;last=now;const el=(now-t0)/1000;$("tPg").style.width=Math.min(100,el/LEN*100)+"%";
+      if(now>spawn){spawn=now+850+Math.random()*600;const ln=Math.floor(Math.random()*3),k=Math.random()<.3?"⭐":pick(["🚧","🚙","🚕","🛢️"]);const d=document.createElement("div");d.className="tob";d.textContent=k;d.style.left=lx(ln);rd.appendChild(d);objs.push({d,ln,y:-10,k});
+        if(!sign&&Math.random()<.4){sign=lane===0?1:lane===2?-1:pick([-1,1]);$("tSg").innerHTML=L(sign<0?"⬅️ انعطف يساراً":"➡️ انعطف يميناً","",sign<0?"Turn left":"Turn right");}}
+      objs.forEach(o=>{o.y+=dt*48;o.d.style.top=o.y+"%";if(!o.hit&&o.y>72&&o.y<90&&o.ln===lane){o.hit=true;if(o.k==="⭐"){addScore(1);tone(1200,.06);o.d.remove();}else{tone(150,.2,0,"square",.08);rd.classList.remove("bump");void rd.offsetWidth;rd.classList.add("bump");o.d.textContent="💥";}}});
+      objs=objs.filter(o=>{if(o.y>105){o.d.remove();return false;}return true;});
+      if(el>=LEN){done=true;removeEventListener("keydown",key);setTimeout(dir==="go"?arriveStore:gate,250);return;}requestAnimationFrame(loop);};requestAnimationFrame(loop);}
+  function arriveStore(){tripBox(`<div class="center big-e">🏪</div>${tsay(`وصلتَ إلى السوبرماركت! ادخل وتسوّق.`.replace("وصلتَ",G("وصلتَ","وصلتِ")).replace("ادخل وتسوّق",G("ادخل وتسوّق","ادخلي وتسوّقي")),"wasalta ila al-subirmarkit! udkhul wa tasawwaq.","You've arrived at the supermarket! Go in and shop.")}
+      <div class="opts"><button class="btn big green" id="tIn">${L("🛒 ادخل المتجر","udkhul al-matjar","Enter the store")}</button></div>`);
+    $("tIn").onclick=()=>{$("trip").hidden=true;TRIP=null;P.x=0;P.z=8.2;P.yaw=0;P.pitch=-.05;newList();drawSide();nextTalk=performance.now()+20000;nextEvent=performance.now()+35000;toast("📝 قائمة التسوّق على اليمين · 🏧 الصرّاف على اليسار","","Shopping list on the right · ATM on the left");};}
+  function gate(){tripBox(`<h2>🏢 ${L("بوّابة العمارة","bawwabat al-ʿimara","Building gate")}</h2>${tsay(`وصلتَ إلى العمارة! امسح بطاقتك على الجهاز لتدخل.`.replace("وصلتَ",G("وصلتَ","وصلتِ")),"wasalta ila al-ʿimara! imsah bitaqataka ʿala al-jihaz.","You're at the building! Scan your card on the reader to get in.")}
+      <div class="tgatewrap"><div class="tgate"><div class="tbars" id="tBars"></div><span>🏢 عمارة النجوم</span></div><div class="tscan" id="tScan"><div class="tled" id="tLed"></div><b>📶</b><small>ضع البطاقة هنا</small></div></div>
+      <div class="center">💳 ${L("حرّك البطاقة بالفأرة أو بإصبعك إلى الجهاز","harrik al-bitaqa ila al-jihaz","Move the card to the reader")}</div>`);
+    const card=document.createElement("div");card.className="tcardk";card.innerHTML=`<b>🏢 بطاقة العمارة</b><span>${me.name}</span><i>${me.e}</i>`;document.body.appendChild(card);let ok=false;
+    const pl=(x,y)=>{card.style.left=x+"px";card.style.top=y+"px";if(ok)return;const r=$("tScan").getBoundingClientRect();if(x>r.left-10&&x<r.right+10&&y>r.top-10&&y<r.bottom+10){ok=true;$("tLed").classList.add("ok");tone(1500,.08,0,"square",.06);tone(1900,.12,.1,"square",.06);
+      setTimeout(()=>{$("tBars").classList.add("up");tone(300,.4,0,"triangle");},400);setTimeout(()=>{card.remove();removeEventListener("pointermove",pm);aptDoorIn();},1700);}};
+    const pm=e=>pl(e.clientX,e.clientY);addEventListener("pointermove",pm);$("trip").addEventListener("pointerdown",e=>pl(e.clientX,e.clientY),{once:false});const r0=$("tScan").getBoundingClientRect();pl(r0.left-160,r0.bottom);}
+  function aptDoorIn(){tripBox(`<h2>🛗 ${L("باب الشقّة","bab al-shaqqa","Apartment door")}</h2>${tsay("صعدتَ بالمصعد إلى شقّتك. الباب يُفتح… 🔑".replace("صعدتَ",G("صعدتَ","صعدتِ")),"saʿidta bil-misʿad ila shaqqatik. al-bab yuftah…","You took the lift up to your apartment. The door is opening…")}
+      <div class="tdoorwrap"><div class="tframe"><div class="tdoor" id="tD2"><i></i><b>🏠</b></div><div class="tout home">🛋️📺🪴</div></div></div>`);
+    setTimeout(()=>{$("tD2").classList.add("open");tone(400,.2,0,"triangle");tone(600,.2,.15,"triangle");},600);setTimeout(home,2000);}
+  function home(){const sum=BOUGHT.reduce((a,x)=>a+x.p*x.q,0);yay();
+    tripBox(`<div class="center big-e">🏠✨</div>${tsay(`أهلاً بك في البيت يا ${me.name}!`,"ahlan bika fi al-bayt!","Welcome home!")}
+      ${BOUGHT.length?`<div class="rcpt"><b>🛍️ ما اشتريتَه اليوم</b>${BOUGHT.map(x=>`<div><span>${x.e} ${esc(x.ar)} × ${ar(x.q)}</span><span>${ar(x.p*x.q)}</span></div>`).join("")}<div class="t"><span>المجموع</span><span>${ar(sum)} ر.س</span></div></div>`.replace("اشتريتَه",G("اشتريتَه","اشتريتِه")):`<div class="center">${L("لم تشترِ شيئاً هذه المرّة 🙂","","You didn't buy anything this time.")}</div>`}
+      <div class="center tmoney">💵 ${ar(WAL.cash)} · 💳 ${ar(WAL.bank)} · ⭐ ${ar(SCORE)}</div>
+      <div class="opts"><button class="btn big green" id="tAgain">${L("🛒 اذهب للتسوّق مرّة أخرى","idhhab lil-tasawwuq marratan ukhra","Go shopping again")}</button><button class="btn big" id="tBack">${L("🏢 ارجع إلى لعبة العمارة","irjiʿ ila luʿbat al-ʿimara","Back to the building game")}</button></div>`);
+    $("tAgain").onclick=()=>startTrip("go");$("tBack").onclick=()=>{location.href="./";};}
+}
+
+/* ---------- modes ---------- */
+function setMode(m){mode=m;document.querySelectorAll("[data-mode]").forEach(b=>b.classList.toggle("on",b.dataset.mode===m));closeP();
+  $("pad").style.display=m==="shop"?"grid":"none";$("help").style.display=m==="shop"?"":"none";
+  custSp.visible=false;beltSprites.forEach(s=>scene.remove(s));beltSprites=[];CLOG="";PAY.items=[];PAY.total=0;PAY.status="wait";updPay();
+  if(m==="cash")cashStart();if(m==="edit")openEdit();drawSide();setHint("");}
+document.querySelectorAll("[data-mode]").forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
+$("back").onclick=()=>{location.href="./";};
+$("panel").addEventListener("pointerdown",e=>{if(e.target===$("panel")&&mode!=="cash")closeP();});
+
+/* ---------- loop ---------- */
+function resize(){const w=innerWidth,h=innerHeight;renderer.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix();}
+addEventListener("resize",resize);resize();
+let last=performance.now(),hintT=0;
+function loop(t){const dt=Math.min(.05,(t-last)/1000);last=t;step(dt);tickWorld(dt,t);placeCam();renderer.render(scene,cam);if(t-hintT>150){hintT=t;updHint();}requestAnimationFrame(loop);}
+newList();setMode("shop");drawWal();requestAnimationFrame(loop);startTrip("go");
+window.STORE={startTrip,openATM,tryExit,WAL:()=>WAL,storeEvent,npcTalk,NPCS,tickWorld,THREE,cam,P,SLOTS:()=>SLOTS,CART:()=>CART,setMode,openProduct,startCheckout,CASH,scanBelt,beltSprites:()=>beltSprites,cashAct,PAY};
+</script>
+</body>
+</html>
