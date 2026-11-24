@@ -4316,7 +4316,7 @@ function startShop(){
   GAME={kind:"shop"};let ci=0,earned=0,good=0,cust=null,step=0,give=0,msg="",log="";const N=4;
   const newCust=()=>{const fs=randApt([[HOME.f,HOME.s]]),r=fs?S.res[fs[0]][fs[1]]:{e:"🧔",ar:"زبون",tr:"zabun",g:"m"};
     const inStock=Math.random()<0.8,item=inStock?shelf[Math.floor(Math.random()*shelf.length)]:keys.filter(k=>!shelf.includes(k))[0]||shelf[0],qty=1+Math.floor(Math.random()*3);
-    const tot=PRODS[item].p*qty,pay=[5,10,20,50,100,200,500,1000].find(x=>x>=tot&&(x>tot||Math.random()<.3))||Math.ceil((tot+1)/500)*500;
+    const tot=PRODS[item].p*qty,pay=tot;   // the customer always pays the exact amount — no change to work out
     cust={r,item,qty,tot,pay,inStock,ok:true};step=0;give=0;msg="";log="";tone(1400,.1);tone(1800,.15,.1);};
   const rG=(m,f)=>cust.r.g==="f"?f:m;
   const bub=(who,a,t)=>{log+=`<div class="phb ${who}"><b>${who==="me"?"🧑‍💼":cust.r.e}</b><div>${P(a,t)}</div></div>`;};
@@ -4337,7 +4337,7 @@ function startShop(){
     else if(step===2){const t=cust.tot,c=[t,t+PRODS[cust.item].p,Math.max(1,t-PRODS[cust.item].p)].filter((v,i,a)=>a.indexOf(v)===i).sort(()=>Math.random()-.5);
       draw(`<div class="hint center">🧮 ${P(`${ar(cust.qty)} × ${ar(PRODS[cust.item].p)} = ؟`,"")}</div>`+opts(c.map(v=>[`المجموع ${riyalAr(v)}.`,`al-majmuʿ ${v}`,"p"+v])));}
     else if(step===3){const ch=cust.pay-cust.tot;
-      if(!ch){draw(opts([["شكراً! المبلغ مضبوط 👍","shukran! al-mablagh madbut","x0"],["هذا قليل!","hadha qalil!","xbad"]]));}
+      if(!ch){draw(opts([["شكراً! المبلغ مضبوط 👍","shukran! al-mablagh madbut","x0"]]));}
       else draw(`<div class="hint center">💵 ${P(`أعطاك ${riyalAr(cust.pay)}. كم الباقي؟ اضغط على النقود:`.replace("أعطاك",rG("أعطاك","أعطتك")),`aʿtaka ${cust.pay}. kam al-baqi?`)}</div>
         <div class="coins">${(cust.pay-cust.tot>=50?[100,50,10,5,1]:[10,5,1]).map(v=>`<button data-so="c${v}" class="coin c${v>=10?10:v}">${ar(v)}</button>`).join("")}</div>
         <div class="center"><b class="givebox">${P(`الباقي: ${riyalAr(give)}`,`al-baqi: ${give}`)}</b> <button class="small" data-so="c0">↩️</button></div>`+opts([[`تفضّل${rG("","ي")} الباقي!`,`tafaddal${rG("","i")} al-baqi!`,"give"]]));}
@@ -4405,7 +4405,7 @@ function startCashier(){
   let ci=0,good=0,earned=0,cust=null,step=0,give=0,msg="",log="";
   const newCust=()=>{const fs=randApt([[HOME.f,HOME.s]]),r=fs?S.res[fs[0]][fs[1]]:{e:"🧔",ar:"زبون",tr:"zabun",g:"m"};
     const n=2+Math.floor(Math.random()*3),items=keys.slice().sort(()=>Math.random()-.5).slice(0,n),tot=items.reduce((a,k)=>a+PRODS[k].p,0);
-    const card=Math.random()<.4,pay=[10,20,50,100].find(x=>x>=tot&&(x>tot||Math.random()<.3))||100;
+    const card=Math.random()<.4,pay=tot;
     cust={r,items,scanned:[],tot,card,pay,ok:true};step=0;give=0;msg="";log="";tone(1400,.1);tone(1800,.15,.1);};
   const rG=(m,f)=>cust.r.g==="f"?f:m;
   const bub=(who,a,t)=>{log+=`<div class="phb ${who}"><b>${who==="me"?"🧑‍💼":cust.r.e}</b><div>${P(a,t||"")}</div></div>`;};
@@ -5349,7 +5349,7 @@ const DOORX=[6,2,-2,-6];           // apartment doors s=0..3 on the front wall (
 const FONT='"Noto Sans Arabic","Segoe UI",Tahoma,Arial,sans-serif';
 const wrap=document.createElement("section");wrap.id="w3d";wrap.hidden=true;
 wrap.innerHTML=`<canvas id="c3d"></canvas><div id="h3d"></div><div id="x3d">✚</div><div id="k3d"></div>
-<div id="pad3d"><button data-k="f">⬆️</button><button data-k="l">⬅️</button><button data-k="b">⬇️</button><button data-k="r">➡️</button></div>`;
+<button id="px3d" title="أغلق">✕</button><button id="tab3d">💬 المحادثة<i>!</i></button><div id="pad3d"><button data-k="f">⬆️</button><button data-k="l">⬅️</button><button data-k="b">⬇️</button><button data-k="r">➡️</button></div>`;
 document.getElementById("scene").before(wrap);
 const css=document.createElement("style");css.textContent=`
 #w3d{position:relative;border-radius:22px;overflow:hidden;height:min(80vh,780px);min-height:420px;margin:10px 0;background:#cfd8dc;box-shadow:0 6px 20px #0003}
@@ -5365,8 +5365,13 @@ const css=document.createElement("style");css.textContent=`
 @media (hover:none){#pad3d{display:grid}#k3d{display:none}}
 body.m3d #callB,body.m3d #enterB,body.m3d #panel [data-fl],body.m3d #panel [data-door]{display:none!important}
 #v3dB.on{background:#00897b;color:#fff}
-#w3d>#panel{position:absolute;left:10px;right:10px;bottom:10px;max-height:44%;overflow:auto;margin:0;z-index:3;background:#fffffff0;border-radius:18px;box-shadow:0 4px 18px #0004;padding:10px 14px}
-#w3d>#panel:empty{display:none}
+#w3d>#panel{position:absolute;right:10px;top:74px;width:min(430px,46%);max-height:calc(100% - 150px);overflow:auto;margin:0;z-index:3;background:#fffffff2;border-radius:18px;box-shadow:0 4px 18px #0005;padding:26px 12px 10px;font-size:.92em}
+#w3d>#panel:empty,#w3d.pc>#panel,#w3d.pc>#px3d{display:none}
+#px3d{position:absolute;top:80px;right:calc(10px + min(430px,46%) - 36px);z-index:4;border:0;border-radius:50%;width:28px;height:28px;background:#eceff1;font-weight:900;cursor:pointer}
+#tab3d{position:absolute;right:10px;top:74px;z-index:4;border:0;border-radius:14px;padding:8px 14px;background:#00897b;color:#fff;font-weight:800;box-shadow:0 3px 10px #0004;cursor:pointer;display:none}
+#w3d.pc #tab3d{display:block}#tab3d i{font-style:normal;background:#ff5252;border-radius:10px;padding:0 7px;margin-inline-start:6px;display:none}
+#tab3d.new i{display:inline}#tab3d.new{animation:tabp 1s infinite}@keyframes tabp{50%{transform:scale(1.08)}}
+@media (max-width:700px){#w3d>#panel{width:auto;left:10px}#px3d{right:auto;left:16px}}
 #w3d.ui #k3d{display:none}`;document.head.appendChild(css);
 
 const cv=document.getElementById("c3d");
@@ -5473,6 +5478,12 @@ addEventListener("keydown",e=>{if(!ON||busy()||typing(e.target))return;
 addEventListener("keyup",e=>{const k=KC[e.code];if(k)keys[k]=0;});addEventListener("blur",()=>{for(const k in keys)keys[k]=0;});
 document.querySelectorAll("#pad3d button").forEach(b=>{const m={f:"f",b:"b",l:"tl",r:"tr"}[b.dataset.k];const on=e=>{e.preventDefault();keys[m]=1;},off=()=>{keys[m]=0;};b.addEventListener("pointerdown",on);b.addEventListener("pointerup",off);b.addEventListener("pointerleave",off);b.addEventListener("pointercancel",off);});
 let LOCKON=true;const isLocked=()=>document.pointerLockElement===cv;
+/* the talk box is a closable notification card */
+const tabB=document.getElementById("tab3d"),pxB=document.getElementById("px3d");let panSig="";
+function talkOpen(o){wrap.classList.toggle("pc",!o);if(o)tabB.classList.remove("new");}
+pxB.onclick=e=>{e.stopPropagation();talkOpen(false);};tabB.onclick=e=>{e.stopPropagation();talkOpen(true);};
+function watchPanel(){const pn=document.getElementById("panel");if(!pn)return;const n=pn.querySelector(".now");const sig=(n?n.textContent:"")+"|"+S.phase+"|"+(S.knocked==null?"":S.knocked);
+  if(sig!==panSig){const had=panSig!=="";panSig=sig;if(wrap.classList.contains("pc")&&had&&pn.textContent.trim()){tabB.classList.add("new");try{tone(1300,.06);}catch(_){}}}}
 function tryLock(){if(!LOCKON||isLocked()||busy())return;try{const r=cv.requestPointerLock();if(r&&r.catch)r.catch(()=>{});}catch(_){}}
 function unlock(){if(isLocked())try{document.exitPointerLock();}catch(_){}}
 addEventListener("mousemove",e=>{if(!isLocked())return;P.yaw-=(e.movementX||0)*.0025;P.pitch=Math.max(-1.1,Math.min(.9,P.pitch-(e.movementY||0)*.002));});
@@ -5486,11 +5497,11 @@ function clickAt(nx,ny){ray.setFromCamera({x:nx,y:ny},cam);ray.far=4.2;
   const h=ray.intersectObjects(objs,true)[0];if(!h){if(where==="corr"||where==="lobby"){ray.far=40;const far=ray.intersectObjects(objs,true)[0];if(far)flash("اقترب أكثر! 🚶","Get closer!");}return;}
   const u=h.object.userData;
   if(u.call){if(S.lift!==null){flash(S.arrived?"المصعد هنا! ادخله 🛗":"المصعد قادم… انتظر ⏳",S.arrived?"The lift is here! Walk in":"The lift is coming…");return;}callNearest();return;}
-  if(u.recep){flash("تكلّم مع المحاسب 👇","Talk to the accountant");scrollPanel();return;}
+  if(u.recep){flash("تكلّم مع المحاسب  💬","Talk to the accountant");scrollPanel();return;}
   if(u.fl!=null){if(S.phase==="inside"||(S.phase==="ride"&&S.moving)){pressFloor(u.fl);}else if(S.phase==="ride")flash("المصعد يتحرّك… ⏳","The lift is moving…");return;}
   if(u.alarm){if(S.phase==="stuck"){const b=document.getElementById("alarmB");if(b)b.click();}else{try{alarm();}catch(_){}}return;}
   if(u.bell!=null){if(S.phase!=="door"){flash("هذا ليس طابقك!","Not your floor!");return;}
-    if(!S.ready){flash("أكمل الكلام أوّلاً 👇","Finish the talk first");scrollPanel();return;}
+    if(!S.ready){flash("أكمل الكلام أوّلاً  💬","Finish the talk first");scrollPanel();return;}
     try{ding();}catch(_){}knockDoor(u.bell);setTimeout(scrollPanel,500);return;}
 }
 function scrollPanel(){const p=document.getElementById("panel");if(p&&p.parentNode!==wrap)p.scrollIntoView({behavior:"smooth",block:"start"});}
@@ -5517,13 +5528,13 @@ function syncState(){
 function hint(){
   if(performance.now()<flashT)return flashH;
   const ph=S.phase,l=S.lift!=null?S.lifts[S.lift]:null;
-  if(ph==="reception")return S.lift!=null&&S.arrived?"🛗 وصل المصعد! لكن تكلّم مع المحاسب أوّلاً 👇<small>Talk to the accountant first </small>":"💁‍♂️ تكلّم مع المحاسب — الكلام هنا 👇<small>Talk to the accountant </small>";
+  if(ph==="reception")return S.lift!=null&&S.arrived?"🛗 وصل المصعد! لكن تكلّم مع المحاسب أوّلاً  💬<small>Talk to the accountant first </small>":"💁‍♂️ تكلّم مع المحاسب في 💬 المحادثة<small>Talk to the accountant </small>";
   if(ph==="lift"){if(S.lift===null)return "🔼 امشِ إلى زرّ المصعد بين المصاعد واضغطه<small>Walk to the call button and press it</small>";
     if(!S.arrived)return `⏳ المصعد قادم… الطابق ${ar(l.f)}<small>The lift is coming…</small>`;return "🛗 فُتح الباب! امشِ وادخل المصعد ⬆️<small>The door is open! Walk into the lift</small>";}
   if(ph==="inside")return S.wrongAt!=null?"🙈 هذا ليس الطابق الصحيح! اضغط زرّاً آخر 🔢<small>Wrong floor! Press another button</small>":"🔢 اضغط زرّ الطابق بنفسك (على يمينك)<small>Press the floor button yourself (on your right)</small>";
   if(ph==="ride")return `${l&&l.dir==="▼"?"⬇️ المصعد ينزل":"⬆️ المصعد يصعد"}… ${l?ar(l.f):""}<small>The lift is moving…</small>`;
   if(ph==="stuck")return "🚨 توقّف المصعد! اضغط زرّ الإنذار 🔔<small>The lift is stuck! Press the alarm</small>";
-  if(ph==="door"){if(S.knocked==null)return `🚪 ${FL[S.pos]?FL[S.pos].ar:""} — امشِ إلى الباب الصحيح واضغط الجرس 🔔<small>Walk to the right door and ring the bell</small>`;return "💬 تكلّم مع الساكن 👇<small>Talk with the neighbour</small>";}
+  if(ph==="door"){if(S.knocked==null)return `🚪 ${FL[S.pos]?FL[S.pos].ar:""} — امشِ إلى الباب الصحيح واضغط الجرس 🔔<small>Walk to the right door and ring the bell</small>`;return "💬 تكلّم مع الساكن  💬<small>Talk with the neighbour</small>";}
   return "";
 }
 const hEl=document.getElementById("h3d"),kEl=document.getElementById("k3d");let hLast="";
@@ -5545,13 +5556,13 @@ function step(dt){
   const sp=(keys.run?4.6:2.8)*dt;let fx=-Math.sin(P.yaw)*f+Math.cos(P.yaw)*sr,fz=-Math.cos(P.yaw)*f-Math.sin(P.yaw)*sr;const m=Math.hypot(fx,fz)||1;fx*=sp/m;fz*=sp/m;
   const nx=P.x+fx,nz=P.z+fz;
   if(where==="lobby"&&nz<-9.6&&nz<P.z&&S.lift!=null&&S.arrived&&S.lifts[S.lift].open&&Math.abs(nx-cabX())<.7&&!enterZone(nx)&&performance.now()>flashT){
-    if(S.phase==="reception"){flash("✋ تكلّم مع المحاسب أوّلاً 👇","Talk to the accountant first");try{alarm();}catch(_){}}
-    else flash("✋ أكمل الكلام أوّلاً 👇","Finish the talk first");}
+    if(S.phase==="reception"){flash("✋ تكلّم مع المحاسب أوّلاً  💬","Talk to the accountant first");try{alarm();}catch(_){}}
+    else flash("✋ أكمل الكلام أوّلاً  💬","Finish the talk first");}
   if(free(nx,P.z))P.x=nx;if(free(P.x,nz))P.z=nz;
   if(where==="lobby"&&P.z<-9.9){                                          // walked into the open lift
-    if(S.phase==="reception"){P.z=-9.4;flash("✋ تكلّم مع المحاسب أوّلاً 👇","Talk to the accountant first");try{alarm();}catch(_){}scrollPanel();}
+    if(S.phase==="reception"){P.z=-9.4;flash("✋ تكلّم مع المحاسب أوّلاً  💬","Talk to the accountant first");try{alarm();}catch(_){}scrollPanel();}
     else if(S.phase==="lift"&&S.ready){enterLift();toCab();}
-    else{P.z=-9.4;if(S.phase==="lift"){flash("✋ أكمل الكلام أوّلاً 👇","Finish the talk first");scrollPanel();}}
+    else{P.z=-9.4;if(S.phase==="lift"){flash("✋ أكمل الكلام أوّلاً  💬","Finish the talk first");scrollPanel();}}
   }
   if(where==="corr"&&P.z<-9.55)P.z=-9.55;
 }
@@ -5582,7 +5593,7 @@ let ON=false,last=0;
 function size(){const r=cv.getBoundingClientRect();if(!r.width)return;renderer.setSize(r.width,r.height,false);cam.aspect=r.width/r.height;cam.updateProjectionMatrix();}
 addEventListener("resize",size);
 function loop(t){const dt=Math.min(.05,(t-last)/1000||0);last=t;
-  if(ON){syncState();step(dt);visuals(dt);const ui=needUI();wrap.classList.toggle("ui",ui);if(ui&&isLocked())unlock();
+  if(ON){syncState();step(dt);visuals(dt);watchPanel();const ui=needUI()&&!wrap.classList.contains("pc");wrap.classList.toggle("ui",ui);if(ui&&isLocked())unlock();
     cam.position.set(P.x,1.6,P.z);cam.rotation.order="YXZ";cam.rotation.y=P.yaw;cam.rotation.x=P.pitch;renderer.render(scene,cam);
     const h=hint();if(h!==hLast){hLast=h;hEl.innerHTML=h;hEl.style.display=h?"block":"none";}
     const k=isLocked()?"🖱️ <b>G</b> لإظهار الماوس · <b>WASD</b> امشِ":LOCKON?"🖱️ اضغط على الشاشة · <b>WASD</b> امشِ · <b>G</b>":"🖱️ <b>G</b> لقفل الماوس · <b>WASD</b> امشِ";if(kEl.innerHTML!==k)kEl.innerHTML=k;}
