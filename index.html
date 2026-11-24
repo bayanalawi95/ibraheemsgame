@@ -5521,14 +5521,17 @@ function free(x,z){
   if(where==="lobby"&&x>3.5&&z>.6&&z<2.4)return false;
   return true;
 }
-function enterZone(x){return S.lift!=null&&S.arrived&&S.lifts[S.lift].open&&Math.abs(x-cabX())<.7;}
+function enterZone(x){return S.phase==="lift"&&S.ready&&S.lift!=null&&S.arrived&&S.lifts[S.lift].open&&Math.abs(x-cabX())<.7;}
+function unstick(){if(where==="cab")return;if(!free(P.x,P.z)){P.x=Math.max(-7.6,Math.min(7.6,P.x));P.z=Math.max(-9.5,Math.min(where==="corr"?4.2:6,P.z));if(where==="lobby"&&P.x>3.5&&P.z>.6&&P.z<2.4)P.z=.5;}}
 function step(dt){
-  if(busy())return;
+  unstick();if(busy())return;
   const f=(keys.f?1:0)-(keys.b?1:0),sr=(keys.sr?1:0)-(keys.sl?1:0),t=(keys.tl?1:0)-(keys.tr?1:0);
   P.yaw+=t*dt*2;if(!f&&!sr)return;
   const sp=(keys.run?4.6:2.8)*dt;let fx=-Math.sin(P.yaw)*f+Math.cos(P.yaw)*sr,fz=-Math.cos(P.yaw)*f-Math.sin(P.yaw)*sr;const m=Math.hypot(fx,fz)||1;fx*=sp/m;fz*=sp/m;
   const nx=P.x+fx,nz=P.z+fz;
-  if(where==="lobby"&&nz<-9.6&&!enterZone(nx)&&nz<P.z&&Math.abs(nx-cabX())<.7&&S.lift!=null&&S.arrived){ /* door open but not allowed */ }
+  if(where==="lobby"&&nz<-9.6&&nz<P.z&&S.lift!=null&&S.arrived&&S.lifts[S.lift].open&&Math.abs(nx-cabX())<.7&&!enterZone(nx)&&performance.now()>flashT){
+    if(S.phase==="reception"){flash("✋ تكلّم مع المحاسب أوّلاً 👇","Talk to the accountant first");try{alarm();}catch(_){}}
+    else flash("✋ أكمل الكلام في الأسفل أوّلاً 👇","Finish the talk below first");}
   if(free(nx,P.z))P.x=nx;if(free(P.x,nz))P.z=nz;
   if(where==="lobby"&&P.z<-9.9){                                          // walked into the open lift
     if(S.phase==="reception"){P.z=-9.4;flash("✋ تكلّم مع المحاسب أوّلاً 👇","Talk to the accountant first");try{alarm();}catch(_){}scrollPanel();}
