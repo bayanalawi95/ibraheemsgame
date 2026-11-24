@@ -456,17 +456,25 @@ function openATM(){let pin="",msg="";const card=`<div class="atmscr">`;
   const pinS=()=>{scr(`<div class="atmscr">${L("أدخل الرقم السرّي:","adkhil al-raqm al-sirri:","Enter your PIN:")}</div><div class="scr">${"●".repeat(pin.length)}${"○".repeat(4-pin.length)}</div><div class="pinpad">${[1,2,3,4,5,6,7,8,9,"⌫",0,"✓"].map(k=>`<button data-p="${k}">${typeof k==="number"?ar(k):k}</button>`).join("")}</div>`);
     $("pcard").querySelectorAll("[data-p]").forEach(b=>b.onclick=()=>{const k=b.dataset.p;if(k==="⌫")pin=pin.slice(0,-1);else if(k==="✓"){if(pin.length===4){menu();return;}}else if(pin.length<4)pin+=k;tone(800,.04);pinS();});};
   const menu=()=>{scr(`<div class="atmscr">${L("اختر العمليّة:","ikhtar al-ʿamaliyya:","Choose a service:")}${msg?`<div class="atmmsg">${msg}</div>`:""}</div>
-      <div class="opts"><button class="btn big" id="aW">${L("💵 سحب نقدي","sahb naqdi","Withdraw cash")}</button><button class="btn big" id="aD">${L("📥 إيداع نقدي","idaʿ naqdi","Deposit cash")}</button><button class="btn big" id="aB">${L("📊 عرض الرصيد","ʿard al-rasid","Check balance")}</button><button class="btn" id="aX">${L("💳 أخرج البطاقة وأنهِ","akhrij al-bitaqa","Take card & finish")}</button></div>`);msg="";
+      <div class="opts"><button class="btn big" id="aW">${L("💵 سحب نقدي","sahb naqdi","Withdraw cash")}</button><button class="btn big" id="aD">${L("📥 إيداع في البطاقة","idaʿ fil-bitaqa","Deposit to card")}</button><button class="btn big" id="aB">${L("📊 عرض الرصيد","ʿard al-rasid","Check balance")}</button><button class="btn" id="aX">${L("💳 أخرج البطاقة وأنهِ","akhrij al-bitaqa","Take card & finish")}</button></div>`);msg="";
     $("aW").onclick=()=>amounts("w");$("aD").onclick=()=>amounts("d");$("aB").onclick=()=>{msg=L(`رصيد البطاقة: ${riyal(WAL.bank)} · معك نقداً: ${riyal(WAL.cash)}`,"",`Card balance: ${WAL.bank} · Cash: ${WAL.cash}`);menu();};
     $("aX").onclick=()=>{tone(400,.1);closeP();toast("💳 لا تنسَ بطاقتك! شكراً.","la tansa bitaqatak!","Don't forget your card! Thanks.");};};
-  const amounts=(t)=>{const list=t==="w"?[20,50,100,200,500]:[10,20,50,100].filter(v=>v<=WAL.cash).concat(WAL.cash>0?[WAL.cash]:[]);
-    scr(`<div class="atmscr">${t==="w"?L("كم تريد أن تسحب؟","kam turidu an tashab?","How much do you want to withdraw?"):L("كم تريد أن تودع في البطاقة؟","kam turidu an tudiʿ?","How much do you want to deposit?")}<div class="atmmsg">💳 ${ar(WAL.bank)} · 💵 ${ar(WAL.cash)}</div></div>
-      <div class="wallet">${[...new Set(list)].map(v=>`<button data-a="${v}">${v===WAL.cash&&t==="d"&&![10,20,50,100].includes(v)?"كلّها ":""}${ar(v)}</button>`).join("")||"<i>لا توجد نقود للإيداع</i>"}</div><div class="opts"><button class="btn" id="aBk">↩️ رجوع</button></div>`);
+  const amounts=(t)=>{const list=t==="w"?[20,50,100,200,500,1000]:[50,100,500,1000,5000,10000];
+    scr(`<div class="atmscr">${t==="w"?L("كم تريد أن تسحب؟","kam turidu an tashab?","How much do you want to withdraw?"):L("كم تريد أن تودع في البطاقة؟","kam turidu an tudiʿ fil-bitaqa?","How much do you want to deposit to your card?")}<div class="atmmsg">💳 ${ar(WAL.bank)} · 💵 ${ar(WAL.cash)}</div></div>
+      <div class="wallet">${list.map(v=>`<button data-a="${v}">${ar(v)}</button>`).join("")}</div>
+      <div class="atmscr" style="margin-top:8px">${L("أو اكتب أيّ مبلغ:","aw uktub ayya mablagh:","Or type any amount:")}</div>
+      <div class="opts" style="direction:ltr;align-items:center"><input id="aAmt" type="text" inputmode="numeric" autocomplete="off" placeholder="0" style="font-size:24px;font-weight:900;width:180px;text-align:center;border-radius:12px;border:3px solid #00897b;padding:8px"><button class="btn big green" id="aOk">✓ ${t==="w"?"اسحب":"أودِع"}</button></div>
+      <div class="atmmsg" id="aErr"></div>
+      <div class="opts"><button class="btn" id="aBk">↩️ رجوع</button></div>`);
     $("aBk").onclick=menu;
-    $("pcard").querySelectorAll("[data-a]").forEach(b=>b.onclick=()=>{const v=+b.dataset.a;
-      if(t==="w"){if(WAL.bank<v){tone(180,.3,0,"square",.07);msg=`❌ ${L("الرصيد غير كافٍ!","al-rasid ghayr kafin!","Not enough balance!")}`;menu();return;}WAL.bank-=v;WAL.cash+=v;for(let i=0;i<5;i++)tone(300+i*40,.05,i*.08,"square",.04);msg=`✅ ${L(`خذ نقودك: ${riyal(v)} 💵`,"khudh nuqudak",`Take your cash: ${v} riyals`)}`;}
-      else{WAL.cash-=v;WAL.bank+=v;tone(700,.1);msg=`✅ ${L(`تمّ إيداع ${riyal(v)} في بطاقتك`,"tamma al-idaʿ",`Deposited ${v} riyals to your card`)}`;}
-      saveW();addScore(1);menu();});};
+    const doIt=v=>{v=Math.floor(Number(v));if(!isFinite(v)||v<=0){$("aErr").innerHTML=`⚠️ ${L("اكتب مبلغاً صحيحاً","uktub mablaghan sahihan","Type a valid amount")}`;tone(200,.15);return;}
+      if(t==="w"){if(WAL.bank<v){tone(180,.3,0,"square",.07);msg=`❌ ${L(`الرصيد غير كافٍ! في البطاقة ${riyal(WAL.bank)} فقط. أودِع أوّلاً.`,"al-rasid ghayr kafin! awdiʿ awwalan.",`Not enough balance! Only ${WAL.bank} on the card. Deposit first.`)}`;menu();return;}WAL.bank-=v;WAL.cash+=v;for(let i=0;i<5;i++)tone(300+i*40,.05,i*.08,"square",.04);msg=`✅ ${L(`خذ نقودك: ${riyal(v)} 💵`,"khudh nuqudak",`Take your cash: ${v} riyals`)}`;}
+      else{WAL.bank+=v;tone(700,.1);tone(900,.1,.12);msg=`✅ ${L(`تمّ إيداع ${riyal(v)} في بطاقتك`,"tamma al-idaʿ",`Deposited ${v} riyals to your card`)}`;}
+      saveW();addScore(1);menu();};
+    $("pcard").querySelectorAll("[data-a]").forEach(b=>b.onclick=()=>doIt(+b.dataset.a));
+    const inp=$("aAmt");const norm=x=>x.replace(/[٠-٩]/g,d=>"٠١٢٣٤٥٦٧٨٩".indexOf(d)).replace(/[^0-9]/g,"");
+    inp.oninput=()=>{const n=norm(inp.value);if(inp.value!==n)inp.value=n;};inp.onkeydown=e=>{e.stopPropagation();if(e.key==="Enter")doIt(inp.value);};
+    $("aOk").onclick=()=>doIt(inp.value);setTimeout(()=>inp.focus(),50);};
   start();}
 
 /* ---------- 🚪 exit door ---------- */
