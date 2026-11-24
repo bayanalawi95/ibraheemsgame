@@ -5326,6 +5326,16 @@ var _renderScene3=renderScene;
 renderScene=function(){const on=use3D();document.body.classList.toggle("m3d",!!on);
   if(on){$("scene").hidden=true;T3D.show();requestAnimationFrame(()=>{const pn=$("panel"),n=pn&&pn.querySelector(".now");if(n&&pn.parentNode&&pn.parentNode.id==="w3d"&&n.offsetParent===pn)pn.scrollTop=Math.max(0,n.offsetTop-8);});return;}
   $("scene").hidden=false;if(window.T3D)T3D.hide();_renderScene3();};
+/* the talk box always sits inside the play screen (2D scenes too), never below it */
+(function(){const sc=$("scene"),pn=$("panel");if(!sc||!pn||$("stage"))return;const st=document.createElement("div");st.id="stage";sc.before(st);st.appendChild(sc);st.appendChild(pn);
+  const cs=document.createElement("style");cs.textContent=`#stage{position:relative}
+body.m3d #stage{display:block!important}
+#stage:not(.below){display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,40%);gap:12px;align-items:start}
+#stage:not(.below)>#scene{margin:0;min-width:0}
+#stage:not(.below)>#panel{position:sticky;top:8px;max-height:calc(100vh - 16px);overflow:auto;margin:0;box-shadow:0 4px 18px #0002}
+#stage:not(.below)>#panel:empty{display:none}
+@media (max-width:820px){#stage:not(.below){grid-template-columns:1fr}#stage:not(.below)>#panel{position:static;max-height:none}}`;document.head.appendChild(cs);})();
+var _renderScene4=renderScene;renderScene=function(){_renderScene4();const st=$("stage");if(st)st.classList.toggle("below",!document.body.classList.contains("m3d")&&["reception","lift","inside","ride","stuck","door"].includes(S.phase)&&!(S.phase==="door"&&S.live&&!S.live.done));if(!document.body.classList.contains("m3d"))requestAnimationFrame(()=>{const pn=$("panel"),n=pn&&pn.querySelector(".now");if(n&&n.offsetParent===pn)pn.scrollTop=Math.max(0,n.offsetTop-8);});};
 (function(){const t=document.querySelector("header .tog");if(t&&!$("v3dB")){t.insertAdjacentHTML("afterbegin",`<button id="v3dB" class="${MODE3D?"on":""}" title="3D / 2D">🧊 3D</button>`);
   $("v3dB").onclick=()=>{MODE3D=!MODE3D;try{localStorage.setItem("tower-3d",MODE3D?"1":"0");}catch(e){}$("v3dB").classList.toggle("on",MODE3D);render();};}})();
 </script>
