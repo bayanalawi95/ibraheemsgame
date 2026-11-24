@@ -5324,7 +5324,7 @@ var MODE3D=(()=>{try{return localStorage.getItem("tower-3d")!=="0";}catch(e){ret
 function use3D(){return MODE3D&&window.T3D&&T3D.ok&&T3D.PH3.includes(S.phase)&&!(S.phase==="door"&&S.live&&!S.live.done);}
 var _renderScene3=renderScene;
 renderScene=function(){const on=use3D();document.body.classList.toggle("m3d",!!on);
-  if(on){$("scene").hidden=true;T3D.show();return;}
+  if(on){$("scene").hidden=true;T3D.show();requestAnimationFrame(()=>{const pn=$("panel"),n=pn&&pn.querySelector(".now");if(n&&pn.parentNode&&pn.parentNode.id==="w3d"&&n.offsetParent===pn)pn.scrollTop=Math.max(0,n.offsetTop-8);});return;}
   $("scene").hidden=false;if(window.T3D)T3D.hide();_renderScene3();};
 (function(){const t=document.querySelector("header .tog");if(t&&!$("v3dB")){t.insertAdjacentHTML("afterbegin",`<button id="v3dB" class="${MODE3D?"on":""}" title="3D / 2D">🧊 3D</button>`);
   $("v3dB").onclick=()=>{MODE3D=!MODE3D;try{localStorage.setItem("tower-3d",MODE3D?"1":"0");}catch(e){}$("v3dB").classList.toggle("on",MODE3D);render();};}})();
@@ -5342,7 +5342,7 @@ wrap.innerHTML=`<canvas id="c3d"></canvas><div id="h3d"></div><div id="x3d">✚<
 <div id="pad3d"><button data-k="f">⬆️</button><button data-k="l">⬅️</button><button data-k="b">⬇️</button><button data-k="r">➡️</button></div>`;
 document.getElementById("scene").before(wrap);
 const css=document.createElement("style");css.textContent=`
-#w3d{position:relative;border-radius:22px;overflow:hidden;height:min(56vh,560px);min-height:340px;margin:10px 0;background:#cfd8dc;box-shadow:0 6px 20px #0003}
+#w3d{position:relative;border-radius:22px;overflow:hidden;height:min(80vh,780px);min-height:420px;margin:10px 0;background:#cfd8dc;box-shadow:0 6px 20px #0003}
 #c3d{width:100%;height:100%;display:block;touch-action:none;cursor:pointer}
 #h3d{position:absolute;top:10px;left:50%;transform:translateX(-50%);background:#263238e8;color:#fff;border-radius:14px;padding:8px 16px;font-weight:800;text-align:center;max-width:92%;pointer-events:none;font-size:17px;line-height:1.5}
 #h3d small{display:block;font-weight:600;color:#b2dfdb;font-size:13px}
@@ -5354,7 +5354,10 @@ const css=document.createElement("style");css.textContent=`
 #pad3d [data-k=f]{grid-column:2}#pad3d [data-k=l]{grid-column:1;grid-row:2}#pad3d [data-k=b]{grid-column:2;grid-row:2}#pad3d [data-k=r]{grid-column:3;grid-row:2}
 @media (hover:none){#pad3d{display:grid}#k3d{display:none}}
 body.m3d #callB,body.m3d #enterB,body.m3d #panel [data-fl],body.m3d #panel [data-door]{display:none!important}
-#v3dB.on{background:#00897b;color:#fff}`;document.head.appendChild(css);
+#v3dB.on{background:#00897b;color:#fff}
+#w3d>#panel{position:absolute;left:10px;right:10px;bottom:10px;max-height:44%;overflow:auto;margin:0;z-index:3;background:#fffffff0;border-radius:18px;box-shadow:0 4px 18px #0004;padding:10px 14px}
+#w3d>#panel:empty{display:none}
+#w3d.ui #k3d{display:none}`;document.head.appendChild(css);
 
 const cv=document.getElementById("c3d");
 let renderer;try{renderer=new THREE.WebGLRenderer({canvas:cv,antialias:true});}catch(e){console.warn("no webgl",e);}
@@ -5464,7 +5467,7 @@ function tryLock(){if(!LOCKON||isLocked()||busy())return;try{const r=cv.requestP
 function unlock(){if(isLocked())try{document.exitPointerLock();}catch(_){}}
 addEventListener("mousemove",e=>{if(!isLocked())return;P.yaw-=(e.movementX||0)*.0025;P.pitch=Math.max(-1.1,Math.min(.9,P.pitch-(e.movementY||0)*.002));});
 let drag=null,moved=0;
-cv.addEventListener("pointerdown",e=>{if(isLocked()){clickAt(0,0);return;}if(e.pointerType==="mouse"&&LOCKON){tryLock();return;}drag={x:e.clientX,y:e.clientY};moved=0;});
+cv.addEventListener("pointerdown",e=>{if(isLocked()){clickAt(0,0);return;}if(e.pointerType==="mouse"&&LOCKON&&!needUI()){tryLock();return;}drag={x:e.clientX,y:e.clientY};moved=0;});
 addEventListener("pointermove",e=>{if(!drag||isLocked())return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;moved+=Math.abs(dx)+Math.abs(dy);P.yaw-=dx*.005;P.pitch=Math.max(-1.1,Math.min(.9,P.pitch-dy*.004));drag={x:e.clientX,y:e.clientY};});
 addEventListener("pointerup",e=>{if(drag&&moved<8&&e.target===cv){const r=cv.getBoundingClientRect();clickAt(((e.clientX-r.left)/r.width)*2-1,-((e.clientY-r.top)/r.height)*2+1);}drag=null;});
 const ray=new THREE.Raycaster();
@@ -5473,14 +5476,16 @@ function clickAt(nx,ny){ray.setFromCamera({x:nx,y:ny},cam);ray.far=4.2;
   const h=ray.intersectObjects(objs,true)[0];if(!h){if(where==="corr"||where==="lobby"){ray.far=40;const far=ray.intersectObjects(objs,true)[0];if(far)flash("اقترب أكثر! 🚶","Get closer!");}return;}
   const u=h.object.userData;
   if(u.call){if(S.lift!==null){flash(S.arrived?"المصعد هنا! ادخله 🛗":"المصعد قادم… انتظر ⏳",S.arrived?"The lift is here! Walk in":"The lift is coming…");return;}callNearest();return;}
-  if(u.recep){flash("تكلّم مع المحاسب في الأسفل 👇","Talk to the accountant below");scrollPanel();return;}
+  if(u.recep){flash("تكلّم مع المحاسب 👇","Talk to the accountant");scrollPanel();return;}
   if(u.fl!=null){if(S.phase==="inside"||(S.phase==="ride"&&S.moving)){pressFloor(u.fl);}else if(S.phase==="ride")flash("المصعد يتحرّك… ⏳","The lift is moving…");return;}
   if(u.alarm){if(S.phase==="stuck"){const b=document.getElementById("alarmB");if(b)b.click();}else{try{alarm();}catch(_){}}return;}
   if(u.bell!=null){if(S.phase!=="door"){flash("هذا ليس طابقك!","Not your floor!");return;}
-    if(!S.ready){flash("أكمل الكلام في الأسفل أوّلاً 👇","Finish the talk below first");scrollPanel();return;}
+    if(!S.ready){flash("أكمل الكلام أوّلاً 👇","Finish the talk first");scrollPanel();return;}
     try{ding();}catch(_){}knockDoor(u.bell);setTimeout(scrollPanel,500);return;}
 }
-function scrollPanel(){const p=document.getElementById("panel");if(p)p.scrollIntoView({behavior:"smooth",block:"start"});}
+function scrollPanel(){const p=document.getElementById("panel");if(p&&p.parentNode!==wrap)p.scrollIntoView({behavior:"smooth",block:"start"});}
+/* while there is talking to do in the box, keep the mouse free so the answers can be clicked */
+function needUI(){return S.phase==="reception"||!S.ready||(S.phase==="door"&&S.knocked!=null);}
 let flashT=0,flashH="";function flash(a,e){flashH=`${a}<small>${e}</small>`;flashT=performance.now()+2600;}
 
 /* ---------- state sync ---------- */
@@ -5502,13 +5507,13 @@ function syncState(){
 function hint(){
   if(performance.now()<flashT)return flashH;
   const ph=S.phase,l=S.lift!=null?S.lifts[S.lift]:null;
-  if(ph==="reception")return S.lift!=null&&S.arrived?"🛗 وصل المصعد! لكن تكلّم مع المحاسب أوّلاً 👇<small>Talk to the accountant first (below)</small>":"💁‍♂️ تكلّم مع المحاسب — الكلام في الأسفل 👇<small>Talk to the accountant (below)</small>";
+  if(ph==="reception")return S.lift!=null&&S.arrived?"🛗 وصل المصعد! لكن تكلّم مع المحاسب أوّلاً 👇<small>Talk to the accountant first </small>":"💁‍♂️ تكلّم مع المحاسب — الكلام هنا 👇<small>Talk to the accountant </small>";
   if(ph==="lift"){if(S.lift===null)return "🔼 امشِ إلى زرّ المصعد بين المصاعد واضغطه<small>Walk to the call button and press it</small>";
     if(!S.arrived)return `⏳ المصعد قادم… الطابق ${ar(l.f)}<small>The lift is coming…</small>`;return "🛗 فُتح الباب! امشِ وادخل المصعد ⬆️<small>The door is open! Walk into the lift</small>";}
   if(ph==="inside")return S.wrongAt!=null?"🙈 هذا ليس الطابق الصحيح! اضغط زرّاً آخر 🔢<small>Wrong floor! Press another button</small>":"🔢 اضغط زرّ الطابق بنفسك (على يمينك)<small>Press the floor button yourself (on your right)</small>";
   if(ph==="ride")return `${l&&l.dir==="▼"?"⬇️ المصعد ينزل":"⬆️ المصعد يصعد"}… ${l?ar(l.f):""}<small>The lift is moving…</small>`;
   if(ph==="stuck")return "🚨 توقّف المصعد! اضغط زرّ الإنذار 🔔<small>The lift is stuck! Press the alarm</small>";
-  if(ph==="door"){if(S.knocked==null)return `🚪 ${FL[S.pos]?FL[S.pos].ar:""} — امشِ إلى الباب الصحيح واضغط الجرس 🔔<small>Walk to the right door and ring the bell</small>`;return "💬 تكلّم مع الساكن في الأسفل 👇<small>Talk with the neighbour below</small>";}
+  if(ph==="door"){if(S.knocked==null)return `🚪 ${FL[S.pos]?FL[S.pos].ar:""} — امشِ إلى الباب الصحيح واضغط الجرس 🔔<small>Walk to the right door and ring the bell</small>`;return "💬 تكلّم مع الساكن 👇<small>Talk with the neighbour</small>";}
   return "";
 }
 const hEl=document.getElementById("h3d"),kEl=document.getElementById("k3d");let hLast="";
@@ -5531,12 +5536,12 @@ function step(dt){
   const nx=P.x+fx,nz=P.z+fz;
   if(where==="lobby"&&nz<-9.6&&nz<P.z&&S.lift!=null&&S.arrived&&S.lifts[S.lift].open&&Math.abs(nx-cabX())<.7&&!enterZone(nx)&&performance.now()>flashT){
     if(S.phase==="reception"){flash("✋ تكلّم مع المحاسب أوّلاً 👇","Talk to the accountant first");try{alarm();}catch(_){}}
-    else flash("✋ أكمل الكلام في الأسفل أوّلاً 👇","Finish the talk below first");}
+    else flash("✋ أكمل الكلام أوّلاً 👇","Finish the talk first");}
   if(free(nx,P.z))P.x=nx;if(free(P.x,nz))P.z=nz;
   if(where==="lobby"&&P.z<-9.9){                                          // walked into the open lift
     if(S.phase==="reception"){P.z=-9.4;flash("✋ تكلّم مع المحاسب أوّلاً 👇","Talk to the accountant first");try{alarm();}catch(_){}scrollPanel();}
     else if(S.phase==="lift"&&S.ready){enterLift();toCab();}
-    else{P.z=-9.4;if(S.phase==="lift"){flash("✋ أكمل الكلام في الأسفل أوّلاً 👇","Finish the talk below first");scrollPanel();}}
+    else{P.z=-9.4;if(S.phase==="lift"){flash("✋ أكمل الكلام أوّلاً 👇","Finish the talk first");scrollPanel();}}
   }
   if(where==="corr"&&P.z<-9.55)P.z=-9.55;
 }
@@ -5567,7 +5572,7 @@ let ON=false,last=0;
 function size(){const r=cv.getBoundingClientRect();if(!r.width)return;renderer.setSize(r.width,r.height,false);cam.aspect=r.width/r.height;cam.updateProjectionMatrix();}
 addEventListener("resize",size);
 function loop(t){const dt=Math.min(.05,(t-last)/1000||0);last=t;
-  if(ON){syncState();step(dt);visuals(dt);
+  if(ON){syncState();step(dt);visuals(dt);const ui=needUI();wrap.classList.toggle("ui",ui);if(ui&&isLocked())unlock();
     cam.position.set(P.x,1.6,P.z);cam.rotation.order="YXZ";cam.rotation.y=P.yaw;cam.rotation.x=P.pitch;renderer.render(scene,cam);
     const h=hint();if(h!==hLast){hLast=h;hEl.innerHTML=h;hEl.style.display=h?"block":"none";}
     const k=isLocked()?"🖱️ <b>G</b> لإظهار الماوس · <b>WASD</b> امشِ":LOCKON?"🖱️ اضغط على الشاشة · <b>WASD</b> امشِ · <b>G</b>":"🖱️ <b>G</b> لقفل الماوس · <b>WASD</b> امشِ";if(kEl.innerHTML!==k)kEl.innerHTML=k;}
@@ -5575,8 +5580,8 @@ function loop(t){const dt=Math.min(.05,(t-last)/1000||0);last=t;
 requestAnimationFrame(loop);
 
 window.T3D={ok:true,PH3,
-  show(){if(!ON){ON=true;wrap.hidden=false;size();}},
-  hide(){if(ON){ON=false;wrap.hidden=true;unlock();for(const k in keys)keys[k]=0;}},
+  show(){const pn=document.getElementById("panel");if(pn&&pn.parentNode!==wrap)wrap.appendChild(pn);if(!ON){ON=true;wrap.hidden=false;size();}},
+  hide(){const pn=document.getElementById("panel"),sc=document.getElementById("scene");if(pn&&pn.parentNode===wrap&&sc)sc.after(pn);if(ON){ON=false;wrap.hidden=true;unlock();for(const k in keys)keys[k]=0;}},
   get where(){return where;},P,clickAt,
   _test:{BTN,CALLS,DOORS,LIFT,cab}};
 if(typeof render==="function")render();
