@@ -5318,5 +5318,266 @@ openAdv=function(){_openAdv14();const g=document.querySelector("#advBox .advgrid
   g.insertAdjacentHTML("afterbegin",`<button class="advc storec" data-store="1"><span class="ae">🛒</span><b>${P("لعبة رف المتجر","luʿbat raff al-matjar")}</b><small>اخرج بالسيّارة إلى السوبرماركت، تسوّق، وارجع بالبطاقة 💳</small></button>`);
   g.querySelector("[data-store]").onclick=()=>{location.href="store.html";};};
 (function(){const a=$("workB")||$("advB");if(a&&!$("storeB")){a.insertAdjacentHTML("afterend",`<button id="storeB" class="big advb">🛒 المتجر</button>`);$("storeB").onclick=()=>{location.href="store.html";};}})();
+
+/* ---------- 🧊 3D building view (module script T3D below draws it) ---------- */
+var MODE3D=(()=>{try{return localStorage.getItem("tower-3d")!=="0";}catch(e){return true;}})();
+function use3D(){return MODE3D&&window.T3D&&T3D.ok&&T3D.PH3.includes(S.phase)&&!(S.phase==="door"&&S.live&&!S.live.done);}
+var _renderScene3=renderScene;
+renderScene=function(){const on=use3D();document.body.classList.toggle("m3d",!!on);
+  if(on){$("scene").hidden=true;T3D.show();return;}
+  $("scene").hidden=false;if(window.T3D)T3D.hide();_renderScene3();};
+(function(){const t=document.querySelector("header .tog");if(t&&!$("v3dB")){t.insertAdjacentHTML("afterbegin",`<button id="v3dB" class="${MODE3D?"on":""}" title="3D / 2D">🧊 3D</button>`);
+  $("v3dB").onclick=()=>{MODE3D=!MODE3D;try{localStorage.setItem("tower-3d",MODE3D?"1":"0");}catch(e){}$("v3dB").classList.toggle("on",MODE3D);render();};}})();
 </script>
+<script type="module">
+/* ================= 🧊 3D building: lobby, lifts, cab buttons, floor corridor with doors & bells =================
+   Drives the existing game state (S) — it only replaces the 2D building picture for the building phases. */
+import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
+const PH3=["reception","lift","inside","ride","stuck","door"];
+const LX=[-5,0,5];                 // lift centres (x); lift doors at z=-10
+const DOORX=[6,2,-2,-6];           // apartment doors s=0..3 on the front wall (z=4.6), s0 on the right
+const FONT='"Noto Sans Arabic","Segoe UI",Tahoma,Arial,sans-serif';
+const wrap=document.createElement("section");wrap.id="w3d";wrap.hidden=true;
+wrap.innerHTML=`<canvas id="c3d"></canvas><div id="h3d"></div><div id="x3d">✚</div><div id="k3d"></div>
+<div id="pad3d"><button data-k="f">⬆️</button><button data-k="l">⬅️</button><button data-k="b">⬇️</button><button data-k="r">➡️</button></div>`;
+document.getElementById("scene").before(wrap);
+const css=document.createElement("style");css.textContent=`
+#w3d{position:relative;border-radius:22px;overflow:hidden;height:min(56vh,560px);min-height:340px;margin:10px 0;background:#cfd8dc;box-shadow:0 6px 20px #0003}
+#c3d{width:100%;height:100%;display:block;touch-action:none;cursor:pointer}
+#h3d{position:absolute;top:10px;left:50%;transform:translateX(-50%);background:#263238e8;color:#fff;border-radius:14px;padding:8px 16px;font-weight:800;text-align:center;max-width:92%;pointer-events:none;font-size:17px;line-height:1.5}
+#h3d small{display:block;font-weight:600;color:#b2dfdb;font-size:13px}
+#x3d{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);color:#fff;font-size:24px;text-shadow:0 0 4px #000;pointer-events:none}
+#k3d{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);background:#263238d0;color:#fff;border-radius:12px;padding:5px 12px;font-size:13px;font-weight:800;white-space:nowrap;pointer-events:none}
+#k3d b{background:#ffd54f;color:#263238;border-radius:6px;padding:0 6px}
+#pad3d{position:absolute;bottom:12px;left:12px;display:none;grid-template-columns:repeat(3,54px);grid-template-rows:repeat(2,54px);gap:6px;direction:ltr}
+#pad3d button{font-size:24px;border:0;border-radius:14px;background:#ffffffd0}
+#pad3d [data-k=f]{grid-column:2}#pad3d [data-k=l]{grid-column:1;grid-row:2}#pad3d [data-k=b]{grid-column:2;grid-row:2}#pad3d [data-k=r]{grid-column:3;grid-row:2}
+@media (hover:none){#pad3d{display:grid}#k3d{display:none}}
+body.m3d #callB,body.m3d #enterB,body.m3d #panel [data-fl],body.m3d #panel [data-door]{display:none!important}
+#v3dB.on{background:#00897b;color:#fff}`;document.head.appendChild(css);
+
+const cv=document.getElementById("c3d");
+let renderer;try{renderer=new THREE.WebGLRenderer({canvas:cv,antialias:true});}catch(e){console.warn("no webgl",e);}
+if(renderer){
+renderer.setPixelRatio(Math.min(2,devicePixelRatio||1));
+const scene=new THREE.Scene();scene.background=new THREE.Color("#dfe7ea");
+const cam=new THREE.PerspectiveCamera(70,1,.05,80);
+scene.add(new THREE.HemisphereLight(0xffffff,0x8d9ba3,1.15));const dl=new THREE.DirectionalLight(0xffffff,.6);dl.position.set(3,8,6);scene.add(dl);
+
+/* ---------- textures ---------- */
+function ctex(w,h,draw){const c=document.createElement("canvas");c.width=w;c.height=h;const x=c.getContext("2d");draw(x,w,h);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=4;t._c=c;return t;}
+function redraw(t,draw){const c=t._c,x=c.getContext("2d");x.clearRect(0,0,c.width,c.height);draw(x,c.width,c.height);t.needsUpdate=true;}
+const ZWJ=String.fromCharCode(0x200d),VS16=String.fromCharCode(0xfe0f);
+const twUrl=e=>{try{const cp=twemoji.convert.toCodePoint(e.indexOf(ZWJ)<0?e.split(VS16).join(""):e);return `https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/72x72/${cp}.png`;}catch(_){return null;}};
+const EMO={};
+function emoTex(e){if(EMO[e])return EMO[e];const t=ctex(128,128,(x,w,h)=>{x.font=`96px ${FONT}`;x.textAlign="center";x.textBaseline="middle";x.fillText(e,w/2,h/2+6);});
+  const u=twUrl(e);if(u){const im=new Image();im.crossOrigin="anonymous";im.onload=()=>redraw(t,(x,w,h)=>x.drawImage(im,8,8,w-16,h-16));im.src=u;}EMO[e]=t;return t;}
+const M=(c,o={})=>new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:.8},o));
+const box=(w,h,d,m,x,y,z,g)=>{const b=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);b.position.set(x,y,z);(g||scene).add(b);return b;};
+const plane=(w,h,mat,x,y,z,ry,g)=>{const p=new THREE.Mesh(new THREE.PlaneGeometry(w,h),mat);p.position.set(x,y,z);p.rotation.y=ry||0;(g||scene).add(p);return p;};
+const sprite=(e,s,g)=>{const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:emoTex(e),transparent:true}));sp.scale.set(s,s,s);(g||scene).add(sp);return sp;};
+const tile=ctex(256,256,(x,w,h)=>{x.fillStyle="#eceff1";x.fillRect(0,0,w,h);x.strokeStyle="#cfd8dc";x.lineWidth=4;x.strokeRect(0,0,w/2,h/2);x.strokeRect(w/2,h/2,w/2,h/2);x.strokeRect(w/2,0,w/2,h/2);x.strokeRect(0,h/2,w/2,h/2);});
+tile.wrapS=tile.wrapT=THREE.RepeatWrapping;tile.repeat.set(8,8);
+const carpet=ctex(256,256,(x,w,h)=>{x.fillStyle="#8d6e63";x.fillRect(0,0,w,h);x.fillStyle="#a1887f";for(let i=0;i<8;i++)x.fillRect(0,i*32,w,6);});carpet.wrapS=carpet.wrapT=THREE.RepeatWrapping;carpet.repeat.set(6,6);
+
+/* ---------- shared shell: lift wall + lifts ---------- */
+box(17,.1,17,M("#fff"),0,3.6,-1.5);                        // ceiling
+for(let i=0;i<6;i++)plane(1.6,.3,new THREE.MeshBasicMaterial({color:"#fffde7"}),i%2?-4:4,3.54,-7+i*2.4,0).rotation.x=Math.PI/2;
+const wallM=M("#b0bec5");
+box(17,3.6,.2,wallM,0,1.8,-10.1-.05);                       // lift wall (holes are covered by frames/doors)
+const LIFT=LX.map((cx,i)=>{
+  box(2.2,.25,.15,M("#90a4ae",{metalness:.5}),cx,2.36,-9.95);box(.2,2.4,.15,M("#90a4ae",{metalness:.5}),cx-1.0,1.2,-9.95);box(.2,2.4,.15,M("#90a4ae",{metalness:.5}),cx+1.0,1.2,-9.95);
+  const dm=M("#cfd8dc",{metalness:.7,roughness:.35});
+  const L=box(.9,2.2,.06,dm,cx-.45,1.1,-10),R=box(.9,2.2,.06,dm,cx+.45,1.1,-10);
+  const dt=ctex(256,96,()=>{});const disp=plane(.9,.34,new THREE.MeshBasicMaterial({map:dt}),cx,2.75,-9.94);
+  const tape=plane(1.8,1.6,new THREE.MeshBasicMaterial({map:ctex(256,230,(x,w,h)=>{x.strokeStyle="#fbc02d";x.lineWidth=26;for(let k=-2;k<4;k++){x.beginPath();x.moveTo(k*90,0);x.lineTo(k*90+230,h);x.stroke();}x.fillStyle="#c62828";x.font=`900 46px ${FONT}`;x.textAlign="center";x.fillText("⚠️ معطّل",w/2,h/2+16);}),transparent:true}),cx,1.2,-9.93);
+  const name=plane(1.3,.26,new THREE.MeshBasicMaterial({map:ctex(256,52,(x,w,h)=>{x.fillStyle="#37474f";x.fillRect(0,0,w,h);x.fillStyle="#fff";x.font=`800 30px ${FONT}`;x.textAlign="center";x.fillText(["المصعد الأول","المصعد الثاني","المصعد الثالث"][i],w/2,37);})}),cx,3.1,-9.98);
+  return {cx,L,R,dt,disp,tape,openK:0,last:""};
+});
+function drawDisp(d,l,lbl){const s=(l.out?"OUT":(l.dir==="▲"?"▲ ":l.dir==="▼"?"▼ ":"")+ar(l.f))+(lbl||"");if(d.last===s)return;d.last=s;redraw(d.dt,(x,w,h)=>{x.fillStyle="#111";x.fillRect(0,0,w,h);x.fillStyle=l.out?"#ff5252":"#ffab00";x.font=`900 64px ${FONT}`;x.textAlign="center";x.textBaseline="middle";x.fillText(s,w/2,h/2+4);});}
+
+/* call buttons (between the lifts) */
+const callTexOff=ctex(128,180,(x,w,h)=>{x.fillStyle="#455a64";x.fillRect(0,0,w,h);x.fillStyle="#cfd8dc";x.beginPath();x.arc(w/2,72,44,0,7);x.fill();x.fillStyle="#37474f";x.font=`900 56px ${FONT}`;x.textAlign="center";x.fillText("▲",w/2,92);x.fillStyle="#fff";x.font=`800 22px ${FONT}`;x.fillText("اضغط",w/2,152);});
+const callTexOn=ctex(128,180,(x,w,h)=>{x.fillStyle="#455a64";x.fillRect(0,0,w,h);x.fillStyle="#ffd54f";x.shadowColor="#ffeb3b";x.shadowBlur=24;x.beginPath();x.arc(w/2,72,44,0,7);x.fill();x.shadowBlur=0;x.fillStyle="#e65100";x.font=`900 56px ${FONT}`;x.textAlign="center";x.fillText("▲",w/2,92);x.fillStyle="#fff";x.font=`800 22px ${FONT}`;x.fillText("قادم…",w/2,152);});
+const CALLS=[-2.5,2.5].map(x=>{const p=plane(.5,.7,new THREE.MeshBasicMaterial({map:callTexOff}),x,1.25,-9.93);p.userData.call=1;return p;});
+
+/* ---------- cab (moves to the chosen lift) ---------- */
+const cab=new THREE.Group();scene.add(cab);
+box(2.1,.06,2.4,M("#6d4c41"),0,0,-11.2,cab);box(2.1,.06,2.4,M("#fafafa"),0,2.45,-11.2,cab);
+box(2.1,2.5,.06,M("#b0bec5",{metalness:.6,roughness:.3}),0,1.25,-12.4,cab);
+box(.06,2.5,2.4,M("#b0bec5",{metalness:.6,roughness:.3}),-1.05,1.25,-11.2,cab);box(.06,2.5,2.4,M("#b0bec5",{metalness:.6,roughness:.3}),1.05,1.25,-11.2,cab);
+plane(1.4,.06,new THREE.MeshBasicMaterial({color:"#fffde7"}),0,2.42,-11.2,0,cab).rotation.x=Math.PI/2;
+box(1.9,.05,.05,M("#ffd54f",{metalness:.6}),0,.95,-12.33,cab);   // handrail
+const mirror=plane(1.5,1.3,new THREE.MeshStandardMaterial({color:"#cfe8f3",metalness:.9,roughness:.1}),0,1.55,-12.36,0,cab);
+const cdT=ctex(256,96,()=>{});plane(.8,.3,new THREE.MeshBasicMaterial({map:cdT}),0,2.25,-10.12,Math.PI,cab);const cabDisp={dt:cdT,last:""};
+/* floor-button panel on the cab's right-hand wall (x=-1.0 when facing the doors) */
+const BTN=[];const pan=box(.04,1.7,.62,M("#37474f",{metalness:.5}),-1.0,1.3,-10.75,cab);
+function btnTex(f,on){return ctex(96,96,(x,w,h)=>{x.fillStyle=on?"#ffd54f":"#eceff1";if(on){x.shadowColor="#ffeb3b";x.shadowBlur=18;}x.beginPath();x.arc(w/2,h/2,40,0,7);x.fill();x.shadowBlur=0;x.lineWidth=5;x.strokeStyle=on?"#ff6f00":"#90a4ae";x.stroke();x.fillStyle="#263238";x.font=`900 ${f===0?30:40}px ${FONT}`;x.textAlign="center";x.textBaseline="middle";x.fillText(f===0?"أرضي":ar(f),w/2,h/2+3);});}
+for(let f=0;f<=19;f++){const col=f%2,row=Math.floor(f/2);const off=btnTex(f,false),on=btnTex(f,true);
+  const b=plane(.2,.2,new THREE.MeshBasicMaterial({map:off,transparent:true}),-.975,.62+row*.15,-10.62-col*.26,Math.PI/2,cab);b.userData={fl:f,off,on};BTN.push(b);}
+const alarmB=plane(.2,.2,new THREE.MeshBasicMaterial({map:ctex(96,96,(x,w,h)=>{x.fillStyle="#e53935";x.beginPath();x.arc(w/2,h/2,40,0,7);x.fill();x.font=`52px ${FONT}`;x.textAlign="center";x.textBaseline="middle";x.fillText("🔔",w/2,h/2+4);}),transparent:true}),-.975,2.1,-10.75,Math.PI/2,cab);alarmB.userData.alarm=1;
+const cabSp=[sprite("🙂",.9,cab),sprite("🙂",.9,cab)];cabSp.forEach(s=>s.visible=false);
+
+/* ---------- lobby (ground floor) ---------- */
+const lobby=new THREE.Group();scene.add(lobby);
+plane(17,17,M("#fff",{map:tile}),0,0,-1.5,0,lobby).rotation.x=-Math.PI/2;
+box(.2,3.6,17,wallM,-8.1,1.8,-1.5,lobby);box(.2,3.6,17,wallM,8.1,1.8,-1.5,lobby);
+box(17,3.6,.2,M("#b3e5fc",{transparent:true,opacity:.55}),0,1.8,6.6,lobby);              // glass entrance
+plane(3,.5,new THREE.MeshBasicMaterial({map:ctex(400,66,(x,w,h)=>{x.fillStyle="#00695c";x.fillRect(0,0,w,h);x.fillStyle="#fff";x.font=`900 40px ${FONT}`;x.textAlign="center";x.fillText("عمارة النجوم ✨",w/2,48);})}),0,3,6.45,Math.PI,lobby);
+const desk=box(3.6,1.05,1.2,M("#795548"),5.6,.53,1.5,lobby);box(3.8,.08,1.4,M("#d7ccc8"),5.6,1.08,1.5,lobby);
+const recep=sprite("💁‍♂️",1.2,lobby);recep.position.set(5.6,1.75,2.5);recep.userData.recep=1;
+plane(2.4,.4,new THREE.MeshBasicMaterial({map:ctex(320,54,(x,w,h)=>{x.fillStyle="#fff8e1";x.fillRect(0,0,w,h);x.fillStyle="#4e342e";x.font=`900 34px ${FONT}`;x.textAlign="center";x.fillText("المحاسب 💁‍♂️",w/2,40);})}),5.6,.6,.88,Math.PI,lobby);
+[[-7.3,5.5],[7.3,-8.8],[-7.3,-8.8]].forEach(([x,z])=>{const s=sprite("🪴",1.1,lobby);s.position.set(x,.55,z);});
+const sofa=sprite("🛋️",1.6,lobby);sofa.position.set(-6.6,.7,1);
+
+/* ---------- corridor (any upper floor) ---------- */
+const corr=new THREE.Group();scene.add(corr);
+plane(17,17,M("#fff",{map:carpet}),0,0,-1.5,0,corr).rotation.x=-Math.PI/2;
+box(.2,3.6,17,M("#efebe9"),-8.1,1.8,-1.5,corr);box(.2,3.6,17,M("#efebe9"),8.1,1.8,-1.5,corr);
+box(17,3.6,.2,M("#efebe9"),0,1.8,4.8,corr);
+const flT=ctex(512,80,()=>{});plane(3.2,.5,new THREE.MeshBasicMaterial({map:flT}),0,3.25,-9.96,0,corr);let flLast=null;
+const DOORS=DOORX.map((x,s)=>{
+  const piv=new THREE.Group();piv.position.set(x-.65,0,4.68);corr.add(piv);
+  const door=box(1.3,2.3,.08,M("#8d5524"),.65,1.15,0,piv);box(.08,.08,.12,M("#ffd54f",{metalness:.8}),1.15,1.1,-.06,piv);
+  box(1.5,.12,.1,M("#5d4037"),x,2.36,4.66,corr);box(.12,2.4,.1,M("#5d4037"),x-.72,1.2,4.66,corr);box(.12,2.4,.1,M("#5d4037"),x+.72,1.2,4.66,corr);
+  const nT=ctex(256,120,()=>{});const plate=plane(.62,.29,new THREE.MeshBasicMaterial({map:nT}),x,1.85,4.6,Math.PI,corr);
+  const bell=plane(.24,.24,new THREE.MeshBasicMaterial({map:ctex(96,96,(c,w,h)=>{c.fillStyle="#fff";c.beginPath();c.arc(w/2,h/2,44,0,7);c.fill();c.lineWidth=6;c.strokeStyle="#ffb300";c.stroke();c.font=`54px ${FONT}`;c.textAlign="center";c.textBaseline="middle";c.fillText("🔔",w/2,h/2+4);}),transparent:true}),x-.98,1.3,4.6,Math.PI,corr);
+  bell.userData.bell=s;door.userData.bell=s;plate.userData.bell=s;
+  const who=sprite("🙂",1.1,corr);who.position.set(x,1.45,5.2);who.visible=false;
+  const mat=plane(1,.5,M("#c62828"),x,.01,4.1,0,corr);mat.rotation.x=-Math.PI/2;
+  return {x,piv,nT,bell,who,ang:0};
+});
+[[-7.3,-8.8],[7.3,-8.8],[0,4.2]].forEach(([x,z])=>{const s=sprite("🪴",1,corr);s.position.set(x,.5,z);});
+
+/* ---------- player & input ---------- */
+const P={x:0,z:4.2,yaw:0,pitch:-.05};let where="lobby";   // lobby | cab | corr
+const keys={};const KC={KeyW:"f",ArrowUp:"f",KeyS:"b",ArrowDown:"b",KeyA:"sl",KeyD:"sr",ArrowLeft:"tl",ArrowRight:"tr",ShiftLeft:"run",ShiftRight:"run"};
+const busy=()=>!!document.querySelector(".overlay:not([hidden])")||!document.getElementById("login").hidden||!document.getElementById("chat").hidden;
+const typing=t=>t&&(t.tagName==="INPUT"||t.tagName==="TEXTAREA"||t.isContentEditable);
+addEventListener("keydown",e=>{if(!ON||busy()||typing(e.target))return;
+  if((e.code==="KeyG")&&!e.repeat){LOCKON=!LOCKON;if(LOCKON)tryLock();else unlock();return;}
+  const k=KC[e.code];if(!k)return;keys[k]=1;e.preventDefault();});
+addEventListener("keyup",e=>{const k=KC[e.code];if(k)keys[k]=0;});addEventListener("blur",()=>{for(const k in keys)keys[k]=0;});
+document.querySelectorAll("#pad3d button").forEach(b=>{const m={f:"f",b:"b",l:"tl",r:"tr"}[b.dataset.k];const on=e=>{e.preventDefault();keys[m]=1;},off=()=>{keys[m]=0;};b.addEventListener("pointerdown",on);b.addEventListener("pointerup",off);b.addEventListener("pointerleave",off);b.addEventListener("pointercancel",off);});
+let LOCKON=true;const isLocked=()=>document.pointerLockElement===cv;
+function tryLock(){if(!LOCKON||isLocked()||busy())return;try{const r=cv.requestPointerLock();if(r&&r.catch)r.catch(()=>{});}catch(_){}}
+function unlock(){if(isLocked())try{document.exitPointerLock();}catch(_){}}
+addEventListener("mousemove",e=>{if(!isLocked())return;P.yaw-=(e.movementX||0)*.0025;P.pitch=Math.max(-1.1,Math.min(.9,P.pitch-(e.movementY||0)*.002));});
+let drag=null,moved=0;
+cv.addEventListener("pointerdown",e=>{if(isLocked()){clickAt(0,0);return;}if(e.pointerType==="mouse"&&LOCKON){tryLock();return;}drag={x:e.clientX,y:e.clientY};moved=0;});
+addEventListener("pointermove",e=>{if(!drag||isLocked())return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;moved+=Math.abs(dx)+Math.abs(dy);P.yaw-=dx*.005;P.pitch=Math.max(-1.1,Math.min(.9,P.pitch-dy*.004));drag={x:e.clientX,y:e.clientY};});
+addEventListener("pointerup",e=>{if(drag&&moved<8&&e.target===cv){const r=cv.getBoundingClientRect();clickAt(((e.clientX-r.left)/r.width)*2-1,-((e.clientY-r.top)/r.height)*2+1);}drag=null;});
+const ray=new THREE.Raycaster();
+function clickAt(nx,ny){ray.setFromCamera({x:nx,y:ny},cam);ray.far=4.2;
+  const objs=where==="cab"?BTN.concat([alarmB]):where==="corr"?DOORS.flatMap(d=>[d.bell]).concat(corr.children.filter(o=>o.userData&&o.userData.bell!=null)):CALLS.concat([recep]);
+  const h=ray.intersectObjects(objs,true)[0];if(!h){if(where==="corr"||where==="lobby"){ray.far=40;const far=ray.intersectObjects(objs,true)[0];if(far)flash("اقترب أكثر! 🚶","Get closer!");}return;}
+  const u=h.object.userData;
+  if(u.call){if(S.lift!==null){flash(S.arrived?"المصعد هنا! ادخله 🛗":"المصعد قادم… انتظر ⏳",S.arrived?"The lift is here! Walk in":"The lift is coming…");return;}callNearest();return;}
+  if(u.recep){flash("تكلّم مع المحاسب في الأسفل 👇","Talk to the accountant below");scrollPanel();return;}
+  if(u.fl!=null){if(S.phase==="inside"||(S.phase==="ride"&&S.moving)){pressFloor(u.fl);}else if(S.phase==="ride")flash("المصعد يتحرّك… ⏳","The lift is moving…");return;}
+  if(u.alarm){if(S.phase==="stuck"){const b=document.getElementById("alarmB");if(b)b.click();}else{try{alarm();}catch(_){}}return;}
+  if(u.bell!=null){if(S.phase!=="door"){flash("هذا ليس طابقك!","Not your floor!");return;}
+    if(!S.ready){flash("أكمل الكلام في الأسفل أوّلاً 👇","Finish the talk below first");scrollPanel();return;}
+    try{ding();}catch(_){}knockDoor(u.bell);setTimeout(scrollPanel,500);return;}
+}
+function scrollPanel(){const p=document.getElementById("panel");if(p)p.scrollIntoView({behavior:"smooth",block:"start"});}
+let flashT=0,flashH="";function flash(a,e){flashH=`${a}<small>${e}</small>`;flashT=performance.now()+2600;}
+
+/* ---------- state sync ---------- */
+let lastPh="",lastRid=null;
+function cabX(){return S.lift!=null?LX[S.lift]:0;}
+function toLobby(){where="lobby";P.x=0;P.z=4.2;P.yaw=0;P.pitch=-.05;}
+function toCab(){where="cab";P.x=cabX();P.z=-11.3;P.yaw=Math.PI;P.pitch=-.05;}
+function toCorr(){where="corr";P.x=cabX();P.z=-8.6;P.yaw=Math.PI;P.pitch=-.05;}
+function syncState(){
+  const ph=S.phase;
+  if(ph!==lastPh||S.rid!==lastRid){
+    if(["reception","lift"].includes(ph)&&(where!=="lobby"||S.rid!==lastRid))toLobby();
+    if(["inside","ride","stuck"].includes(ph)&&where!=="cab")toCab();
+    if(ph==="door"&&where!=="corr")toCorr();
+    lastPh=ph;lastRid=S.rid;
+  }
+  if(S.entering&&where!=="cab")toCab();
+}
+function hint(){
+  if(performance.now()<flashT)return flashH;
+  const ph=S.phase,l=S.lift!=null?S.lifts[S.lift]:null;
+  if(ph==="reception")return S.lift!=null&&S.arrived?"🛗 وصل المصعد! لكن تكلّم مع المحاسب أوّلاً 👇<small>Talk to the accountant first (below)</small>":"💁‍♂️ تكلّم مع المحاسب — الكلام في الأسفل 👇<small>Talk to the accountant (below)</small>";
+  if(ph==="lift"){if(S.lift===null)return "🔼 امشِ إلى زرّ المصعد بين المصاعد واضغطه<small>Walk to the call button and press it</small>";
+    if(!S.arrived)return `⏳ المصعد قادم… الطابق ${ar(l.f)}<small>The lift is coming…</small>`;return "🛗 فُتح الباب! امشِ وادخل المصعد ⬆️<small>The door is open! Walk into the lift</small>";}
+  if(ph==="inside")return S.wrongAt!=null?"🙈 هذا ليس الطابق الصحيح! اضغط زرّاً آخر 🔢<small>Wrong floor! Press another button</small>":"🔢 اضغط زرّ الطابق بنفسك (على يمينك)<small>Press the floor button yourself (on your right)</small>";
+  if(ph==="ride")return `${l&&l.dir==="▼"?"⬇️ المصعد ينزل":"⬆️ المصعد يصعد"}… ${l?ar(l.f):""}<small>The lift is moving…</small>`;
+  if(ph==="stuck")return "🚨 توقّف المصعد! اضغط زرّ الإنذار 🔔<small>The lift is stuck! Press the alarm</small>";
+  if(ph==="door"){if(S.knocked==null)return `🚪 ${FL[S.pos]?FL[S.pos].ar:""} — امشِ إلى الباب الصحيح واضغط الجرس 🔔<small>Walk to the right door and ring the bell</small>`;return "💬 تكلّم مع الساكن في الأسفل 👇<small>Talk with the neighbour below</small>";}
+  return "";
+}
+const hEl=document.getElementById("h3d"),kEl=document.getElementById("k3d");let hLast="";
+
+/* ---------- movement & collision ---------- */
+function free(x,z){
+  if(where==="cab"){const c=cabX();return x>c-.8&&x<c+.8&&z>-12.15&&z<-10.25;}
+  if(where==="lobby"&&z<-9.6&&z>-10.6&&enterZone(x))return true;
+  if(x<-7.7||x>7.7||z>(where==="corr"?4.3:6.1)||z<-9.6)return false;
+  if(where==="lobby"&&x>3.5&&z>.6&&z<2.4)return false;
+  return true;
+}
+function enterZone(x){return S.lift!=null&&S.arrived&&S.lifts[S.lift].open&&Math.abs(x-cabX())<.7;}
+function step(dt){
+  if(busy())return;
+  const f=(keys.f?1:0)-(keys.b?1:0),sr=(keys.sr?1:0)-(keys.sl?1:0),t=(keys.tl?1:0)-(keys.tr?1:0);
+  P.yaw+=t*dt*2;if(!f&&!sr)return;
+  const sp=(keys.run?4.6:2.8)*dt;let fx=-Math.sin(P.yaw)*f+Math.cos(P.yaw)*sr,fz=-Math.cos(P.yaw)*f-Math.sin(P.yaw)*sr;const m=Math.hypot(fx,fz)||1;fx*=sp/m;fz*=sp/m;
+  const nx=P.x+fx,nz=P.z+fz;
+  if(where==="lobby"&&nz<-9.6&&!enterZone(nx)&&nz<P.z&&Math.abs(nx-cabX())<.7&&S.lift!=null&&S.arrived){ /* door open but not allowed */ }
+  if(free(nx,P.z))P.x=nx;if(free(P.x,nz))P.z=nz;
+  if(where==="lobby"&&P.z<-9.9){                                          // walked into the open lift
+    if(S.phase==="reception"){P.z=-9.4;flash("✋ تكلّم مع المحاسب أوّلاً 👇","Talk to the accountant first");try{alarm();}catch(_){}scrollPanel();}
+    else if(S.phase==="lift"&&S.ready){enterLift();toCab();}
+    else{P.z=-9.4;if(S.phase==="lift"){flash("✋ أكمل الكلام في الأسفل أوّلاً 👇","Finish the talk below first");scrollPanel();}}
+  }
+  if(where==="corr"&&P.z<-9.55)P.z=-9.55;
+}
+
+/* ---------- per-frame visuals ---------- */
+function visuals(dt){
+  const ph=S.phase,ml=S.lift!=null?S.lifts[S.lift]:null;
+  const viewF=where==="cab"?(ml?ml.f:0):where==="corr"?S.pos:0;
+  lobby.visible=viewF===0;corr.visible=viewF!==0;
+  if(corr.visible&&flLast!==viewF){flLast=viewF;redraw(flT,(x,w,h)=>{x.fillStyle="#3e2723";x.fillRect(0,0,w,h);x.fillStyle="#ffecb3";x.font=`900 46px ${FONT}`;x.textAlign="center";x.fillText(`${FL[viewF]?FL[viewF].ar:""} · ${viewF}`,w/2,56);});
+    DOORS.forEach((d,s)=>redraw(d.nT,(x,w,h)=>{x.fillStyle="#ffd54f";x.fillRect(0,0,w,h);x.strokeStyle="#5d4037";x.lineWidth=8;x.strokeRect(4,4,w-8,h-8);x.fillStyle="#3e2723";x.font=`900 50px ${FONT}`;x.textAlign="center";x.fillText(`شقّة ${aptNo(viewF,s)}`,w/2,62);x.font=`700 30px ${FONT}`;x.fillText(String((viewF-1)*4+s+1),w/2,102);}));}
+  LIFT.forEach((L,i)=>{const l=S.lifts[i];if(!l)return;drawDisp(L,l);L.tape.visible=!!l.out;
+    const want=(S.lift===i&&l.open&&l.f===viewF)||(where==="cab"&&S.lift===i&&l.open)?1:0;L.openK+=(want-L.openK)*Math.min(1,dt*4);
+    L.L.position.x=L.cx-.45-L.openK*.85;L.R.position.x=L.cx+.45+L.openK*.85;});
+  const callOn=S.lift!==null&&!S.arrived&&(ph==="lift"||ph==="reception");CALLS.forEach(c=>{const t=callOn?callTexOn:callTexOff;if(c.material.map!==t){c.material.map=t;c.material.needsUpdate=true;}});
+  cab.visible=S.lift!=null;cab.position.x=cabX();
+  if(ml)drawDisp(cabDisp,ml);
+  BTN.forEach(b=>{const on=(ph==="ride"&&S.final===b.userData.fl)||(ph==="inside"&&S.wrongAt===b.userData.fl&&false);const t=on?b.userData.on:b.userData.off;if(b.material.map!==t){b.material.map=t;b.material.needsUpdate=true;}});
+  const riders=[];if(S.nb&&S.nb.aboard)riders.push(S.nb.r.e);if(S.mosque&&S.mosque.picked&&typeof T==="function"){try{riders.push(T().e);}catch(_){}}
+  cabSp.forEach((sp,k)=>{const e=riders[k];sp.visible=!!e&&S.lift!=null;if(e){if(sp._e!==e){sp._e=e;sp.material.map=emoTex(e);sp.material.needsUpdate=true;}sp.position.set(k?.55:-.55,1.2,-12);}});
+  DOORS.forEach((d,s)=>{const open=ph==="door"&&S.knocked===s&&viewF===S.pos;const tgt=open?-1.25:0;d.ang+=(tgt-d.ang)*Math.min(1,dt*3);d.piv.rotation.y=d.ang;
+    const r=S.res[viewF]&&S.res[viewF][s];const show=open&&r&&!(s===S.side&&S.hide);d.who.visible=!!show;
+    if(show){const e=r.home?"🏠":r.e;if(d.who._e!==e){d.who._e=e;d.who.material.map=emoTex(e);d.who.material.needsUpdate=true;}}});
+}
+
+/* ---------- loop ---------- */
+let ON=false,last=0;
+function size(){const r=cv.getBoundingClientRect();if(!r.width)return;renderer.setSize(r.width,r.height,false);cam.aspect=r.width/r.height;cam.updateProjectionMatrix();}
+addEventListener("resize",size);
+function loop(t){const dt=Math.min(.05,(t-last)/1000||0);last=t;
+  if(ON){syncState();step(dt);visuals(dt);
+    cam.position.set(P.x,1.6,P.z);cam.rotation.order="YXZ";cam.rotation.y=P.yaw;cam.rotation.x=P.pitch;renderer.render(scene,cam);
+    const h=hint();if(h!==hLast){hLast=h;hEl.innerHTML=h;hEl.style.display=h?"block":"none";}
+    const k=isLocked()?"🖱️ <b>G</b> لإظهار الماوس · <b>WASD</b> امشِ":LOCKON?"🖱️ اضغط على الشاشة · <b>WASD</b> امشِ · <b>G</b>":"🖱️ <b>G</b> لقفل الماوس · <b>WASD</b> امشِ";if(kEl.innerHTML!==k)kEl.innerHTML=k;}
+  requestAnimationFrame(loop);}
+requestAnimationFrame(loop);
+
+window.T3D={ok:true,PH3,
+  show(){if(!ON){ON=true;wrap.hidden=false;size();}},
+  hide(){if(ON){ON=false;wrap.hidden=true;unlock();for(const k in keys)keys[k]=0;}},
+  get where(){return where;},P,clickAt,
+  _test:{BTN,CALLS,DOORS,LIFT,cab}};
+if(typeof render==="function")render();
+}
+</script>
+
 </body></html>
