@@ -5312,7 +5312,7 @@ var MODE3D=true;   // the building is always 3D (2D mode removed)
 function use3D(){return MODE3D&&window.T3D&&T3D.ok&&T3D.PH3.includes(S.phase);}
 var _renderScene3=renderScene;
 renderScene=function(){const on=use3D();document.body.classList.toggle("m3d",!!on);
-  if(on){$("scene").hidden=true;T3D.show();requestAnimationFrame(()=>{const pn=$("panel"),n=pn&&pn.querySelector(".now");if(n&&pn.parentNode&&pn.parentNode.id==="w3d"&&n.offsetParent===pn)pn.scrollTop=Math.max(0,n.offsetTop-8);});return;}
+  if(on){$("scene").hidden=true;if(T3D.SETPH&&T3D.SETPH.includes(S.phase)){_renderScene3();T3D.sync2D($("scene"));}T3D.show();requestAnimationFrame(()=>{const pn=$("panel"),n=pn&&pn.querySelector(".now");if(n&&pn.parentNode&&pn.parentNode.id==="w3d"&&n.offsetParent===pn)pn.scrollTop=Math.max(0,n.offsetTop-8);});return;}
   $("scene").hidden=false;if(window.T3D)T3D.hide();_renderScene3();};
 /* the talk box always sits inside the play screen (2D scenes too), never below it */
 (function(){const sc=$("scene"),pn=$("panel");if(!sc||!pn||$("stage"))return;const st=document.createElement("div");st.id="stage";sc.before(st);st.appendChild(sc);st.appendChild(pn);
@@ -5323,7 +5323,7 @@ body.m3d #stage{display:block!important}
 #stage:not(.below)>#panel{position:sticky;top:8px;max-height:calc(100vh - 16px);overflow:auto;margin:0;box-shadow:0 4px 18px #0002}
 #stage:not(.below)>#panel:empty{display:none}
 @media (max-width:820px){#stage:not(.below){grid-template-columns:1fr}#stage:not(.below)>#panel{position:static;max-height:none}}`;document.head.appendChild(cs);})();
-var _renderScene4=renderScene;renderScene=function(){_renderScene4();const st=$("stage");if(st)st.classList.toggle("below",!document.body.classList.contains("m3d")&&["reception","lift","inside","ride","stuck","door","myhome"].includes(S.phase));if(!document.body.classList.contains("m3d"))requestAnimationFrame(()=>{const pn=$("panel"),n=pn&&pn.querySelector(".now");if(n&&n.offsetParent===pn)pn.scrollTop=Math.max(0,n.offsetTop-8);});};
+var _renderScene4=renderScene;renderScene=function(){_renderScene4();const st=$("stage");if(st)st.classList.toggle("below",!document.body.classList.contains("m3d")&&["reception","lift","inside","ride","stuck","door","myhome","place","souq","kids","house","mosque"].includes(S.phase));if(!document.body.classList.contains("m3d"))requestAnimationFrame(()=>{const pn=$("panel"),n=pn&&pn.querySelector(".now");if(n&&n.offsetParent===pn)pn.scrollTop=Math.max(0,n.offsetTop-8);});};
 (function(){return;const t=document.querySelector("header .tog");if(t&&!$("v3dB")){t.insertAdjacentHTML("afterbegin",`<button id="v3dB" class="${MODE3D?"on":""}" title="3D / 2D">🧊 3D</button>`);
   $("v3dB").onclick=()=>{MODE3D=!MODE3D;try{localStorage.setItem("tower-3d",MODE3D?"1":"0");}catch(e){}$("v3dB").classList.toggle("on",MODE3D);render();};}})();
 </script>
@@ -5331,7 +5331,7 @@ var _renderScene4=renderScene;renderScene=function(){_renderScene4();const st=$(
 /* ================= 🧊 3D building: lobby, lifts, cab buttons, floor corridor with doors & bells =================
    Drives the existing game state (S) — it only replaces the 2D building picture for the building phases. */
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
-const PH3=["reception","lift","inside","ride","stuck","door","myhome"];
+const PH3=["reception","lift","inside","ride","stuck","door","myhome","place","souq","kids","house","mosque"];
 const LX=[-5,0,5];                 // lift centres (x); lift doors at z=-10
 const DOORX=[6,2,-2,-6];           // apartment doors s=0..3 on the front wall (z=4.6), s0 on the right
 const FONT='"Noto Sans Arabic","Segoe UI",Tahoma,Arial,sans-serif';
@@ -5360,7 +5360,10 @@ body.m3d #callB,body.m3d #enterB,body.m3d #panel [data-fl],body.m3d #panel [data
 #w3d.pc #tab3d{display:block}#tab3d i{font-style:normal;background:#ff5252;border-radius:10px;padding:0 7px;margin-inline-start:6px;display:none}
 #tab3d.new i{display:inline}#tab3d.new{animation:tabp 1s infinite}@keyframes tabp{50%{transform:scale(1.08)}}
 @media (max-width:700px){#w3d>#panel{width:auto;left:10px}#px3d{right:auto;left:16px}}
-#w3d.ui #k3d{display:none}`;document.head.appendChild(css);
+#w3d.ui #k3d{display:none}
+#w3d.bd{position:fixed!important;inset:0;height:100vh!important;max-height:none;border-radius:0;margin:0;z-index:69}
+#w3d.bd #h3d,#w3d.bd #k3d,#w3d.bd #x3d,#w3d.bd>#panel,#w3d.bd #tab3d,#w3d.bd #px3d,#w3d.bd #pad3d{display:none!important}
+body.bd3 #gameBox{background:rgba(20,20,40,.18)!important}`;document.head.appendChild(css);
 
 const cv=document.getElementById("c3d");
 let renderer;try{renderer=new THREE.WebGLRenderer({canvas:cv,antialias:true});}catch(e){console.warn("no webgl",e);}
@@ -5503,6 +5506,72 @@ function aptClick(u){
     S.aptTap=j;try{beep();}catch(_){}render();}
 }
 
+
+/* ---------- 🎭 generic 3D set: turns any 2D scene (supermarket, kids, airport, dinner, park, beach, mosque…) into a 3D place.
+   The 2D scene is still rendered (hidden); every clickable thing in it becomes a 3D prop that clicks the original button. ---------- */
+const SX=80;const SETPH=["place","souq","kids","house","mosque"];
+const setG=new THREE.Group();scene.add(setG);setG.visible=false;
+const stFloorM=M("#9ccc65"),stWallM=M("#eceff1"),stSkyM=new THREE.MeshBasicMaterial({color:"#90caf9",side:THREE.BackSide});
+const stFloor=plane(30,30,stFloorM,SX,0,0,0,setG);stFloor.rotation.x=-Math.PI/2;
+const stSky=new THREE.Mesh(new THREE.SphereGeometry(40,24,16),stSkyM);stSky.position.set(SX,0,0);setG.add(stSky);
+const stWalls=new THREE.Group();setG.add(stWalls);
+box(16,4,.2,stWallM,SX,2,-6,stWalls);box(.2,4,12,stWallM,SX-8,2,0,stWalls);box(.2,4,12,stWallM,SX+8,2,0,stWalls);box(16,.1,12,M("#fafafa"),SX,4,0,stWalls);
+const stSea=plane(30,12,new THREE.MeshStandardMaterial({color:"#1e88e5",transparent:true,opacity:.9}),SX,.02,-12,0,setG);stSea.rotation.x=-Math.PI/2;
+const stSignT=ctex(640,90,()=>{});const stSign=plane(5,.7,new THREE.MeshBasicMaterial({map:stSignT,transparent:true}),SX,3.3,-5.85,0,setG);
+let stDecor=[],stProps=[],stSig="",stTheme="",stCompanions=[];
+const THEMES={
+  souq:{floor:"#eceff1",wall:"#fff8e1",indoor:1,decor:[["🛒",-6,-4,1.2],["🧾",6.5,-4,1],["💡",0,3.6,.5]]},
+  kids:{floor:"#8bc34a",wall:null,decor:[["🎈",-5,-5,1.2],["🎈",5,-5,1.2],["🛝",-6,-3,2.2],["⚽",4,-2,.7],["🌳",-7,-6,2.6],["🌳",7,-6,2.6]]},
+  airport:{floor:"#cfd8dc",wall:"#e3f2fd",indoor:1,decor:[["✈️",-5,-5.5,1.6],["🧳",6,-3,1],["🛫",5,-5.5,1.4],["🕒",0,-5.6,.9]]},
+  dinner:{floor:"#c8915a",wall:"#fde0ea",indoor:1,decor:[["🪴",-7,-5,1.2],["🖼️",3,-5.8,1],["🕯️",0,-3,.6]]},
+  boss:{floor:"#546e7a",wall:"#b0bec5",indoor:1,decor:[["🔦",-5,-4,.8],["🔌",5,-5.6,.8]]},
+  house:{floor:"#c8915a",wall:"#f7e3c4",indoor:1,decor:[["🖼️",-3,-5.8,1],["🪴",-7,-5,1.2],["💡",0,3.6,.5]]},
+  park:{floor:"#7cb342",wall:null,decor:[["🌳",-7,-6,2.8],["🌲",7,-6,2.8],["🌳",-3,-8,2.4],["🌷",-2,-3,.5],["🌼",2,-3,.5],["☀️",6,6,0]]},
+  beach:{floor:"#ffe0a3",wall:null,sea:1,decor:[["⛱️",-5,-2,1.6],["🐚",3,-1,.5],["⛵",4,-10,1.6],["🌴",-7,-4,2.6],["🌴",7,-4,2.6]]},
+  mosque:{floor:"#2e7d32",wall:"#fffde7",indoor:1,decor:[["🕌",0,-5.4,2.4],["📿",-5,-4,.6],["🕋",5,-5.6,1]]},
+  clinic:{floor:"#eceff1",wall:"#e0f2f1",indoor:1,decor:[["🏥",0,-5.5,2],["🩺",-4,-3,.9],["💊",4,-3,.9],["🛏️",-6,-4,1.8],["🧑‍⚕️",3,-4,1.6]]},
+  street:{floor:"#616161",wall:null,decor:[["🚕",-2,-3,1.6],["🏢",-7,-8,4],["🏬",6,-8,4],["🚦",4,-4,1.6],["🌴",-6,-3,2.4]]},
+  barber:{floor:"#fafafa",wall:"#e3f2fd",indoor:1,decor:[["💈",-5,-5,1.6],["💺",0,-4,1.6],["✂️",3,-5.6,.8],["🪞",0,-5.8,1.4]]},
+  kitchen:{floor:"#d7ccc8",wall:"#fff3e0",indoor:1,decor:[["🍳",-3,-4,1],["🥘",2,-4,1],["👵",4,-4,1.6],["🧂",-1,-4,.6]]},
+  escape:{floor:"#37474f",wall:"#455a64",indoor:1,decor:[["🗝️",-4,-5.6,.9],["🔒",0,-5.6,1.2],["🧩",4,-5.6,.9],["🕯️",-6,-4,.7],["🕯️",6,-4,.7]]},
+  fair:{floor:"#8bc34a",wall:null,decor:[["🎡",-5,-8,4],["🎪",5,-8,3.4],["🎈",-2,-4,1],["🎈",2,-4,1],["🎯",0,-6,1.4]]},
+  party:{floor:"#c8915a",wall:"#fde0ea",indoor:1,decor:[["🎁",-3,-4,1],["🎈",3,-5,1.2],["🎉",0,-5.6,1.2],["🍰",0,-3,.8]]}
+};
+const KIND_THEME={shop:"souq",shopsetup:"souq",cashier:"souq",errand:"souq",phone:"house",phsetup:"house",pin:"house",report:"house",wheel:"fair",catch:"fair",moves:"fair",escape:"escape",taxi:"street",
+  doctor:"clinic",pharmacy:"clinic",emergency:"clinic",restaurant:"dinner",barber:"barber",recipe:"kitchen",occasion:"party",challenge:"fair"};
+function themeKey(){if(S.phase==="souq")return "souq";if(S.phase==="kids")return "kids";if(S.phase==="house")return "house";
+  if(S.phase==="place")return THEMES[S.place]?S.place:"airport";if(S.phase==="mosque"){const k=typeof outKind==="function"?outKind():"mosque";return THEMES[k]?k:"mosque";}return "park";}
+const EMO_RE=/\p{Extended_Pictographic}(?:️|‍\p{Extended_Pictographic}|\p{Emoji_Modifier})*/u;
+function labelTex(txt){return ctex(320,64,(c,w,h)=>{c.fillStyle="#263238dd";c.beginPath();c.roundRect?c.roundRect(0,0,w,h,18):c.rect(0,0,w,h);c.fill();c.fillStyle="#fff";c.font=`800 28px ${FONT}`;c.textAlign="center";c.textBaseline="middle";c.fillText(txt.slice(0,22),w/2,h/2+2);});}
+function setTheme(k){if(k===stTheme)return;stTheme=k;const T=THEMES[k]||THEMES.park;
+  stFloorM.color.set(T.floor);stWalls.visible=!!T.indoor;if(T.wall)stWallM.color.set(T.wall);stSky.visible=!T.indoor;stSkyM.color.set(isNight()?"#1a237e":"#90caf9");stSea.visible=!!T.sea;
+  stSign.visible=true;stDecor.forEach(o=>setG.remove(o));stDecor=T.decor.filter(d=>d[3]>0).map(([e,x,z,sz])=>{const sp=sprite(e,sz,setG);sp.position.set(SX+x,sz/2+(e==="💡"?0:0),z);if(e==="💡")sp.position.y=3.6;return sp;});
+  const nm={clinic:"🏥 العيادة",street:"🚕 الشارع",barber:"💈 الحلّاق",kitchen:"👵 مطبخ الجدّة",escape:"🗝️ غرفة الهروب",fair:"🎡 مدينة الألعاب",party:"🎉 المناسبة",souq:"🛒 سوبرماركت العمارة",kids:"👫 ساحة أطفال العمارة",airport:"✈️ المطار",dinner:"🍽️ عشاء في شقّتي",boss:"⚡ مهمّة اليوم",house:"🏠 بيت الجار",park:"🌳 الحديقة",beach:"🏖️ الشاطئ",mosque:"🕌 المسجد"}[k]||"";
+  redraw(stSignT,(x,w,h)=>{x.fillStyle="#00695cdd";x.fillRect(0,0,w,h);x.fillStyle="#fff";x.font=`900 46px ${FONT}`;x.textAlign="center";x.textBaseline="middle";x.fillText(nm,w/2,h/2+3);});stSign.position.z=T.indoor?-5.85:-7;}
+function sync2D(root){
+  setTheme(themeKey());
+  const els=[...root.querySelectorAll("button[data-pk],button[data-prod],button[data-kid],button.pk")].filter((b,i,a)=>a.indexOf(b)===i);
+  const sig=stTheme+"|"+els.map(b=>b.outerHTML.length+":"+b.className+":"+b.textContent).join("|");
+  if(sig===stSig){stProps.forEach((p,i)=>p.userData.el=els[i]);return;}stSig=sig;
+  stProps.forEach(p=>{setG.remove(p);if(p._lbl)setG.remove(p._lbl);if(p._ring)setG.remove(p._ring);if(p._shelf)setG.remove(p._shelf);});stProps=[];
+  const n=els.length,rows=stTheme==="souq"?Math.ceil(n/6):1;
+  els.forEach((b,i)=>{const txt=(b.textContent||"").replace(/\s+/g," ").trim();const pref=b.querySelector(".pe,.ste,.head");const m=(pref&&pref.textContent.match(EMO_RE))||txt.replace(/[❔💛❓]/g,"").match(EMO_RE);const e=m?m[0]:"❓";const label=txt.replace(new RegExp(EMO_RE.source,"gu"),"").replace(/[❔💛؟?]/g,"").replace(/[a-zʿ'’\-]+/gi,"").replace(/\s+/g," ").trim();
+    let x,z,y=.9,sz=1.1;
+    if(stTheme==="souq"){const r=Math.floor(i/6),c=i%6;x=-5+c*2;z=-4.6+r*2.4;y=.5+(r%2)*.2;sz=.9;}
+    else{const a=n>1?(-0.9+1.8*i/(n-1)):0;x=Math.sin(a)*5.2;z=-Math.cos(a)*4.2-.5;}
+    const sp=sprite(e,sz,setG);sp.position.set(SX+x,y+sz/2,z);sp.userData={el:b,set:1};
+    if(label){const lt=new THREE.Sprite(new THREE.SpriteMaterial({map:labelTex(label),transparent:true,depthTest:false}));lt.scale.set(1.5,.3,1);lt.position.set(SX+x,y+sz+.35,z);lt.userData={el:b,set:1};setG.add(lt);sp._lbl=lt;}
+    const on=/\b(on|need|hl)\b/.test(b.className),dn=/\bdone\b/.test(b.className);
+    const rg=new THREE.Mesh(new THREE.RingGeometry(.45,.6,28),new THREE.MeshBasicMaterial({color:on?"#ffd54f":dn?"#66bb6a":"#ffffff",transparent:true,opacity:on||dn?.9:.35}));rg.rotation.x=-Math.PI/2;rg.position.set(SX+x,.03,z);setG.add(rg);sp._ring=rg;
+    if(stTheme==="souq"){const sh=box(1.8,.12,.9,M("#8d6e63"),SX+x,y-.06,z,setG);sh.userData.setShelf=1;setG.remove(sh);setG.add(sh);sp._shelf=sh;}
+    stProps.push(sp);});
+  // the person you are with (park / beach / house / place npc)
+  stCompanions.forEach(o=>setG.remove(o));stCompanions=[];
+  let ce=null;try{if(["house","mosque"].includes(S.phase))ce=T().e;else if(S.phase==="place"&&PLACES[S.place])ce=PLACES[S.place].npc().e;}catch(_){}
+  if(ce){const c=sprite(ce,1.4,setG);c.position.set(SX+1.6,.75,1.2);stCompanions.push(c);}
+}
+function setClick(u){const b=u.el;if(b&&b.isConnected){try{beep();}catch(_){}b.click();}}
+
 /* ---------- player & input ---------- */
 const P={x:0,z:4.2,yaw:0,pitch:-.05};let where="lobby";   // lobby | cab | corr
 const keys={};const KC={KeyW:"f",ArrowUp:"f",KeyS:"b",ArrowDown:"b",KeyA:"sl",KeyD:"sr",ArrowLeft:"tl",ArrowRight:"tr",ShiftLeft:"run",ShiftRight:"run"};
@@ -5529,6 +5598,7 @@ addEventListener("pointermove",e=>{if(!drag||isLocked())return;const dx=e.client
 addEventListener("pointerup",e=>{if(drag&&moved<8&&e.target===cv){const r=cv.getBoundingClientRect();clickAt(((e.clientX-r.left)/r.width)*2-1,-((e.clientY-r.top)/r.height)*2+1);}drag=null;});
 const ray=new THREE.Raycaster();
 function clickAt(nx,ny){ray.setFromCamera({x:nx,y:ny},cam);ray.far=4.2;
+  if(where==="set"){ray.far=30;const objs=[];stProps.forEach(p=>{objs.push(p);if(p._lbl)objs.push(p._lbl);});const h=ray.intersectObjects(objs,false)[0];if(h)setClick(h.object.userData);return;}
   if(where==="apt"){ray.far=12;const sp=AMARK.filter(m=>m._lbl.visible).map(m=>m._lbl).concat(AMARK.filter(m=>m.visible));const hs=sp.length&&S.aptPick!=null?ray.intersectObjects(sp,false)[0]:null;if(hs){aptClick(hs.object.userData);return;}
     const h=ray.intersectObjects(aItems.concat(sp,[aDoor,aExitT]),false)[0];if(h)aptClick(h.object.userData);return;}
   const objs=where==="cab"?BTN.concat([alarmB]):where==="corr"?DOORS.flatMap(d=>[d.bell]).concat(corr.children.filter(o=>o.userData&&o.userData.bell!=null)):CALLS.concat([recep]);
@@ -5544,7 +5614,7 @@ function clickAt(nx,ny){ray.setFromCamera({x:nx,y:ny},cam);ray.far=4.2;
 }
 function scrollPanel(){const p=document.getElementById("panel");if(p&&p.parentNode!==wrap)p.scrollIntoView({behavior:"smooth",block:"start"});}
 /* while there is talking to do in the box, keep the mouse free so the answers can be clicked */
-function needUI(){return where==="apt"||S.phase==="reception"||!S.ready||(S.phase==="door"&&S.knocked!=null);}
+function needUI(){return where==="apt"||where==="set"||S.phase==="reception"||!S.ready||(S.phase==="door"&&S.knocked!=null);}
 let flashT=0,flashH="";function flash(a,e){flashH=`${a}<small>${e}</small>`;flashT=performance.now()+2600;}
 
 /* ---------- state sync ---------- */
@@ -5555,9 +5625,13 @@ function toCab(){where="cab";P.x=cabX();P.z=-11.3;P.yaw=Math.PI;P.pitch=-.05;}
 function toCorr(){where="corr";P.x=cabX();P.z=-8.6;P.yaw=Math.PI;P.pitch=-.05;}
 function toApt(){where="apt";P.x=AX-3.6;P.z=-1;P.yaw=-Math.PI/2*0-Math.PI/2+Math.PI;P.pitch=-.12;P.x=AX;P.z=3.2;P.yaw=0;}
 const aptMode=()=>S.phase==="myhome"||(S.phase==="door"&&S.live&&!S.live.done);
+const setMode=()=>SETPH.includes(S.phase);
+function toSet(){where="set";P.x=SX;P.z=3.4;P.yaw=0;P.pitch=-.18;}
 function syncState(){
   const ph=S.phase;
   if(aptMode()){if(where!=="apt")toApt();lastPh=ph;lastRid=S.rid;return;}
+  if(setMode()){if(where!=="set"||ph!==lastPh)toSet();lastPh=ph;lastRid=S.rid;return;}
+  if(where==="set"){lastPh="";}
   if(where==="apt"){lastPh="";}
   if(ph!==lastPh||S.rid!==lastRid){
     if(["reception","lift"].includes(ph)&&(where!=="lobby"||S.rid!==lastRid))toLobby();
@@ -5570,6 +5644,7 @@ function syncState(){
 function hint(){
   if(performance.now()<flashT)return flashH;
   const ph=S.phase,l=S.lift!=null?S.lifts[S.lift]:null;
+  if(where==="set")return "👆 امشِ واضغط على الأشياء — والكلام في 💬<small>Walk around and click things — talk in the chat</small>";
   if(where==="apt"){if(aptVisiting())return `🏠 أنت في شقّة ${PL_INFO[aptKey()]?PL_INFO[aptKey()].name:""} — تكلّم في 💬<small>You're visiting — talk in the chat</small>`;
     if(S.aptMove)return S.aptPick==null?"🔀 اضغط على قطعة أثاث لتحرّكها<small>Click a piece of furniture to move it</small>":"⭕ اضغط على مكان أخضر لتضعها فيه<small>Click a green spot to put it there</small>";
     return "🏠 شقّتي — امشِ واضغط على أيّ قطعة لتقول أين هي<small>Walk around and click any piece</small>";}
@@ -5588,13 +5663,14 @@ const hEl=document.getElementById("h3d"),kEl=document.getElementById("k3d");let 
 function free(x,z){
   if(where==="cab"){const c=cabX();return x>c-.8&&x<c+.8&&z>-12.15&&z<-10.25;}
   if(where==="apt")return x>AX-4.6&&x<AX+4.6&&z>-3.6&&z<3.6;
+  if(where==="set")return x>SX-7.6&&x<SX+7.6&&z>-5.4&&z<5.4;
   if(where==="lobby"&&z<-9.6&&z>-10.6&&enterZone(x))return true;
   if(x<-7.7||x>7.7||z>(where==="corr"?4.3:6.1)||z<-9.6)return false;
   if(where==="lobby"&&x>3.5&&z>.6&&z<2.4)return false;
   return true;
 }
 function enterZone(x){return S.phase==="lift"&&S.ready&&S.lift!=null&&S.arrived&&S.lifts[S.lift].open&&Math.abs(x-cabX())<.7;}
-function unstick(){if(where==="cab"||where==="apt")return;if(!free(P.x,P.z)){P.x=Math.max(-7.6,Math.min(7.6,P.x));P.z=Math.max(-9.5,Math.min(where==="corr"?4.2:6,P.z));if(where==="lobby"&&P.x>3.5&&P.z>.6&&P.z<2.4)P.z=.5;}}
+function unstick(){if(where==="cab"||where==="apt"||where==="set")return;if(!free(P.x,P.z)){P.x=Math.max(-7.6,Math.min(7.6,P.x));P.z=Math.max(-9.5,Math.min(where==="corr"?4.2:6,P.z));if(where==="lobby"&&P.x>3.5&&P.z>.6&&P.z<2.4)P.z=.5;}}
 function step(dt){
   unstick();if(busy())return;
   const f=(keys.f?1:0)-(keys.b?1:0),sr=(keys.sr?1:0)-(keys.sl?1:0),t=(keys.tl?1:0)-(keys.tr?1:0);
@@ -5615,7 +5691,8 @@ function step(dt){
 
 /* ---------- per-frame visuals ---------- */
 function visuals(dt){
-  apt.visible=where==="apt";if(where==="apt"){lobby.visible=corr.visible=false;cab.visible=false;aptSync();return;}
+  apt.visible=where==="apt";setG.visible=where==="set";if(where==="set"){lobby.visible=corr.visible=false;cab.visible=false;return;}
+  if(where==="apt"){lobby.visible=corr.visible=false;cab.visible=false;aptSync();return;}
   const ph=S.phase,ml=S.lift!=null?S.lifts[S.lift]:null;
   const viewF=where==="cab"?(ml?ml.f:0):where==="corr"?S.pos:0;
   lobby.visible=viewF===0;corr.visible=viewF!==0;
@@ -5636,10 +5713,16 @@ function visuals(dt){
 }
 
 /* ---------- loop ---------- */
-let ON=false,last=0;
+let ON=false,last=0,bdSave=null;
 function size(){const r=cv.getBoundingClientRect();if(!r.width)return;renderer.setSize(r.width,r.height,false);cam.aspect=r.width/r.height;cam.updateProjectionMatrix();}
 addEventListener("resize",size);
 function loop(t){const dt=Math.min(.05,(t-last)/1000||0);last=t;
+  const gb=document.getElementById("gameBox"),bdK=ON&&gb&&!gb.hidden&&window.GAME&&GAME.kind&&GAME.kind!=="work"?(KIND_THEME[GAME.kind]||"house"):null;
+  if(bdK){if(!wrap.classList.contains("bd")){wrap.classList.add("bd");document.body.classList.add("bd3");bdSave={where,x:P.x,z:P.z,yaw:P.yaw,pitch:P.pitch};size();}
+    setTheme(bdK);stProps.forEach(p=>{p.visible=false;if(p._lbl)p._lbl.visible=false;if(p._ring)p._ring.visible=false;if(p._shelf)p._shelf.visible=bdK==="souq";});stCompanions.forEach(c=>c.visible=false);
+    where="set";setG.visible=true;apt.visible=lobby.visible=corr.visible=cab.visible=false;P.x=SX+Math.sin(t/9000)*2.5;P.z=3.6;P.yaw=Math.sin(t/7000)*.45;P.pitch=-.08;
+    cam.position.set(P.x,1.6,P.z);cam.rotation.order="YXZ";cam.rotation.y=P.yaw;cam.rotation.x=P.pitch;renderer.render(scene,cam);requestAnimationFrame(loop);return;}
+  if(wrap.classList.contains("bd")){wrap.classList.remove("bd");document.body.classList.remove("bd3");if(bdSave){where=bdSave.where;P.x=bdSave.x;P.z=bdSave.z;P.yaw=bdSave.yaw;P.pitch=bdSave.pitch;}stTheme="";stSig="";stProps.forEach(p=>{p.visible=true;if(p._lbl)p._lbl.visible=true;if(p._ring)p._ring.visible=true;if(p._shelf)p._shelf.visible=true;});stCompanions.forEach(c=>c.visible=true);size();if(typeof render==="function")render();}
   if(ON){syncState();step(dt);visuals(dt);watchPanel();const ui=needUI()&&!wrap.classList.contains("pc");wrap.classList.toggle("ui",ui);if(ui&&isLocked())unlock();
     cam.position.set(P.x,1.6,P.z);cam.rotation.order="YXZ";cam.rotation.y=P.yaw;cam.rotation.x=P.pitch;renderer.render(scene,cam);
     const h=hint();if(h!==hLast){hLast=h;hEl.innerHTML=h;hEl.style.display=h?"block":"none";}
@@ -5647,7 +5730,7 @@ function loop(t){const dt=Math.min(.05,(t-last)/1000||0);last=t;
   requestAnimationFrame(loop);}
 requestAnimationFrame(loop);
 
-window.T3D={ok:true,PH3,
+window.T3D={ok:true,PH3,SETPH,sync2D,
   show(){const pn=document.getElementById("panel");if(pn&&pn.parentNode!==wrap)wrap.appendChild(pn);if(!ON){ON=true;wrap.hidden=false;size();}},
   hide(){const pn=document.getElementById("panel"),sc=document.getElementById("scene");if(pn&&pn.parentNode===wrap&&sc)sc.after(pn);if(ON){ON=false;wrap.hidden=true;unlock();for(const k in keys)keys[k]=0;}},
   get where(){return where;},P,clickAt,
