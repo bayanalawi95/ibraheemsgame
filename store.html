@@ -76,6 +76,7 @@ small.tr{display:block;font-size:.7rem;font-weight:600;opacity:.75;direction:ltr
 .tcardk{position:fixed;z-index:99;pointer-events:none;width:120px;height:76px;transform:translate(-50%,-50%) rotate(-8deg);background:linear-gradient(135deg,#1565c0,#42a5f5);color:#fff;border-radius:10px;padding:6px 8px;box-shadow:0 6px 14px #0006;font-size:.72rem;display:flex;flex-direction:column}.tcardk span{font-weight:800;margin-top:auto}.tcardk i{position:absolute;right:6px;bottom:4px;font-style:normal;font-size:1.4rem}
 .atmscr{background:#0d47a1;color:#fff;border-radius:12px;padding:10px;text-align:center;font-weight:800;margin:6px 0}.atmscr small.tr{color:#bbdefb}.atmscr small.en{color:#90caf9}.atmmsg{background:#102027;border-radius:8px;padding:6px;margin-top:6px}
 </style>
+<script src="drive.js"></script>
 </head>
 <body>
 <canvas id="c"></canvas>
@@ -554,20 +555,10 @@ function startTrip(dir){TRIP=dir;closeP();setHint("");$("actB").hidden=true;Obje
       [dir==="go"?"شغّل السيّارة وقُدها إلى السوبرماركت! 🔑":"شغّل السيّارة وقُدها إلى البيت! 🔑",dir==="go"?"shaghghil al-sayyara wa qudha ila al-subirmarkit!":"shaghghil al-sayyara wa qudha ila al-bayt!",dir==="go"?"Start the car and drive to the supermarket!":"Start the car and drive home!",["🔑 شغّل وقُد","shaghghil wa qud","Start & drive"]]];
     const draw=()=>{const s=S[st];tripBox(`<h2>🚗 ${L("السيّارة","al-sayyara","The car")}</h2>${tsay(s[0].replace("جلستَ",G("جلستَ","جلستِ")),s[1],s[2])}
       <div class="tstreet">${dir==="home"?`<span class="tshop">🏪</span>`:`<span class="tshop">🏢</span>`}<div class="tcar ${st?"in":""}" id="tCar">🚗${st?`<span>${me.e}</span>`:""}</div></div>
-      ${s[3]?`<div class="opts"><button class="btn big" id="tN">${L(s[3][0],s[3][1],s[3][2])}</button></div>`:""}`);
+      ${st===0&&dir==="go"&&window.ROADDRIVE?ROADDRIVE.pickerHtml():""}${s[3]?`<div class="opts"><button class="btn big" id="tN">${L(s[3][0],s[3][1],s[3][2])}</button></div>`:""}`);if(window.ROADDRIVE)ROADDRIVE.bindPicker($("trip"));
       if(!st)$("tCar").onclick=()=>{st=1;tone(400,.1);draw();};else $("tN").onclick=()=>{if(st===2){tone(110,.4,0,"sawtooth",.06);tone(170,.4,.3,"sawtooth",.05);setTimeout(drive,700);}else{tone(900,.06);st++;draw();}};};draw();}
-  function drive(){const LEN=14;let lane=1,objs=[],t0=performance.now(),last=t0,spawn=0,sign=null,done=false;
-    tripBox(`<h2>🛣️ ${dir==="go"?L("إلى السوبرماركت","ila al-subirmarkit","To the supermarket"):L("إلى البيت","ila al-bayt","Home")}</h2><div class="tprog"><i id="tPg"></i><span>${dir==="go"?"🏪":"🏠"}</span></div><div class="tsign" id="tSg"></div>
-      <div class="troad" id="tRd"><div class="tlines"></div><div class="tme" id="tMe">🚗</div></div><div class="tctrl"><button id="tL">⬅️ ${L("يساراً","yasaran","Left")}</button><button id="tR">${L("يميناً","yaminan","Right")} ➡️</button></div>`);
-    const rd=$("tRd"),pl=$("tMe"),lx=i=>(16.7+i*33.3)+"%";pl.style.left=lx(lane);
-    const mv=d=>{if(done)return;lane=Math.max(0,Math.min(2,lane+d));pl.style.left=lx(lane);tone(600,.03);if(sign&&Math.sign(sign)===d){addScore(1);$("tSg").innerHTML="✅";tone(1000,.08);sign=null;}};
-    $("tL").onclick=()=>mv(-1);$("tR").onclick=()=>mv(1);const key=e=>{if(e.key==="ArrowLeft"||e.code==="KeyA"){e.preventDefault();mv(-1);}if(e.key==="ArrowRight"||e.code==="KeyD"){e.preventDefault();mv(1);}};addEventListener("keydown",key);
-    const loop=now=>{if(done)return;const dt=(now-last)/1000;last=now;const el=(now-t0)/1000;$("tPg").style.width=Math.min(100,el/LEN*100)+"%";
-      if(now>spawn){spawn=now+850+Math.random()*600;const ln=Math.floor(Math.random()*3),k=Math.random()<.3?"⭐":pick(["🚧","🚙","🚕","🛢️"]);const d=document.createElement("div");d.className="tob";d.textContent=k;d.style.left=lx(ln);rd.appendChild(d);objs.push({d,ln,y:-10,k});
-        if(!sign&&Math.random()<.4){sign=lane===0?1:lane===2?-1:pick([-1,1]);$("tSg").innerHTML=L(sign<0?"⬅️ انعطف يساراً":"➡️ انعطف يميناً","",sign<0?"Turn left":"Turn right");}}
-      objs.forEach(o=>{o.y+=dt*48;o.d.style.top=o.y+"%";if(!o.hit&&o.y>72&&o.y<90&&o.ln===lane){o.hit=true;if(o.k==="⭐"){addScore(1);tone(1200,.06);o.d.remove();}else{tone(150,.2,0,"square",.08);rd.classList.remove("bump");void rd.offsetWidth;rd.classList.add("bump");o.d.textContent="💥";}}});
-      objs=objs.filter(o=>{if(o.y>105){o.d.remove();return false;}return true;});
-      if(el>=LEN){done=true;removeEventListener("keydown",key);setTimeout(dir==="go"?arriveStore:gate,250);return;}requestAnimationFrame(loop);};requestAnimationFrame(loop);}
+  function drive(){tripBox(`<h2>🛣️ ${dir==="go"?L("إلى السوبرماركت","ila al-subirmarkit","To the supermarket"):L("إلى البيت","ila al-bayt","Home")}</h2><div id="rdBox"></div>`);
+    window.__rd=ROADDRIVE.open({el:$("rdBox"),dir:dir==="go"?"out":"in",dest:dir==="go"?"🏪":"🏢",tone,onDone:r=>{if(r.stars)addScore(r.stars);setTimeout(dir==="go"?arriveStore:gate,250);}});}
   function arriveStore(){tripBox(`<div class="center big-e">🏪</div>${tsay(`وصلتَ إلى السوبرماركت! ادخل وتسوّق.`.replace("وصلتَ",G("وصلتَ","وصلتِ")).replace("ادخل وتسوّق",G("ادخل وتسوّق","ادخلي وتسوّقي")),"wasalta ila al-subirmarkit! udkhul wa tasawwaq.","You've arrived at the supermarket! Go in and shop.")}
       <div class="opts"><button class="btn big green" id="tIn">${L("🛒 ادخل المتجر","udkhul al-matjar","Enter the store")}</button></div>`);
     $("tIn").onclick=()=>{$("trip").hidden=true;TRIP=null;tryLock();P.x=0;P.z=8.2;P.yaw=0;P.pitch=-.05;newList();drawSide();nextTalk=performance.now()+20000;nextEvent=performance.now()+35000;toast("📝 قائمة التسوّق على اليمين · 🏧 الصرّاف على اليسار","","Shopping list on the right · ATM on the left");};}
