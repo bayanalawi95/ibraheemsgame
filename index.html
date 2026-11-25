@@ -5321,7 +5321,7 @@ openAdv=function(){_openAdv14();const g=document.querySelector("#advBox .advgrid
 
 /* ---------- 🧊 3D building view (module script T3D below draws it) ---------- */
 var MODE3D=true;   // the building is always 3D (2D mode removed)
-function use3D(){return MODE3D&&window.T3D&&T3D.ok&&T3D.PH3.includes(S.phase)&&!(S.phase==="door"&&S.live&&!S.live.done);}
+function use3D(){return MODE3D&&window.T3D&&T3D.ok&&T3D.PH3.includes(S.phase);}
 var _renderScene3=renderScene;
 renderScene=function(){const on=use3D();document.body.classList.toggle("m3d",!!on);
   if(on){$("scene").hidden=true;T3D.show();requestAnimationFrame(()=>{const pn=$("panel"),n=pn&&pn.querySelector(".now");if(n&&pn.parentNode&&pn.parentNode.id==="w3d"&&n.offsetParent===pn)pn.scrollTop=Math.max(0,n.offsetTop-8);});return;}
@@ -5335,7 +5335,7 @@ body.m3d #stage{display:block!important}
 #stage:not(.below)>#panel{position:sticky;top:8px;max-height:calc(100vh - 16px);overflow:auto;margin:0;box-shadow:0 4px 18px #0002}
 #stage:not(.below)>#panel:empty{display:none}
 @media (max-width:820px){#stage:not(.below){grid-template-columns:1fr}#stage:not(.below)>#panel{position:static;max-height:none}}`;document.head.appendChild(cs);})();
-var _renderScene4=renderScene;renderScene=function(){_renderScene4();const st=$("stage");if(st)st.classList.toggle("below",!document.body.classList.contains("m3d")&&["reception","lift","inside","ride","stuck","door"].includes(S.phase)&&!(S.phase==="door"&&S.live&&!S.live.done));if(!document.body.classList.contains("m3d"))requestAnimationFrame(()=>{const pn=$("panel"),n=pn&&pn.querySelector(".now");if(n&&n.offsetParent===pn)pn.scrollTop=Math.max(0,n.offsetTop-8);});};
+var _renderScene4=renderScene;renderScene=function(){_renderScene4();const st=$("stage");if(st)st.classList.toggle("below",!document.body.classList.contains("m3d")&&["reception","lift","inside","ride","stuck","door","myhome"].includes(S.phase));if(!document.body.classList.contains("m3d"))requestAnimationFrame(()=>{const pn=$("panel"),n=pn&&pn.querySelector(".now");if(n&&n.offsetParent===pn)pn.scrollTop=Math.max(0,n.offsetTop-8);});};
 (function(){return;const t=document.querySelector("header .tog");if(t&&!$("v3dB")){t.insertAdjacentHTML("afterbegin",`<button id="v3dB" class="${MODE3D?"on":""}" title="3D / 2D">🧊 3D</button>`);
   $("v3dB").onclick=()=>{MODE3D=!MODE3D;try{localStorage.setItem("tower-3d",MODE3D?"1":"0");}catch(e){}$("v3dB").classList.toggle("on",MODE3D);render();};}})();
 </script>
@@ -5343,7 +5343,7 @@ var _renderScene4=renderScene;renderScene=function(){_renderScene4();const st=$(
 /* ================= 🧊 3D building: lobby, lifts, cab buttons, floor corridor with doors & bells =================
    Drives the existing game state (S) — it only replaces the 2D building picture for the building phases. */
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
-const PH3=["reception","lift","inside","ride","stuck","door"];
+const PH3=["reception","lift","inside","ride","stuck","door","myhome"];
 const LX=[-5,0,5];                 // lift centres (x); lift doors at z=-10
 const DOORX=[6,2,-2,-6];           // apartment doors s=0..3 on the front wall (z=4.6), s0 on the right
 const FONT='"Noto Sans Arabic","Segoe UI",Tahoma,Arial,sans-serif';
@@ -5467,6 +5467,54 @@ const DOORS=DOORX.map((x,s)=>{
 });
 [[-7.3,-8.8],[7.3,-8.8],[0,4.2]].forEach(([x,z])=>{const s=sprite("🪴",1,corr);s.position.set(x,.5,z);});
 
+
+/* ---------- 🏠 apartment (my home, or a neighbour's during a live visit) — room centred at x=40 ---------- */
+const AX=40;const apt=new THREE.Group();scene.add(apt);apt.visible=false;
+const aFloorM=M("#c8915a"),aWallM=M("#f7e3c4"),aSkyM=new THREE.MeshBasicMaterial({color:"#9fdcff"});
+plane(10,8,aFloorM,AX,0,0,0,apt).rotation.x=-Math.PI/2;box(10,.1,8,M("#fffdf7"),AX,3,0,apt);
+box(10,3,.1,aWallM,AX,1.5,-4,apt);box(10,3,.1,aWallM,AX,1.5,4,apt);box(.1,3,8,aWallM,AX-5,1.5,0,apt);box(.1,3,8,aWallM,AX+5,1.5,0,apt);
+const aWin=plane(2.2,1.3,aSkyM,AX,1.75,-3.94,0,apt);box(2.4,.1,.12,M("#fff"),AX,1.1,-3.92,apt);box(2.4,.1,.12,M("#fff"),AX,2.4,-3.92,apt);box(.1,1.4,.12,M("#fff"),AX,1.75,-3.92,apt);
+const aView=sprite("☀️",.9,apt);aView.position.set(AX+.5,1.85,-3.88);
+const aDoor=box(.08,2.2,1.1,M("#8d5524"),AX-4.94,1.1,-1,apt);aDoor.userData.aexit=1;
+const aExitT=plane(1,.28,new THREE.MeshBasicMaterial({map:ctex(200,56,(x,w,h)=>{x.fillStyle="#c62828";x.fillRect(0,0,w,h);x.fillStyle="#fff";x.font=`900 32px ${FONT}`;x.textAlign="center";x.fillText("🚪 خروج",w/2,40);})}),AX-4.88,2.45,-1,Math.PI/2,apt);aExitT.userData.aexit=1;
+const rug=new THREE.Mesh(new THREE.CircleGeometry(1.6,40),M("#b71c1c"));rug.rotation.x=-Math.PI/2;rug.position.set(AX,.01,.3);apt.add(rug);
+const aName=plane(3.4,.4,new THREE.MeshBasicMaterial({map:ctex(512,60,()=>{})}),AX,2.75,-3.93,0,apt);let aNameLast="";
+// furniture spots (same 6 places as the game's SPOTS): beside window, under window, corner, beside door, middle, right
+const ASPOT=[[2.2,-3.2],[-.2,-3.3],[4.2,-3.3],[-4.1,-2.3],[0,.3],[3.8,.8]];
+const ringM=new THREE.MeshBasicMaterial({color:"#ffd54f",transparent:true,opacity:.85});
+const AMARK=ASPOT.map(([x,z],i)=>{const m=new THREE.Mesh(new THREE.RingGeometry(.45,.6,32),new THREE.MeshBasicMaterial({color:"#00897b",transparent:true,opacity:.8,side:THREE.DoubleSide}));m.rotation.x=-Math.PI/2;m.position.set(AX+x,.03,z);m.userData.adrop=i;apt.add(m);
+  m.visible=false;
+  const lt=new THREE.Sprite(new THREE.SpriteMaterial({map:ctex(260,60,(c,w,h)=>{c.fillStyle="#00897bdd";c.fillRect(0,0,w,h);c.fillStyle="#fff";c.font=`800 28px ${FONT}`;c.textAlign="center";c.fillText(SPOTS[i]?SPOTS[i][0]:"",w/2,40);}),transparent:true,depthTest:false}));lt.scale.set(1.1,.26,1);lt.position.set(AX+x,1.6,z);apt.add(lt);lt.visible=false;lt.userData.adrop=i;m._lbl=lt;return m;});
+let aItems=[],aSig="";const aRing=new THREE.Mesh(new THREE.RingGeometry(.5,.62,32),ringM);aRing.rotation.x=-Math.PI/2;aRing.visible=false;apt.add(aRing);
+const aOwner=sprite("🙂",1.3,apt);aOwner.visible=false;aOwner.position.set(AX-1.6,1.15,1.2);
+function hexOf(css,d){const m=String(css||"").match(/#[0-9a-f]{6}/i);return m?m[0]:d;}
+function aptKey(){return S.phase==="myhome"?CUR:(typeof other==="function"?other():CUR);}
+function aptVisiting(){return S.phase!=="myhome";}
+function aptSync(){
+  const k=aptKey(),h=PL[k]&&PL[k].home||{items:[]},items=h.items||[],st=typeof homeStyle==="function"?homeStyle(k):{wall:0,floor:0,win:0};
+  const sig=k+"|"+JSON.stringify(items)+"|"+JSON.stringify(st)+"|"+isNight();
+  if(sig!==aSig){aSig=sig;
+    if(typeof HSTYLE!=="undefined"){aWallM.color.set(hexOf((HSTYLE.wall[st.wall]||HSTYLE.wall[0])[2],"#f7e3c4"));aFloorM.color.set(hexOf((HSTYLE.floor[st.floor]||HSTYLE.floor[0])[2],"#c8915a"));
+      const N=HSTYLE.win[st.win]||HSTYLE.win[0];aSkyM.color.set(isNight()?"#1a237e":hexOf(N[3],"#9fdcff"));const ve=isNight()&&st.win!==4?"🌙":(st.win?N[2]:"☀️");aView.material.map=emoTex(ve);aView.material.needsUpdate=true;}
+    aItems.forEach(o=>apt.remove(o));aItems=[];
+    const per={};items.forEach((it,j)=>{const f=FURN[it.i];if(!f)return;const p=ASPOT[it.p]?it.p:4;const n=per[p]=(per[p]||0)+1;
+      const sp=sprite(f[0],1.25,apt);const [x,z]=ASPOT[p];const off=(n-1)*.95*((n%2)?1:-1)*Math.ceil((n-1)/2)/Math.max(1,Math.ceil((n-1)/2));
+      sp.position.set(AX+x+(n>1?((n%2?1:-1)*Math.ceil((n-1)/2)*.95):0),.75,z+(n>2?.4:0));sp.userData.aitem=j;aItems.push(sp);});
+    const nm=`🏠 شقّة ${PL_INFO[k]?PL_INFO[k].name:""} · ${FL[h.f]?FL[h.f].ar:""}`;if(nm!==aNameLast){aNameLast=nm;redraw(aName.material.map,(x,w,hh)=>{x.fillStyle="#ffffffdd";x.fillRect(0,0,w,hh);x.fillStyle="#3e2723";x.font=`900 34px ${FONT}`;x.textAlign="center";x.fillText(nm,w/2,42);});}
+  }
+  const mv=S.phase==="myhome"&&S.aptMove;AMARK.forEach(m=>{m.visible=mv;m._lbl.visible=mv&&S.aptPick!=null;});
+  const sel=mv?S.aptPick:S.aptTap,so=aItems.find(o=>o.userData.aitem===sel);aRing.visible=!!so;if(so){aRing.position.set(so.position.x,.04,so.position.z);aRing.material.color.set(mv?"#ff6f00":"#ffd54f");}
+  aOwner.visible=aptVisiting();if(aOwner.visible){const e=PL_INFO[aptKey()]?PL_INFO[aptKey()].e:"🙂";if(aOwner._e!==e){aOwner._e=e;aOwner.material.map=emoTex(e);aOwner.material.needsUpdate=true;}}
+}
+function aptClick(u){
+  if(u.aexit){if(aptVisiting()){flash("أنت ضيف هنا 😊 تكلّم في 💬","You're a guest here");return;}const b=document.getElementById("aptOut");if(b)b.click();else if(typeof leaveHome==="function")leaveHome();return;}
+  if(aptVisiting()){flash("هذه شقّة جارك 😊","Your neighbour's flat");return;}
+  if(u.adrop!=null){if(S.aptMove&&S.aptPick!=null)aptMoveTo(S.aptPick,u.adrop);return;}
+  if(u.aitem!=null){const j=u.aitem;
+    if(S.aptMove){const it=HOME.items[j];if(S.aptPick!=null&&S.aptPick!==j&&it){aptMoveTo(S.aptPick,it.p);return;}S.aptPick=S.aptPick===j?null:j;S.aptTap=j;try{beep();}catch(_){}render();return;}
+    S.aptTap=j;try{beep();}catch(_){}render();}
+}
+
 /* ---------- player & input ---------- */
 const P={x:0,z:4.2,yaw:0,pitch:-.05};let where="lobby";   // lobby | cab | corr
 const keys={};const KC={KeyW:"f",ArrowUp:"f",KeyS:"b",ArrowDown:"b",KeyA:"sl",KeyD:"sr",ArrowLeft:"tl",ArrowRight:"tr",ShiftLeft:"run",ShiftRight:"run"};
@@ -5493,6 +5541,8 @@ addEventListener("pointermove",e=>{if(!drag||isLocked())return;const dx=e.client
 addEventListener("pointerup",e=>{if(drag&&moved<8&&e.target===cv){const r=cv.getBoundingClientRect();clickAt(((e.clientX-r.left)/r.width)*2-1,-((e.clientY-r.top)/r.height)*2+1);}drag=null;});
 const ray=new THREE.Raycaster();
 function clickAt(nx,ny){ray.setFromCamera({x:nx,y:ny},cam);ray.far=4.2;
+  if(where==="apt"){ray.far=12;const sp=AMARK.filter(m=>m._lbl.visible).map(m=>m._lbl).concat(AMARK.filter(m=>m.visible));const hs=sp.length&&S.aptPick!=null?ray.intersectObjects(sp,false)[0]:null;if(hs){aptClick(hs.object.userData);return;}
+    const h=ray.intersectObjects(aItems.concat(sp,[aDoor,aExitT]),false)[0];if(h)aptClick(h.object.userData);return;}
   const objs=where==="cab"?BTN.concat([alarmB]):where==="corr"?DOORS.flatMap(d=>[d.bell]).concat(corr.children.filter(o=>o.userData&&o.userData.bell!=null)):CALLS.concat([recep]);
   const h=ray.intersectObjects(objs,true)[0];if(!h){if(where==="corr"||where==="lobby"){ray.far=40;const far=ray.intersectObjects(objs,true)[0];if(far)flash("اقترب أكثر! 🚶","Get closer!");}return;}
   const u=h.object.userData;
@@ -5506,7 +5556,7 @@ function clickAt(nx,ny){ray.setFromCamera({x:nx,y:ny},cam);ray.far=4.2;
 }
 function scrollPanel(){const p=document.getElementById("panel");if(p&&p.parentNode!==wrap)p.scrollIntoView({behavior:"smooth",block:"start"});}
 /* while there is talking to do in the box, keep the mouse free so the answers can be clicked */
-function needUI(){return S.phase==="reception"||!S.ready||(S.phase==="door"&&S.knocked!=null);}
+function needUI(){return where==="apt"||S.phase==="reception"||!S.ready||(S.phase==="door"&&S.knocked!=null);}
 let flashT=0,flashH="";function flash(a,e){flashH=`${a}<small>${e}</small>`;flashT=performance.now()+2600;}
 
 /* ---------- state sync ---------- */
@@ -5515,8 +5565,12 @@ function cabX(){return S.lift!=null?LX[S.lift]:0;}
 function toLobby(){where="lobby";P.x=0;P.z=4.2;P.yaw=0;P.pitch=-.05;}
 function toCab(){where="cab";P.x=cabX();P.z=-11.3;P.yaw=Math.PI;P.pitch=-.05;}
 function toCorr(){where="corr";P.x=cabX();P.z=-8.6;P.yaw=Math.PI;P.pitch=-.05;}
+function toApt(){where="apt";P.x=AX-3.6;P.z=-1;P.yaw=-Math.PI/2*0-Math.PI/2+Math.PI;P.pitch=-.12;P.x=AX;P.z=3.2;P.yaw=0;}
+const aptMode=()=>S.phase==="myhome"||(S.phase==="door"&&S.live&&!S.live.done);
 function syncState(){
   const ph=S.phase;
+  if(aptMode()){if(where!=="apt")toApt();lastPh=ph;lastRid=S.rid;return;}
+  if(where==="apt"){lastPh="";}
   if(ph!==lastPh||S.rid!==lastRid){
     if(["reception","lift"].includes(ph)&&(where!=="lobby"||S.rid!==lastRid))toLobby();
     if(["inside","ride","stuck"].includes(ph)&&where!=="cab")toCab();
@@ -5528,6 +5582,9 @@ function syncState(){
 function hint(){
   if(performance.now()<flashT)return flashH;
   const ph=S.phase,l=S.lift!=null?S.lifts[S.lift]:null;
+  if(where==="apt"){if(aptVisiting())return `🏠 أنت في شقّة ${PL_INFO[aptKey()]?PL_INFO[aptKey()].name:""} — تكلّم في 💬<small>You're visiting — talk in the chat</small>`;
+    if(S.aptMove)return S.aptPick==null?"🔀 اضغط على قطعة أثاث لتحرّكها<small>Click a piece of furniture to move it</small>":"⭕ اضغط على مكان أخضر لتضعها فيه<small>Click a green spot to put it there</small>";
+    return "🏠 شقّتي — امشِ واضغط على أيّ قطعة لتقول أين هي<small>Walk around and click any piece</small>";}
   if(ph==="reception")return S.lift!=null&&S.arrived?"🛗 وصل المصعد! لكن تكلّم مع المحاسب أوّلاً  💬<small>Talk to the accountant first </small>":"💁‍♂️ تكلّم مع المحاسب في 💬 المحادثة<small>Talk to the accountant </small>";
   if(ph==="lift"){if(S.lift===null)return "🔼 امشِ إلى زرّ المصعد بين المصاعد واضغطه<small>Walk to the call button and press it</small>";
     if(!S.arrived)return `⏳ المصعد قادم… الطابق ${ar(l.f)}<small>The lift is coming…</small>`;return "🛗 فُتح الباب! امشِ وادخل المصعد ⬆️<small>The door is open! Walk into the lift</small>";}
@@ -5542,13 +5599,14 @@ const hEl=document.getElementById("h3d"),kEl=document.getElementById("k3d");let 
 /* ---------- movement & collision ---------- */
 function free(x,z){
   if(where==="cab"){const c=cabX();return x>c-.8&&x<c+.8&&z>-12.15&&z<-10.25;}
+  if(where==="apt")return x>AX-4.6&&x<AX+4.6&&z>-3.6&&z<3.6;
   if(where==="lobby"&&z<-9.6&&z>-10.6&&enterZone(x))return true;
   if(x<-7.7||x>7.7||z>(where==="corr"?4.3:6.1)||z<-9.6)return false;
   if(where==="lobby"&&x>3.5&&z>.6&&z<2.4)return false;
   return true;
 }
 function enterZone(x){return S.phase==="lift"&&S.ready&&S.lift!=null&&S.arrived&&S.lifts[S.lift].open&&Math.abs(x-cabX())<.7;}
-function unstick(){if(where==="cab")return;if(!free(P.x,P.z)){P.x=Math.max(-7.6,Math.min(7.6,P.x));P.z=Math.max(-9.5,Math.min(where==="corr"?4.2:6,P.z));if(where==="lobby"&&P.x>3.5&&P.z>.6&&P.z<2.4)P.z=.5;}}
+function unstick(){if(where==="cab"||where==="apt")return;if(!free(P.x,P.z)){P.x=Math.max(-7.6,Math.min(7.6,P.x));P.z=Math.max(-9.5,Math.min(where==="corr"?4.2:6,P.z));if(where==="lobby"&&P.x>3.5&&P.z>.6&&P.z<2.4)P.z=.5;}}
 function step(dt){
   unstick();if(busy())return;
   const f=(keys.f?1:0)-(keys.b?1:0),sr=(keys.sr?1:0)-(keys.sl?1:0),t=(keys.tl?1:0)-(keys.tr?1:0);
@@ -5569,6 +5627,7 @@ function step(dt){
 
 /* ---------- per-frame visuals ---------- */
 function visuals(dt){
+  apt.visible=where==="apt";if(where==="apt"){lobby.visible=corr.visible=false;cab.visible=false;aptSync();return;}
   const ph=S.phase,ml=S.lift!=null?S.lifts[S.lift]:null;
   const viewF=where==="cab"?(ml?ml.f:0):where==="corr"?S.pos:0;
   lobby.visible=viewF===0;corr.visible=viewF!==0;
@@ -5604,7 +5663,7 @@ window.T3D={ok:true,PH3,
   show(){const pn=document.getElementById("panel");if(pn&&pn.parentNode!==wrap)wrap.appendChild(pn);if(!ON){ON=true;wrap.hidden=false;size();}},
   hide(){const pn=document.getElementById("panel"),sc=document.getElementById("scene");if(pn&&pn.parentNode===wrap&&sc)sc.after(pn);if(ON){ON=false;wrap.hidden=true;unlock();for(const k in keys)keys[k]=0;}},
   get where(){return where;},P,clickAt,
-  _test:{BTN,CALLS,DOORS,LIFT,cab}};
+  _test:{BTN,CALLS,DOORS,LIFT,cab,AMARK,get aItems(){return aItems;},ray,cam}};
 if(typeof render==="function")render();
 }
 </script>
