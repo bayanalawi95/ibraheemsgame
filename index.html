@@ -764,7 +764,7 @@ img.emoji{height:1em;width:1em;margin:0 .05em;vertical-align:-0.12em;display:inl
 .mpp small{font-size:.75rem;color:#666}
 .mpp .mpe{font-size:2rem;line-height:1}.mpp .mpn{font-weight:700;font-size:.92rem;text-align:center}
 .mprand{background:#fff7d6;border-color:#f2c94c}
-</style><script src="/config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.js"></script><script src="https://cdn.jsdelivr.net/npm/@twemoji/api@15.1.0/dist/twemoji.min.js"></script></head><body>
+</style><script src="/config.js"></script><script src="/drive.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.js"></script><script src="https://cdn.jsdelivr.net/npm/@twemoji/api@15.1.0/dist/twemoji.min.js"></script></head><body>
 
 <div class="wrap" dir="rtl">
   <header>
@@ -1239,10 +1239,11 @@ for(const k of PLK){PL[k].cfg=Object.assign({det:true},PL[k].cfg||{});PL[k].star
 const AUTH=(()=>{try{const a=JSON.parse(localStorage.getItem("tower-auth")||"null");return a&&a.t&&PL_INFO[a.pl]?a:null;}catch(e){return null;}})();
 let CUR=AUTH?AUTH.pl:"ib";
 let HOME=PL[CUR].home;
-/* kids (ib, mh) talk to Bayan; Bayan picks which kid she is talking to */
-var CHATW=(()=>{try{const w=localStorage.getItem("tower-chatwith");return w&&PL_INFO[w]&&w!=="by"?w:"ib";}catch(e){return "ib";}})();
-const other=()=>CUR==="by"?CHATW:"by";
-function setChatW(k,quiet){if(CUR!=="by"||!PL_INFO[k]||k==="by"||k===CHATW)return;CHATW=k;try{localStorage.setItem("tower-chatwith",k);}catch(e){}TYP.until=0;if(quiet)return;if(typeof layout==="function")layout();if(CHT.open)drawChat();render();}
+/* every player picks who they are talking to (Bayan, Ibraheem, Mashhour) */
+const defW=()=>CUR==="by"?"ib":"by";
+var CHATW=(()=>{try{const w=localStorage.getItem("tower-chatwith-"+CUR);return w&&PL_INFO[w]&&w!==CUR?w:defW();}catch(e){return defW();}})();
+const other=()=>(CHATW&&CHATW!==CUR&&PL_INFO[CHATW])?CHATW:defW();
+function setChatW(k,quiet){if(!PL_INFO[k]||k===CUR||k===other())return;CHATW=k;try{localStorage.setItem("tower-chatwith-"+CUR,k);}catch(e){}TYP.until=0;if(quiet)return;if(typeof layout==="function")layout();if(CHT.open)drawChat();render();}
 const isIb=()=>CUR!=="by", isBy=()=>CUR==="by";
 function saveHome(){if(typeof syncPlayer==="function")setTimeout(syncPlayer,0);PL[CUR].stars=S.stars;try{localStorage.setItem("tower-players-v1",JSON.stringify(PL));localStorage.setItem("tower-player",CUR);}catch(e){}}
 const IB_RES={e:"👦",ar:"إبراهيم",tr:"ibrahim",en:"Ibraheem",g:"m",m:1,ab:"أنا جارُ المعلّمة بيان، وأحبّ الألعاب والتقنية!",abt:"ana jaru al-muʿallima bayan, wa uhibbu al-alʿaba wal-tiqniyya!",abe:"I'm Teacher Bayan's neighbor, and I love games and tech!"};
@@ -1291,7 +1292,7 @@ const lastSeen=()=>{try{return +localStorage.getItem("tower-seen-"+CUR)||0;}catc
 function markSeen(){try{localStorage.setItem("tower-seen-"+CUR,String(Date.now()));}catch(e){}}
 const pair=m=>(m.from===CUR&&m.to===other())||(m.from===other()&&m.to===CUR);
 const unreadFrom=k=>{const t=lastSeen();return CHAT.filter(m=>m.to===CUR&&m.from===k&&m.ts>t&&!isCtl(m)&&!isEndMsg(m)&&!isDel(m)).length;};
-const unread=()=>{const t=lastSeen();return CHAT.filter(m=>m.to===CUR&&(CUR==="by"?m.from!==CUR:m.from===other())&&m.ts>t&&!isCtl(m)&&!isEndMsg(m)&&!isDel(m)).length;};
+const unread=()=>{const t=lastSeen();return CHAT.filter(m=>m.to===CUR&&m.from!==CUR&&m.ts>t&&!isCtl(m)&&!isEndMsg(m)&&!isDel(m)).length;};
 const hhmm=ts=>{const d=new Date(ts);return ar(String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"));};
 const bubble=m=>{if(typeof m.text==="string"&&m.text.startsWith("§END§"))return `<div class="msg endmsg">👋 ${P("انتهت الزيارة. هديّة لشقّة كلّ واحد منكما! 🎁","intahat al-ziyara.")}<div class="mtime">${hhmm(m.ts)}</div></div>`;const p=PL_INFO[m.from]||PL_INFO.ib;if(isDel(m)){const p0=PL_INFO[m.from]||PL_INFO.ib;return `<div class="msg ${m.from===CUR?"mine":"theirs"} deleted"><div class="mhead">${p0.e} ${p0.name}</div><div class="mtext">🚫 ${P("حُذِفت هذه الرسالة","hudhifat hadhihi al-risala")}</div><div class="mtime">${hhmm(m.ts)}</div></div>`;}
   const mine=m.from===CUR,aud=isAud(m),img=isImg(m)||aud,url=aud?m.text.slice(AUD_TAG.length):img?m.text.slice(IMG_TAG.length):"";const okUrl=/^https:\/\/[a-z0-9.-]+\.supabase\.co\//i.test(url);return `<div class="msg ${mine?"mine":"theirs"} ${CHT.editId===m.id?"editing":""}"><div class="mhead">${p.e} ${p.name}${mine&&!img?`<button class="medit" data-edit="${esc(m.id)}" title="تعديل">✏️</button>`:""}${mine?`<button class="medit mdel ${CHT.delArm===m.id?"armed":""}" data-del="${esc(m.id)}" title="حذف">${CHT.delArm===m.id?`🗑️ ${P("احذف؟","ihdhif?")}`:"🗑️"}</button>`:""}</div>${aud?(okUrl?`<div class="maud">🎤 <audio controls preload="metadata" src="${esc(url)}"></audio></div>`:`<div class="mtext">🎤</div>`):img?(okUrl?`<a href="${esc(url)}" target="_blank" rel="noopener"><img class="mimg" src="${esc(url)}" alt="صورة" loading="lazy"></a>`:`<div class="mtext">🖼️</div>`):`<div class="mtext">${esc(m.text)}</div>`}<div class="mtime">${m.edited?`<span class="medited">${P("معدّلة","muʿaddala")}</span> `:""}${hhmm(m.ts)}<button class="mreact" data-rbtn="${esc(m.id)}" title="تفاعل">😊+</button></div>${CHT.reactFor===m.id?`<div class="rbar">${REACTS.map(e=>`<button data-react="${esc(m.id)}|${e}" class="${cleanReacts(m.reacts)[CUR]===e?"on":""}">${e}</button>`).join("")}</div>`:""}${(()=>{const r=cleanReacts(m.reacts),ks=Object.keys(r);return ks.length?`<div class="mreacts">${ks.map(k=>`<span title="${PL_INFO[k].name}">${r[k]}<small>${PL_INFO[k].e}</small></span>`).join("")}</div>`:"";})()}</div>`;};
@@ -1519,7 +1520,7 @@ function drawChat(){
   const oth=PL_INFO[other()];
   const msgs=CHAT.filter(m=>pair(m)&&!isCtl(m));
   o.innerHTML=`<div class="wa">
-    ${CUR==="by"?`<div class="wawho">${PLK.filter(k=>k!=="by").map(k=>{const n=unreadFrom(k);return `<button class="${k===CHATW?"on":""}" data-cw="${k}">${PL_INFO[k].e} ${PL_INFO[k].name}${n&&k!==CHATW?` <i>${ar(n)}</i>`:""}</button>`;}).join("")}</div>`:""}<div class="wahead"><span class="wav">${oth.e}</span><div><b>${oth.name}</b><small id="waStatus">${typingNow()?typingHtml():chatStatus()}</small></div><button id="waMenuB" class="wamenub" aria-label="المزيد">⋮</button><button id="cClose">✕</button>
+    ${PLK.length>2?`<div class="wawho">${PLK.filter(k=>k!==CUR).map(k=>{const n=unreadFrom(k);return `<button class="${k===other()?"on":""}" data-cw="${k}">${PL_INFO[k].e} ${PL_INFO[k].name}${n&&k!==other()?` <i>${ar(n)}</i>`:""}</button>`;}).join("")}</div>`:""}<div class="wahead"><span class="wav">${oth.e}</span><div><b>${oth.name}</b><small id="waStatus">${typingNow()?typingHtml():chatStatus()}</small></div><button id="waMenuB" class="wamenub" aria-label="المزيد">⋮</button><button id="cClose">✕</button>
       ${CHT.menu?`<div class="wamenu"><button id="waClear" class="${CHT.clrArm?"armed":""}">🧹 ${CHT.clrArm?P("اضغط مرّة أخرى للتأكيد","idghat marratan ukhra lil-ta'kid"):P("مسح المحادثة","mash al-muhadatha")}</button><div class="hint">${P("تُمسح عند بيان وإبراهيم","tumsahu ʿinda bayan wa ibrahim")}</div></div>`:""}</div>
     <div class="wabody" id="waBody">${msgs.map(bubble).join("")}${CHT.uploading?`<div class="msg mine"><div class="mtext">⏳ ${CHT.uploading==="aud"?P("جارٍ إرسال الرسالة الصوتية…","jarin irsal al-risala al-sawtiyya…"):P("جارٍ إرسال الصورة…","jarin irsal al-sura…")}</div></div>`:""}${msgs.length||CHT.uploading?"":`<div class="hint center">${P(`لا توجد رسائل بعد. اكتب أوّل رسالة إلى ${oth.name}!`,`uktub awwala risala!`)}</div>`}</div>
     ${(PL[CUR].opts||[]).length?`<div class="opts wa-opts">${PL[CUR].opts.map((t,i)=>`<button class="small" data-wo="${i}">${esc(t)}</button>`).join("")}</div>`:""}
@@ -2136,7 +2137,7 @@ function renderPanel(){
   else if(S.phase==="reception"){
     if(!Object.keys(S.said).length){
       h+=`<div class="tog center"><button class="big mosqueb" id="mosqueTrip">🕌 ${P("خذ أحداً إلى المسجد","khudh ahadan ila al-masjid")}</button><button class="big beachb" id="beachTrip">🏖️ ${P("خذ أحداً إلى الشاطئ","khudh ahadan ila al-shati'")}</button><button class="big parkb" id="parkTrip">🌳 ${P("خذ أحداً إلى الحديقة","khudh ahadan ila al-hadiqa")}</button><button class="big rentb" id="rentTrip">🔑 ${P("أريد أن أستأجر شقّة","uridu an asta'jira shaqqa")}</button>${HOME.f?`<button class="big" id="homeTrip">🏠 ${P("أريد أن أذهب إلى شقّتي","uridu an adhhaba ila shaqqati")}</button>`:""}
-        ${isIb()?(PL.by.home.f?`<button class="big" id="visitBy">👩‍🏫 ${P("أريد أن أزور جارتي المعلّمة بيان","uridu an azura jarati al-muʿallima bayan")}</button>`:"")
+        ${isIb()?PLK.filter(k=>k!=="by"&&k!==CUR&&PL[k]&&PL[k].home&&PL[k].home.f).map(k=>`<button class="big" id="visitK_${k}">${PL_INFO[k].e} ${P(`أريد أن أزور جاري ${PL_INFO[k].name}`,`uridu an azura jari ${PL_INFO[k].tr}`)}</button>`).join("")+(PL.by.home.f?`<button class="big" id="visitBy">👩‍🏫 ${P("أريد أن أزور جارتي المعلّمة بيان","uridu an azura jarati al-muʿallima bayan")}</button>`:"")
                 :(PL.ib.home.f?`<button class="big" id="visitIb">👦 ${P("أريد أن أزور جاري إبراهيم","uridu an azura jari ibrahim")}</button>`:"")+(PL.mh&&PL.mh.home.f?`<button class="big" id="visitMh">👦🏽 ${P("أريد أن أزور جاري مشهور","uridu an azura jari mashhur")}</button>`:"")}</div>`;
     }
     h+=weatherLine();
@@ -2380,7 +2381,7 @@ function renderPanel(){
       } else if(r.home){
         banner=`<div class="win">🏠 ${P("هذه شقّتك أنت! 😄","hadhihi shaqqatuka anta!")}</div>`;
         lines.push(ln(k+"home",K,v.e,`هذه شقّتي! أنا أبحث عن ${t.ar}.`,`hadhihi shaqqati! ana abhathu ʿan ${t.tr}.`,`This is my apartment! I'm looking for ${t.en}.`,1));
-      } else if(right&&(CUR==="by"?PLK.some(k=>k!=="by"&&RES_OF[k]===r&&(setChatW(k,true),true)):r===RES_OF[other()])&&SB&&!S.live&&(!S.knockReq||S.knockReq.st!=="ok")){
+      } else if(right&&PLK.some(k=>k!==CUR&&RES_OF[k]===r&&(setChatW(k,true),true))&&SB&&!S.live&&(!S.knockReq||S.knockReq.st!=="ok")){
         if(!S.knockReq){const m=sendChat(REQ_TAG);S.knockReq={id:m.id,st:"wait"};}
         const kr=S.knockReq,hn=PL_INFO[other()],she=other()==="by";
         if(kr.st==="wait"){
@@ -2586,6 +2587,8 @@ function renderPanel(){
   on("visitBy",()=>startVisit(PL.by.home.f,PL.by.home.s));
   on("visitIb",()=>{setChatW("ib");startVisit(PL.ib.home.f,PL.ib.home.s);});
   on("visitMh",()=>{setChatW("mh");startVisit(PL.mh.home.f,PL.mh.home.s);});
+  PLK.forEach(k=>on("visitK_"+k,()=>{setChatW(k);startVisit(PL[k].home.f,PL[k].home.s);}));
+  on("visitBy",()=>{setChatW("by");startVisit(PL.by.home.f,PL.by.home.s);});
 }
 
 function renderCast(){
@@ -5241,28 +5244,13 @@ function startWork(){
       ["ممتاز! الآن شغّل السيّارة وقُدها إلى العمل. 🔑","mumtaz! al-an shaghghil al-sayyara wa qudha ila al-ʿamal.","Great! Now start the car and drive it to work.",["🔑 شغّل السيّارة","shaghghil al-sayyara","Start the car"]]];
     const draw=()=>{const s=steps[st];box(`${say(s[0].replace("جلستَ",GV("جلستَ","جلستِ")),s[1],s[2])}
       <div class="cstreet"><div class="ccar ${st>0?"in":""}" id="cCar">🚗${st>0?`<span class="cdriver">${meE}</span>`:""}</div></div>
-      ${s[3]?`<div class="tog center"><button class="big huge" id="cNext">${L3(s[3][0],s[3][1],s[3][2])}</button></div>`:""}`);
+      ${st===0&&window.ROADDRIVE?ROADDRIVE.pickerHtml():""}${s[3]?`<div class="tog center"><button class="big huge" id="cNext">${L3(s[3][0],s[3][1],s[3][2])}</button></div>`:""}`);if(window.ROADDRIVE)ROADDRIVE.bindPicker(o);
       if(st===0)$("cCar").onclick=()=>{st=1;tone(400,.1);draw();};else $("cNext").onclick=()=>{if(st===2){tone(120,.4,0,"sawtooth",.06);tone(180,.4,.3,"sawtooth",.05);setTimeout(()=>drive("work"),700);}else{tone(900,.06);st++;draw();}};};
     draw();};
-  /* 3. driving: three lanes, follow the arrows, avoid cones */
-  const drive=(to)=>{const LEN=to==="work"?24:18;let lane=1,t0=performance.now(),objs=[],raf=0,last=t0,spawnAt=0,sign=null,done=false,hits=0,stars=0;
-    box(`${say(to==="work"?"قُد بحذر إلى العمل! اتبع الأسهم 🧭":"قُد بحذر إلى البيت! 🏠",to==="work"?"qud bi-hadhar ila al-ʿamal!":"qud bi-hadhar ila al-bayt!",to==="work"?"Drive carefully to work! Follow the arrows.":"Drive carefully home!")}
-      <div class="cprog"><i id="cProg"></i><span>${to==="work"?"🏢":"🏠"}</span></div><div class="csign" id="cSign"></div>
-      <div class="croad" id="cRoad"><div class="clines"></div><div class="cplayer" id="cPl">🚗</div></div>
-      <div class="cctrl"><button id="cL">⬅️ ${L3("يساراً","yasaran","Left")}</button><button id="cR">${L3("يميناً","yaminan","Right")} ➡️</button></div>`,"cdrive");
-    const road=$("cRoad"),pl=$("cPl");const lx=i=>(16.7+i*33.3)+"%";pl.style.left=lx(lane);
-    const move=d=>{if(done)return;lane=Math.max(0,Math.min(2,lane+d));pl.style.left=lx(lane);tone(600,.03);
-      if(sign&&((sign.dir<0&&d<0)||(sign.dir>0&&d>0))){stars++;driveScore++;$("cSign").innerHTML=`✅ ${sign.ar}!`;tone(1000,.08);sign=null;}};
-    $("cL").onclick=()=>move(-1);$("cR").onclick=()=>move(1);
-    const key=e=>{if(e.key==="ArrowLeft"){e.preventDefault();move(-1);}if(e.key==="ArrowRight"){e.preventDefault();move(1);}};document.addEventListener("keydown",key);GAME.key=key;
-    const loop=now=>{if(!GAME||GAME.kind!=="work"||done)return;const dt=(now-last)/1000;last=now;const el=(now-t0)/1000;$("cProg").style.width=Math.min(100,el/LEN*100)+"%";
-      if(now>spawnAt){spawnAt=now+900+Math.random()*700;const ln=Math.floor(Math.random()*3),kind=Math.random()<.35?"⭐":lpick(["🚧","🚙","🛢️","🚕"]);const d=document.createElement("div");d.className="cobj";d.textContent=kind;d.style.left=lx(ln);road.appendChild(d);objs.push({d,ln,y:-10,kind});
-        if(!sign&&Math.random()<.35){const dir=lane===0?1:lane===2?-1:(Math.random()<.5?-1:1);sign={dir,ar:dir<0?"انعطف يساراً":"انعطف يميناً"};$("cSign").innerHTML=`${dir<0?"⬅️":"➡️"} ${sign.ar} <small class="ope">${dir<0?"Turn left":"Turn right"}</small>`;}}
-      objs.forEach(ob=>{ob.y+=dt*45;ob.d.style.top=ob.y+"%";if(!ob.hit&&ob.y>72&&ob.y<90&&ob.ln===lane){ob.hit=true;if(ob.kind==="⭐"){driveScore++;tone(1200,.06);ob.d.remove();}else{hits++;tone(150,.2,0,"square",.08);road.classList.remove("bump");void road.offsetWidth;road.classList.add("bump");ob.d.textContent="💥";}}});
-      objs=objs.filter(ob=>{if(ob.y>105){ob.d.remove();return false;}return true;});
-      if(el>=LEN){done=true;document.removeEventListener("keydown",key);GAME.key=null;miss+=hits;setTimeout(()=>to==="work"?arriveWork():gate(),300);return;}
-      raf=requestAnimationFrame(loop);};
-    raf=requestAnimationFrame(loop);};
+  /* 3. driving: real road (ROADDRIVE) — car park ramps, Malaysian traffic lights, indicators */
+  const drive=(to)=>{box(`${say(to==="work"?"قُد بحذر إلى العمل! انتبه للإشارات 🚦":"قُد بحذر إلى البيت! 🏠",to==="work"?"qud bi-hadhar ila al-ʿamal! intabih lil-isharat":"qud bi-hadhar ila al-bayt!",to==="work"?"Drive carefully to work! Watch the traffic lights.":"Drive carefully home!")}<div id="rdBox"></div>`,"cdrive");
+    const d=ROADDRIVE.open({el:$("rdBox"),dir:to==="work"?"out":"in",dest:"🏢",tone,onDone:r=>{if(!GAME||GAME.kind!=="work")return;driveScore+=r.stars;miss+=r.hits+r.reds;GAME.cleanup=null;setTimeout(()=>to==="work"?arriveWork():gate(),300);}});
+    GAME.cleanup=()=>d.stop();};
   /* 4. at work: choose a job and do the task */
   const arriveWork=()=>{box(`${say(`وصلتَ إلى العمل! 🏢 ما عملك اليوم؟`.replace("وصلتَ",GV("وصلتَ","وصلتِ")),"wasalta ila al-ʿamal! ma ʿamaluka al-yawm?","You arrived at work! What's your job today?")}
       <div class="cjobs">${Object.entries(WORK_JOBS).map(([k,j])=>`<button data-job="${k}"><span>${j.e}</span>${L3(j.ar,j.tr,j.en)}</button>`).join("")}</div>`);
