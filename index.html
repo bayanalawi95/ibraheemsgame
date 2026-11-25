@@ -5237,16 +5237,10 @@ function startWork(){
       <div class="cdoorwrap"><div class="cdoorframe"><div class="cdoor" id="cDoor"><i class="knob"></i><span>🚪</span></div><div class="coutside">🌤️🌳🚗</div></div>
         <button class="cdoorbtn" id="cOpen"><b>🔓</b>${L3("افتح الباب","iftah al-bab","Open the door")}</button></div>`,"cdoorcard");
     $("cOpen").onclick=()=>{$("cDoor").classList.add("open");$("cOpen").disabled=true;tone(300,.2,0,"triangle");tone(500,.2,.15,"triangle");setTimeout(car,1300);};};
-  /* 2. the car: sit, seatbelt, start */
-  const car=()=>{let st=0;const steps=[
-      ["هذه سيّارتك! اضغط على السيّارة لتجلس فيها.","hadhihi sayyaratuk! idghat ʿala al-sayyara li-tajlisa fiha.","This is your car! Tap the car to sit in it.",null],
-      ["جلستَ في السيّارة. اربط حزام الأمان! 🔒","jalasta fi al-sayyara. irbut hizam al-aman!","You sat in the car. Fasten your seatbelt!",["🔒 اربط الحزام","irbut al-hizam","Fasten the seatbelt"]],
-      ["ممتاز! الآن شغّل السيّارة وقُدها إلى العمل. 🔑","mumtaz! al-an shaghghil al-sayyara wa qudha ila al-ʿamal.","Great! Now start the car and drive it to work.",["🔑 شغّل السيّارة","shaghghil al-sayyara","Start the car"]]];
-    const draw=()=>{const s=steps[st];box(`${say(s[0].replace("جلستَ",GV("جلستَ","جلستِ")),s[1],s[2])}
-      <div class="cstreet"><div class="ccar ${st>0?"in":""}" id="cCar">🚗${st>0?`<span class="cdriver">${meE}</span>`:""}</div></div>
-      ${st===0&&window.ROADDRIVE?ROADDRIVE.pickerHtml():""}${s[3]?`<div class="tog center"><button class="big huge" id="cNext">${L3(s[3][0],s[3][1],s[3][2])}</button></div>`:""}`);if(window.ROADDRIVE)ROADDRIVE.bindPicker(o);
-      if(st===0)$("cCar").onclick=()=>{st=1;tone(400,.1);draw();};else $("cNext").onclick=()=>{if(st===2){tone(120,.4,0,"sawtooth",.06);tone(180,.4,.3,"sawtooth",.05);setTimeout(()=>drive("work"),700);}else{tone(900,.06);st++;draw();}};};
-    draw();};
+  /* 2. the car park: choose your floor, go down, then walk to the car (inside ROADDRIVE) */
+  const car=()=>{box(`${say("سيّارتك في موقف السيّارات. اختر الطابق، ثمّ انزل وامشِ إليها!","sayyaratuk fi mawqif al-sayyarat. ikhtar al-tabiq, thumma inzil wa imshi ilayha!","Your car is in the car park. Pick the floor, go down and walk to it!")}
+      ${window.ROADDRIVE?ROADDRIVE.pickerHtml():""}<div class="tog center"><button class="big huge" id="cNext">${L3("🛗 انزل إلى الموقف","inzil ila al-mawqif","Go down to the car park")}</button></div>`);
+    if(window.ROADDRIVE)ROADDRIVE.bindPicker(o);$("cNext").onclick=()=>{tone(600,.08);tone(800,.08,.1);drive("work");};};
   /* 3. driving: real road (ROADDRIVE) — car park ramps, Malaysian traffic lights, indicators */
   const drive=(to)=>{box(`${say(to==="work"?"قُد بحذر إلى العمل! انتبه للإشارات 🚦":"قُد بحذر إلى البيت! 🏠",to==="work"?"qud bi-hadhar ila al-ʿamal! intabih lil-isharat":"qud bi-hadhar ila al-bayt!",to==="work"?"Drive carefully to work! Watch the traffic lights.":"Drive carefully home!")}<div id="rdBox"></div>`,"cdrive");
     const d=ROADDRIVE.open({el:$("rdBox"),dir:to==="work"?"out":"in",dest:"🏢",tone,onDone:r=>{if(!GAME||GAME.kind!=="work")return;driveScore+=r.stars;miss+=r.hits+r.reds;GAME.cleanup=null;setTimeout(()=>to==="work"?arriveWork():gate(),300);}});
