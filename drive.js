@@ -271,10 +271,12 @@ function open(o){addCss();
     g.fillStyle="#546e7a";RD.forEach(r=>{g.fillRect(0,r-RW2,m.W,RW2*2);g.fillRect(r-RW2,0,RW2*2,m.H);});
     g.strokeStyle="#fff";g.lineWidth=3;g.setLineDash([26,22]);RD.forEach(r=>{g.beginPath();g.moveTo(0,r);g.lineTo(m.W,r);g.stroke();g.beginPath();g.moveTo(r,0);g.lineTo(r,m.H);g.stroke();});g.setLineDash([]);
     m.lights.forEach(L=>{g.fillStyle="#546e7a";g.fillRect(L.x-RW2,L.y-RW2,RW2*2,RW2*2);
-      [["v",-1],["v",1],["h",-1],["h",1]].forEach(([ax,s])=>{const st=lightState(L,ax);
-        g.fillStyle="#fff";if(ax==="v")g.fillRect(L.x-RW2,L.y+s*(RW2+4)-(s<0?6:0),RW2*2,6);else g.fillRect(L.x+s*(RW2+4)-(s<0?6:0),L.y-RW2,6,RW2*2);   // white stop line
-        const px=ax==="v"?L.x+(s<0?-RW2-22:RW2+22):L.x+s*(RW2+22),py=ax==="v"?L.y+s*(RW2+22):L.y+(s<0?RW2+22:-RW2-22);
-        trafficLight(px,py,st);});});
+      /* only the light for YOUR direction, on your side (Malaysia drives on the left), stop line across your lane only */
+      const me=phase==="drive"?car:man,fx=Math.sin(me.h),fy=-Math.cos(me.h),ax=Math.abs(fx)>Math.abs(fy)?"h":"v",s=ax==="h"?(fx>0?-1:1):(fy<0?1:-1),st=lightState(L,ax);
+      g.fillStyle="#fff";
+      if(ax==="v")g.fillRect(s>0?L.x-RW2:L.x,L.y+s*(RW2+4)-(s<0?6:0),RW2,6);else g.fillRect(L.x+s*(RW2+4)-(s<0?6:0),s<0?L.y-RW2:L.y,6,RW2);
+      const px=ax==="v"?L.x+(s>0?-RW2-22:RW2+22):L.x+s*(RW2+22),py=ax==="v"?L.y+s*(RW2+22):L.y+(s<0?-RW2-22:RW2+22);
+      trafficLight(px,py,st);});
     /* destination car park */
     const lt=m.lot;g.fillStyle="#78909c";g.fillRect(lt.x,lt.y,lt.w,lt.h);g.strokeStyle="#fff";g.lineWidth=3;for(let i=0;i<=6;i++){g.beginPath();g.moveTo(lt.x+12+i*64,lt.y+10);g.lineTo(lt.x+12+i*64,lt.y+90);g.stroke();}
     label("🅿️ موقف — اركن هنا وضع الناقل على P",lt.x+lt.w/2,lt.y+lt.h-60,16,"#fff","#0d47a1");
