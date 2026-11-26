@@ -195,17 +195,17 @@ function open(o){addCss();
     if(phase!=="drive")return;
     /* --- gear: P never moves, R: ⬆️ goes back, D: ⬆️ goes forward --- */
     const offRoad=map.kind==="world"&&!onRoadXY(car.x,car.y)&&!inR(car,map.lot)&&!inR(car,map.tunnel);
-    const maxF=map.kind==="deck"?120:offRoad?150:280,maxR=80;
+    const maxF=map.kind==="deck"?150:offRoad?190:360,maxR=100;
     if(gear==="P"){speed=0;if((keys.g||steer)&&performance.now()>pHint){pHint=performance.now()+3500;say("🅿️ الناقل على P — السيّارة لن تتحرّك! ضع الناقل على D أو R","It's in Park — it won't move! Choose D or R");tone(250,.08);}}
     else{const sg=gear==="D"?1:-1,mx=gear==="D"?maxF:maxR;
-      if(keys.b){const dv=420*dt;speed=Math.abs(speed)<=dv?0:speed-Math.sign(speed)*dv;}
-      else if(keys.g){speed+=sg*170*dt;}
+      if(keys.b){const dv=520*dt;speed=Math.abs(speed)<=dv?0:speed-Math.sign(speed)*dv;}
+      else if(keys.g){speed+=sg*(Math.abs(speed)<200?230:150)*dt;}
       else{const dv=70*dt;speed=Math.abs(speed)<=dv?0:speed-Math.sign(speed)*dv;}
       if(sg*speed>mx)speed=sg*Math.max(mx,Math.abs(speed)-300*dt);   // slow down gently, e.g. when going onto the grass
       if(sg*speed<-40)speed+=sg*200*dt;}
     if(offRoad&&!grassSaid&&Math.abs(speed)>60){grassSaid=true;say("🌱 أنت تقود خارج الطريق — هذا مسموح، لكنّ السيّارة أبطأ","Off-road driving is allowed — but it's slower");}
     if(!offRoad)grassSaid=false;
-    car.h+=steer*2.3*dt*Math.max(-1,Math.min(1,speed/110));
+    car.h+=steer*dt*Math.max(-1,Math.min(1,speed/110))*(Math.abs(speed)>250?1.9:2.3);   // a little gentler at top speed so it stays easy to steer
     const nx=car.x+Math.sin(car.h)*speed*dt,ny=car.y-Math.cos(car.h)*speed*dt;
     let blocked=false;if(!hitAt(nx,car.y,14))car.x=nx;else blocked=true;if(!hitAt(car.x,ny,14))car.y=ny;else blocked=true;
     if(map.kind==="world")map.ai.forEach(a=>{const ap=aiPos(a);if(Math.hypot(ap.x-car.x,ap.y-car.y)<34){blocked=true;const dx=car.x-ap.x,dy=car.y-ap.y,d=Math.hypot(dx,dy)||1;car.x+=dx/d*4;car.y+=dy/d*4;}});
