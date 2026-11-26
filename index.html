@@ -2213,11 +2213,11 @@ function renderPanel(){
     const K1=fillB(pickL("k1",[[`سأضغط زرّ ${B}.`,`sa'adghatu zirra ___ .`,`I'll press the ___ floor button.`],
                         [`أريد أن أصعد إلى ${B}.`,`uridu an asʿada ila ___ .`,`I want to go up to the ___ floor.`],
                         [`سأذهب إلى ${B}.`,`sa'adhhabu ila ___ .`,`I'll go to the ___ floor.`]]),[fFloor(S.t)]);
-    const lines=[S.mosque&&S.mosque.picked?ln("mk1",K,v.e,...fillB([`سننزل إلى الطابق الأرضي. سأضغط زرّ ${B}.`,`sananzilu ila al-tabiq al-ardi. sa'adghatu zirra ___ .`,"We'll go down to the ground floor. I'll press ___."],[[ar(0),"0","0"]]),1):ln("k1",K,v.e,...K1,1)];
+    const lines=[S.down?ln("dn1",K,v.e,...fillB([`سأنزل إلى الطابق الأرضي لأكلّم المحاسب. سأضغط زرّ ${B}.`,`sa'anzilu ila al-tabiq al-ardi li-ukallima al-muhasib. sa'adghatu zirra ___ .`,"I'll go down to the ground floor to talk to the accountant. I'll press ___."],[[ar(0),"0","0"]]),1):S.mosque&&S.mosque.picked?ln("mk1",K,v.e,...fillB([`سننزل إلى الطابق الأرضي. سأضغط زرّ ${B}.`,`sananzilu ila al-tabiq al-ardi. sa'adghatu zirra ___ .`,"We'll go down to the ground floor. I'll press ___."],[[ar(0),"0","0"]]),1):ln("k1",K,v.e,...K1,1)];
     if(S.wrongAt!=null&&S.phase==="inside")lines.push(ln("w"+S.wrongAt,K,v.e,...pickL("w",[
       ["أوه! أخطأت. هذا ليس الطابق الصحيح.","oh! akhta'tu. hadha laysa al-tabiqa al-sahih.","Oops! Wrong floor."],
       ["لا! هذا طابقٌ خطأ. سأحاول مرّة أخرى.","la! hadha tabiqun khata'. sa'uhawilu marratan ukhra.","No! Wrong floor. I'll try again."]]),1));
-    const banner=S.mosque&&S.mosque.picked&&S.wrongAt!=null&&S.phase==="inside"?`<div class="alert">🙈 ${P(`هذا ${FL[S.wrongAt].ar}! ${OK().ar} ${OK().g==="f"?"قريبةٌ":"قريبٌ"} من الطابق الأرضي.`,`hadha ${FL[S.wrongAt].tr}! al-masjidu bi-janib al-tabiq al-ardi.`)}</div>`:S.wrongAt!=null&&S.phase==="inside"?`<div class="alert">🙈 هذا ${FL[S.wrongAt].ar}! ${S.wrongAt===0?"":`سكّان هذا الطابق: ${S.res[S.wrongAt].map(r=>r.e).join(" ")}. `}لكنّ ${t.ar} ${G(t,"ليس","ليست")} هنا.${S.tr?`<div class="tr">hadha ${FL[S.wrongAt].tr}! lakinna ${t.tr} ${G(t,"laysa","laysat")} huna.</div>`:""}</div>`:"";
+    const banner=S.down&&S.wrongAt!=null&&S.phase==="inside"?`<div class="alert">🙈 ${P(`هذا ${FL[S.wrongAt].ar}! المحاسب في الطابق الأرضي.`,`hadha ${FL[S.wrongAt].tr}! al-muhasib fi al-tabiq al-ardi.`)}</div>`:S.mosque&&S.mosque.picked&&S.wrongAt!=null&&S.phase==="inside"?`<div class="alert">🙈 ${P(`هذا ${FL[S.wrongAt].ar}! ${OK().ar} ${OK().g==="f"?"قريبةٌ":"قريبٌ"} من الطابق الأرضي.`,`hadha ${FL[S.wrongAt].tr}! al-masjidu bi-janib al-tabiq al-ardi.`)}</div>`:S.wrongAt!=null&&S.phase==="inside"?`<div class="alert">🙈 هذا ${FL[S.wrongAt].ar}! ${S.wrongAt===0?"":`سكّان هذا الطابق: ${S.res[S.wrongAt].map(r=>r.e).join(" ")}. `}لكنّ ${t.ar} ${G(t,"ليس","ليست")} هنا.${S.tr?`<div class="tr">hadha ${FL[S.wrongAt].tr}! lakinna ${t.tr} ${G(t,"laysa","laysat")} huna.</div>`:""}</div>`:"";
     const req=new Set();if(S.phase==="ride"&&S.final!=null)req.add(S.final);if(S.nb&&S.nb.aboard)req.add(S.nb.to);
     h+=(S.nbMsg?S.nbMsg:banner)+(S.phase==="ride"&&!S.nbMsg?`<div class="win center">🛗 ${P("المصعد يتحرّك…","al-misʿad yataharrak")}</div>`:"")+
       focus(lines,`<div class="keypad">${[...Array(TOP+1)].map((_,i)=>TOP-i).map(f=>`<button data-fl="${f}" class="${req.has(f)?"req":""} ${S.phase==="inside"&&S.cancelFl===f?"cancelled":""}" ${S.phase==="ride"&&!(f===S.final&&S.moving)?"disabled":""} ${S.phase==="ride"&&f===S.final?'title="اضغط مرّة أخرى للإلغاء"':""}>${ar(f)}</button>`).join("")}<span></span><button class="alarm" disabled>🔔</button></div>${S.phase==="ride"&&S.moving&&S.final!=null?`<div class="tog center"><button class="big cancelfl" id="cancelFl">✋ ${P(`ألغِ زرّ ${FL[S.final].ar}`,`alghi zirra ${FL[S.final].tr}`)}</button></div><div class="hint center">${P("أو اضغط الزرّ المضيء مرّة أخرى","aw idghat al-zirra al-mudi' marratan ukhra")}</div>`:""}`);
@@ -2737,7 +2737,7 @@ function atStop(l){
   // our floor
   S.pos=l.f;
   const mq=!!(S.mosque&&S.mosque.picked);
-  const right=mq?S.pos===0:S.pos===S.t;
+  const right=(mq||S.down)?S.pos===0:S.pos===S.t;
   if(nb&&nb.aboard&&nb.to===l.f){
     // the neighbour gets off here with us
     openThen(l,()=>{nbOff();if(!right)S.nbMsg="";arrive();});
@@ -2772,6 +2772,10 @@ function keepGoing(l){
   setTimeout(step,500);
 }
 function arrive(){
+  if(S.down){                                   // riding down to the accountant on the ground floor
+    if(S.pos===0){S.exiting=true;render();setTimeout(()=>{S.exiting=false;if(S.lift!=null)S.lifts[S.lift].open=false;S.down=null;S.phase="reception";S.lift=null;S.arrived=false;S.nbMsg="";S.wrongAt=null;yay();render();announce("أُغلِقت الأبواب.","ughliqat al-abwab.");},1500);return;}
+    S.phase="inside";S.wrongAt=S.pos;render();return;
+  }
   if(S.mosque&&S.mosque.picked){
     if(S.pos===0){S.exiting=true;render();setTimeout(()=>{S.exiting=false;S.phase="mosque";S.lifts[S.lift].open=false;yay();render();if(outKind()==="mosque")playAdhan();},1500);return;}
     S.phase="inside";S.wrongAt=S.pos;render();return;
@@ -5238,10 +5242,10 @@ function startWork(){
         <button class="cdoorbtn" id="cOpen"><b>🔓</b>${L3("افتح الباب","iftah al-bab","Open the door")}</button></div>`,"cdoorcard");
     $("cOpen").onclick=()=>{$("cDoor").classList.add("open");$("cOpen").disabled=true;tone(300,.2,0,"triangle");tone(500,.2,.15,"triangle");setTimeout(car,1300);};};
   /* 2. the car park: choose your floor, go down, then walk to the car (inside ROADDRIVE) */
-  const car=()=>{box(`${say("سيّارتك في موقف السيّارات. اختر الطابق، ثمّ انزل وامشِ إليها!","sayyaratuk fi mawqif al-sayyarat. ikhtar al-tabiq, thumma inzil wa imshi ilayha!","Your car is in the car park. Pick the floor, go down and walk to it!")}
-      ${window.ROADDRIVE?ROADDRIVE.pickerHtml():""}<div class="tog center"><button class="big huge" id="cNext">${L3("🛗 انزل إلى الموقف","inzil ila al-mawqif","Go down to the car park")}</button></div>`);
+  const car=()=>{box(`${say("سيّارتك في موقف السيّارات. اركب المصعد إلى الطابق الذي فيه سيّارتك، ثمّ امشِ إليها!","sayyaratuk fi mawqif al-sayyarat. irkab al-misʿad ila al-tabiq alladhi fihi sayyaratuk, thumma imshi ilayha!","Your car is in the car park. Take the lift to the floor where your car is, then walk to it!")}
+      ${window.ROADDRIVE?ROADDRIVE.pickerHtml():""}<div class="tog center"><button class="big huge" id="cNext">${L3("🛗 اركب المصعد إلى الموقف","irkab al-misʿad ila al-mawqif","Take the lift to the car park")}</button></div>`);
     if(window.ROADDRIVE)ROADDRIVE.bindPicker(o);$("cNext").onclick=()=>{tone(600,.08);tone(800,.08,.1);drive("work");};};
-  /* 3. driving: real road (ROADDRIVE) — car park ramps, Malaysian traffic lights, indicators */
+  /* 3. driving (ROADDRIVE): car-park lift to your floor, gear P/R/D, free driving anywhere, traffic lights, indicators */
   const drive=(to)=>{box(`${say(to==="work"?"قُد بحذر إلى العمل! انتبه للإشارات 🚦":"قُد بحذر إلى البيت! 🏠",to==="work"?"qud bi-hadhar ila al-ʿamal! intabih lil-isharat":"qud bi-hadhar ila al-bayt!",to==="work"?"Drive carefully to work! Watch the traffic lights.":"Drive carefully home!")}<div id="rdBox"></div>`,"cdrive");
     const d=ROADDRIVE.open({el:$("rdBox"),dir:to==="work"?"out":"in",dest:"🏢",tone,onDone:r=>{if(!GAME||GAME.kind!=="work")return;driveScore+=r.stars;miss+=r.hits+r.reds;GAME.cleanup=null;setTimeout(()=>to==="work"?arriveWork():gate(),300);}});
     GAME.cleanup=()=>d.stop();};
@@ -5320,6 +5324,30 @@ body.m3d #stage{display:block!important}
 var _renderScene4=renderScene;renderScene=function(){_renderScene4();const st=$("stage");if(st)st.classList.toggle("below",!document.body.classList.contains("m3d")&&["reception","lift","inside","ride","stuck","door","myhome","place","souq","kids","house","mosque"].includes(S.phase));if(!document.body.classList.contains("m3d"))requestAnimationFrame(()=>{const pn=$("panel"),n=pn&&pn.querySelector(".now");if(n&&n.offsetParent===pn)pn.scrollTop=Math.max(0,n.offsetTop-8);});};
 (function(){return;const t=document.querySelector("header .tog");if(t&&!$("v3dB")){t.insertAdjacentHTML("afterbegin",`<button id="v3dB" class="${MODE3D?"on":""}" title="3D / 2D">🧊 3D</button>`);
   $("v3dB").onclick=()=>{MODE3D=!MODE3D;try{localStorage.setItem("tower-3d",MODE3D?"1":"0");}catch(e){}$("v3dB").classList.toggle("on",MODE3D);render();};}})();
+
+/* ---------- you are never teleported to the lobby: a new round starts inside the lift on the floor you were on,
+   and you ride it down to the ground floor yourself to talk to the accountant ---------- */
+var _newRoundD=newRound,_renderD=render,_downCUR=null;
+function curFloorNow(){const ph=S.phase;
+  if(ph==="door")return S.pos||0;
+  if(["inside","ride","stuck"].includes(ph)&&S.lift!=null&&S.lifts[S.lift])return S.lifts[S.lift].f||0;
+  if(ph==="myhome")return (HOME&&HOME.f)||0;
+  return 0;}
+newRound=function(keep){
+  let F=0;try{F=_downCUR===CUR?curFloorNow():0;}catch(e){F=0;}
+  _downCUR=CUR;S.down=null;
+  const r=_newRoundD(keep);
+  if(F>0&&S.phase==="reception"){
+    let i=S.lifts.findIndex(l=>!l.out);if(i<0){i=0;S.lifts[0].out=false;}
+    const l=S.lifts[i];l.f=F;l.open=true;l.dir="";
+    Object.assign(S,{down:{from:F},lift:i,arrived:true,phase:"inside",pos:F,wrongAt:null,cancelFl:null,
+      nbMsg:`<div class="win">🛗 ${P(`أنت في المصعد في ${FL[F].ar}. انزل إلى الطابق الأرضي لتكلّم المحاسب!`,`anta fi al-misʿad fi ${FL[F].tr}. inzil ila al-tabiq al-ardi li-tukallima al-muhasib!`)}</div>`});
+    render();
+  }
+  return r;};
+render=function(){
+  if(S.down&&!["inside","ride","stuck"].includes(S.phase)){S.down=null;}
+  return _renderD.apply(this,arguments);};
 </script>
 <script type="module">
 /* ================= 🧊 3D building: lobby, lifts, cab buttons, floor corridor with doors & bells =================
@@ -5645,6 +5673,7 @@ function hint(){
   if(ph==="reception")return S.lift!=null&&S.arrived?"🛗 وصل المصعد! لكن تكلّم مع المحاسب أوّلاً  💬<small>Talk to the accountant first </small>":"💁‍♂️ تكلّم مع المحاسب في 💬 المحادثة<small>Talk to the accountant </small>";
   if(ph==="lift"){if(S.lift===null)return "🔼 امشِ إلى زرّ المصعد بين المصاعد واضغطه<small>Walk to the call button and press it</small>";
     if(!S.arrived)return `⏳ المصعد قادم… الطابق ${ar(l.f)}<small>The lift is coming…</small>`;return "🛗 فُتح الباب! امشِ وادخل المصعد ⬆️<small>The door is open! Walk into the lift</small>";}
+  if(ph==="inside"&&S.down&&S.wrongAt==null)return `⬇️ أنت في المصعد — ${FL[S.pos]?FL[S.pos].ar:""}. اضغط زرّ ٠ لتنزل إلى المحاسب<small>You're in the lift. Press 0 to go down to the accountant</small>`;
   if(ph==="inside")return S.wrongAt!=null?"🙈 هذا ليس الطابق الصحيح! اضغط زرّاً آخر 🔢<small>Wrong floor! Press another button</small>":"🔢 اضغط زرّ الطابق بنفسك (على يمينك)<small>Press the floor button yourself (on your right)</small>";
   if(ph==="ride")return `${l&&l.dir==="▼"?"⬇️ المصعد ينزل":"⬆️ المصعد يصعد"}… ${l?ar(l.f):""}<small>The lift is moving…</small>`;
   if(ph==="stuck")return "🚨 توقّف المصعد! اضغط زرّ الإنذار 🔔<small>The lift is stuck! Press the alarm</small>";

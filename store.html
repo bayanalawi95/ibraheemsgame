@@ -551,8 +551,8 @@ function startTrip(dir){TRIP=dir;closeP();setHint("");$("actB").hidden=true;Obje
       <div class="center tmoney">${L(`في محفظتك 💵 ${ar(WAL.cash)} · في بطاقتك 💳 ${ar(WAL.bank)}`,"",`Wallet: ${WAL.cash} · Card: ${WAL.bank}`)}</div>`);
     $("tEx").onclick=()=>{$("tDoor").classList.add("open");$("tEx").disabled=true;tone(1200,.08,0,"square",.05);tone(300,.3,.1,"triangle");setTimeout(carStep,1300);};}
   function carStep(){if(dir!=="go"){drive();return;}
-    tripBox(`<h2>🛗 ${L("إلى موقف السيّارات","ila mawqif al-sayyarat","To the car park")}</h2>${tsay("سيّارتك في موقف السيّارات. اختر الطابق، ثمّ انزل بالمصعد وامشِ إليها!","sayyaratuk fi mawqif al-sayyarat. ikhtar al-tabiq, thumma inzil bil-misʿad wa imshi ilayha!","Your car is in the car park. Pick the floor, take the lift down and walk to it!")}
-      ${window.ROADDRIVE?ROADDRIVE.pickerHtml():""}<div class="opts"><button class="btn big" id="tN">${L("🛗 انزل إلى الموقف","inzil ila al-mawqif","Go down to the car park")}</button></div>`);
+    tripBox(`<h2>🛗 ${L("إلى موقف السيّارات","ila mawqif al-sayyarat","To the car park")}</h2>${tsay("سيّارتك في موقف السيّارات. اركب المصعد إلى الطابق الذي فيه سيّارتك، ثمّ امشِ إليها!","sayyaratuk fi mawqif al-sayyarat. irkab al-misʿad ila al-tabiq alladhi fihi sayyaratuk, thumma imshi ilayha!","Your car is in the car park. Take the lift to the floor where your car is, then walk to it!")}
+      ${window.ROADDRIVE?ROADDRIVE.pickerHtml():""}<div class="opts"><button class="btn big" id="tN">${L("🛗 اركب المصعد إلى الموقف","irkab al-misʿad ila al-mawqif","Take the lift to the car park")}</button></div>`);
     if(window.ROADDRIVE)ROADDRIVE.bindPicker($("trip"));$("tN").onclick=()=>{tone(600,.08);tone(800,.08,.1);drive();};}
   function drive(){tripBox(`<h2>🛣️ ${dir==="go"?L("إلى السوبرماركت","ila al-subirmarkit","To the supermarket"):L("إلى البيت","ila al-bayt","Home")}</h2><div id="rdBox"></div>`);
     window.__rd=ROADDRIVE.open({el:$("rdBox"),dir:dir==="go"?"out":"in",dest:dir==="go"?"🏪":"🏢",tone,onDone:r=>{if(r.stars)addScore(r.stars);setTimeout(dir==="go"?arriveStore:gate,250);}});}
