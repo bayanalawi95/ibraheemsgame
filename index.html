@@ -5327,7 +5327,7 @@ var _renderScene4=renderScene;renderScene=function(){_renderScene4();const st=$(
 
 /* ---------- you are never teleported to the lobby: a new round starts inside the lift on the floor you were on,
    and you ride it down to the ground floor yourself to talk to the accountant ---------- */
-var _newRoundD=newRound,_renderD=render,_downCUR=null;
+var _newRoundD=newRound,_renderD=render,_downCUR=null;try{_downCUR=CUR;}catch(e){}
 function curFloorNow(){const ph=S.phase;
   if(ph==="door")return S.pos||0;
   if(["inside","ride","stuck"].includes(ph)&&S.lift!=null&&S.lifts[S.lift])return S.lifts[S.lift].f||0;
