@@ -258,15 +258,23 @@ function open(o){addCss();
     const lf=m.lift;g.fillStyle="#b0bec5";g.fillRect(lf.x,lf.y,lf.w+6,lf.h);label("🛗",lf.x+24,lf.y+lf.h/2,22,"#000");
     m.solids.forEach(s=>{if(s.k==="wall"){g.fillStyle="#37474f";g.fillRect(s.x,s.y,s.w,s.h);}else if(s.k==="pillar"){g.fillStyle="#bdbdbd";g.fillRect(s.x,s.y,s.w,s.h);g.fillStyle="#ffd54f";g.fillRect(s.x,s.y+s.h-4,s.w,4);}else if(s.k==="car")carShape(s.x+s.w/2,s.y+s.h/2,0,s.col);});
     if(m.mine&&phase!=="drive"){carShape(m.mine.x,m.mine.y,m.mine.h,"#1565c0");label(`⬇ سيّارتك`,m.mine.x,m.mine.y+44,14,"#3e2723","#ffd54f");}}
+  /* a real traffic light (Malaysian style): black box, yellow edge, red on top, amber, green at the bottom — always upright on screen */
+  function trafficLight(x,y,st){upright(x,y,()=>{const w=20,h=54,bt=-h-14;
+    g.fillStyle="#0005";g.beginPath();g.ellipse(0,2,9,4,0,0,7);g.fill();
+    g.fillStyle="#455a64";g.fillRect(-2,bt+h,4,14);
+    g.fillStyle="#212121";g.beginPath();g.roundRect?g.roundRect(-w/2,bt,w,h,5):g.rect(-w/2,bt,w,h);g.fill();g.strokeStyle="#ffd600";g.lineWidth=2;g.stroke();
+    [["r","#ff1744","#4a1010"],["a","#ffab00","#4a3300"],["g","#00e676","#0b3d1f"]].forEach((c,i)=>{const on=st===c[0],cy=bt+9+i*18;
+      g.fillStyle=on?c[1]:c[2];if(on){g.shadowColor=c[1];g.shadowBlur=14;}g.beginPath();g.arc(0,cy,6.5,0,7);g.fill();g.shadowBlur=0;
+      if(on){g.fillStyle="#ffffff88";g.beginPath();g.arc(-2,cy-2,2,0,7);g.fill();}});});}
   function drawWorld(m){g.fillStyle="#7cb342";g.fillRect(-40,-40,m.W+80,m.H+80);
     g.fillStyle="#689f38";for(let x=0;x<m.W;x+=120)for(let y=(x/120)%2*60;y<m.H;y+=120)g.fillRect(x,y,60,60);
     g.fillStyle="#546e7a";RD.forEach(r=>{g.fillRect(0,r-RW2,m.W,RW2*2);g.fillRect(r-RW2,0,RW2*2,m.H);});
     g.strokeStyle="#fff";g.lineWidth=3;g.setLineDash([26,22]);RD.forEach(r=>{g.beginPath();g.moveTo(0,r);g.lineTo(m.W,r);g.stroke();g.beginPath();g.moveTo(r,0);g.lineTo(r,m.H);g.stroke();});g.setLineDash([]);
     m.lights.forEach(L=>{g.fillStyle="#546e7a";g.fillRect(L.x-RW2,L.y-RW2,RW2*2,RW2*2);
-      [["v",-1],["v",1],["h",-1],["h",1]].forEach(([ax,s])=>{const st=lightState(L,ax),c=st==="g"?"#00e676":st==="a"?"#ffab00":"#ff1744";g.fillStyle=c;
-        if(ax==="v")g.fillRect(L.x-RW2,L.y+s*(RW2+4)-(s<0?8:0),RW2*2,8);else g.fillRect(L.x+s*(RW2+4)-(s<0?8:0),L.y-RW2,8,RW2*2);
-        const px=ax==="v"?L.x+(s<0?-RW2-14:RW2+14):L.x+s*(RW2+14),py=ax==="v"?L.y+s*(RW2+14):L.y+(s<0?RW2+14:-RW2-14);
-        g.fillStyle="#212121";g.beginPath();g.arc(px,py,9,0,7);g.fill();g.fillStyle=c;g.shadowColor=c;g.shadowBlur=8;g.beginPath();g.arc(px,py,6,0,7);g.fill();g.shadowBlur=0;});});
+      [["v",-1],["v",1],["h",-1],["h",1]].forEach(([ax,s])=>{const st=lightState(L,ax);
+        g.fillStyle="#fff";if(ax==="v")g.fillRect(L.x-RW2,L.y+s*(RW2+4)-(s<0?6:0),RW2*2,6);else g.fillRect(L.x+s*(RW2+4)-(s<0?6:0),L.y-RW2,6,RW2*2);   // white stop line
+        const px=ax==="v"?L.x+(s<0?-RW2-22:RW2+22):L.x+s*(RW2+22),py=ax==="v"?L.y+s*(RW2+22):L.y+(s<0?RW2+22:-RW2-22);
+        trafficLight(px,py,st);});});
     /* destination car park */
     const lt=m.lot;g.fillStyle="#78909c";g.fillRect(lt.x,lt.y,lt.w,lt.h);g.strokeStyle="#fff";g.lineWidth=3;for(let i=0;i<=6;i++){g.beginPath();g.moveTo(lt.x+12+i*64,lt.y+10);g.lineTo(lt.x+12+i*64,lt.y+90);g.stroke();}
     label("🅿️ موقف — اركن هنا وضع الناقل على P",lt.x+lt.w/2,lt.y+lt.h-60,16,"#fff","#0d47a1");
